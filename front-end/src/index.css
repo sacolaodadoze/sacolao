@@ -1,0 +1,440 @@
+/* Google Fonts - Inter */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+
+:root {
+  /* Palette requested: predominant greens, yellow, orange, rare celeste */
+  --primary: #15803d;
+  /* Green 700 - Main Brand Color */
+  --primary-light: #22c55e;
+  /* Green 500 - Lighter for highlights */
+  --primary-hover: #14532d;
+  /* Green 900 - Hover state */
+
+  --accent-orange: #f97316;
+  /* Orange 500 - Secondary/Actions */
+  --accent-yellow: #facc15;
+  /* Yellow 400 - Highlights/Accents */
+
+  --rare-celeste: #38bdf8;
+  /* Sky 400 - Few instances */
+
+  --background: #fcfdfa;
+  /* Very slight warm/natural tint */
+  --surface: #ffffff;
+
+  --text-main: #1e293b;
+  /* Slate 800 */
+  --text-muted: #64748b;
+  /* Slate 500 */
+  --border: #e2e8f0;
+
+  --success: #16a34a;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+
+  --radius: 12px;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --transition: all 0.2s ease-in-out;
+  width: 100%;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  background-color: var(--background);
+  color: var(--text-main);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header / Banner */
+.main-header {
+  background-color: var(--surface);
+  border-bottom: 2px solid var(--accent-yellow);
+  /* Yellow accent line */
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: var(--shadow-sm);  
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--primary);
+}
+
+.logo-img {
+  height: 40px;
+  width: auto;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.language-select {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background-color: var(--background);
+  color: var(--text-main);
+  font-size: 0.875rem;
+  cursor: pointer;
+  outline: none;
+  transition: var(--transition);
+}
+
+.language-select:focus {
+  border-color: var(--rare-celeste);
+  /* RARE CELESTE usage */
+}
+
+.btn-login {
+  background-color: var(--primary);
+  color: white;
+  padding: 0.6rem 1.5rem;
+  border-radius: var(--radius);
+  text-decoration: none;
+  font-weight: 500;
+  transition: var(--transition);
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(21, 128, 61, 0.3);
+}
+
+.btn-login:hover {
+  background-color: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(21, 128, 61, 0.4);
+}
+
+/* Sub-menu */
+.sub-menu {
+  background-color: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0.75rem 2rem;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  height: 50px; /* O la altura exacta que quieras mantener */
+  overflow: hidden; /* Corta cualquier cosa que intente estirarlo */
+  box-sizing: border-box; /*  Asegura que el padding se incluya en la altura total */ 
+   
+}
+
+.nav-links {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.nav-link {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: var(--transition);
+  position: relative;
+  padding-bottom: 0.25rem;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: var(--accent-orange);
+  /* Active link is Orange */
+}
+
+.nav-link.active::after {
+  content: "";
+  position: absolute;
+  bottom: -0.8rem;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background-color: var(--accent-orange);
+  border-radius: 2px 2px 0 0;
+}
+
+.submenu-select {
+  margin-left: auto;
+  padding: 0.4rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background-color: var(--background);
+  color: var(--text-main);
+  outline: none;
+
+}
+
+.submenu-select:focus {
+  border-color: var(--rare-celeste);
+  /* RARE CELESTE usage */
+}
+
+/* Main Content */
+.main-container {
+  max-width: 1200px;
+  margin: 1rem auto;
+  width: 95%;
+  flex: 1;
+ /*    z-index: 10;
+  position: sticky;
+  top: 0; */
+}
+
+.page-header {
+  margin-bottom: 0.5rem;
+  /*margin-right: 1rem;*/
+
+  overflow-x: auto; /* Activa el scroll interno */
+
+  /* Para separar que l tabla salga bien */
+  /* max-width: 100vw; /* Evita que el div sea más ancho que la pantalla */
+
+  /*  display: block; /* Asegura que se comporte como un bloque */
+
+  /*max-width: calc(100% - 100px); /* Ajusta el ancho máximo restando los márgenes */
+}
+
+.page-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  margin-top: 1rem;
+  /* margin-left: 3rem; */
+  color: var(--primary);
+  /* Title in Green */
+  letter-spacing: -0.025em;
+}
+
+.controls-row {
+  display: flex;
+  gap: 1rem;
+  /*  margin: 0 0.5rem 2rem 3rem; */
+  margin-bottom: 1.5rem;
+  background: var(--surface);
+  padding: 1rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  align-items: center;
+  border-left: 4px solid var(--accent-yellow);
+  /* Yellow touch */
+
+  /*   z-index: 10;
+  position: sticky;
+  top: 0; */
+}
+
+.search-input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: var(--transition);
+  outline: none;
+}
+
+.search-input:focus {
+  border-color: var(--rare-celeste);
+  /* RARE CELESTE usage for focus */
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.1);
+}
+
+.filter-select {
+  min-width: 140px;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background-color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  outline: none;
+}
+
+.filter-select:focus {
+  border-color: var(--rare-celeste);
+}
+
+/* Tabs */
+.table-container {
+  background-color: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+ /* min-height: 400px;*/
+}
+
+/*
+.tabs-content {
+  padding: 1.5rem 2rem;
+}
+/*
+
+/* Table */
+.table-wrapper {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-spacing: 0;
+  border-collapse: collapse;  
+
+  table-layout: fixed; /* Fuerza a las columnas a respetar el ancho total */
+  word-wrap: break-word; /* Rompe palabras largas para que no ensanchen la celda */
+  overflow-x: auto; /* Añade scroll horizontal si es necesario */
+  border-radius: 13px;
+}
+.table-header {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  /*  margin-left: 3rem; */
+  background-color: #f0fdf4;
+  height: 48px;
+  color: #706f6f;
+  padding: 1rem 1rem;
+ /* border-radius: 13px;*/
+}
+
+th,
+td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+   width: 90%;
+}
+
+th {
+  font-weight: 600;
+  overflow: hidden;
+  color: var(--primary);
+  /* Green headers */
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background-color: #f0fdf4;
+ 
+  /* Green tint header bg */
+}
+
+tr:hover td {
+  background-color: #fefce8;
+  /* Hover row is light yellow */
+
+
+ /* #f9fafb; /* Un gris muy sutil 
+ cursor: pointer;
+ */
+}
+
+.status-select {
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background-color: white;
+  font-size: 0.875rem;
+  color: var(--text-main);
+  cursor: pointer;
+}
+
+.cta-container {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-add {
+  background-color: var(--surface);
+  color: var(--accent-orange);
+  border: 2px solid var(--accent-orange);
+  padding: 0.6rem 1.25rem;
+  border-radius: var(--radius);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-add:hover {
+  background-color: var(--accent-orange);
+  color: white;
+}
+
+.tab-content {
+  padding: 2rem;
+  display: none;
+  animation: fadeIn 0.3s ease;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+.custom-table tr:hover {
+  background-color: #f9f9f9; /* Efecto hover para guiar la vista */
+}
+.col-number {
+  color: #888;
+  font-weight: 500;
+  text-align: left;
+  width: 40px;
+}
+
+/*  Botones de acción en la tabla */
+.btn-action {
+  background-color: white;
+  color: black;
+  padding: 0.6rem 1.5rem;
+  border-radius: var(--radius);
+  text-decoration: none;
+  font-weight: 500;
+  transition: var(--transition);
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(21, 128, 61, 0.3);
+  gap: 0.5rem;
+}
+.btn-action:hover {
+  background-color: var(--primary);
+  color: white;
+}
+
+.btn-action.btn-del:hover {
+ /*background-color: #fee2e2; /* Rojo claro */
+  /*  color: #991b1b;            /* Texto rojo oscuro */
+   background-color: red;
+  color: white; 
+}
+
+.btn-edit {
+margin-bottom: 1.5px;
+}
+
+/* Keyframes */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
