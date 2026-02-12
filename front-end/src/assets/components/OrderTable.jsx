@@ -1,14 +1,14 @@
 import React, { use, useEffect, useId, useState } from "react";
-import { TrashIcon,EditIcon } from "./Icons";
-import  {formatDate} from "../helpers/formatDate.js" 
+import { TrashIcon, EditIcon } from "./Icons";
+import { formatDate } from "../helpers/formatDate.js";
 import { OrdersTableSkeleton } from "./OrdersTableSkeleton.jsx";
 
-export function OrderTable({ orders,isLoading }) {
+export function OrderTable({ orders, isLoading }) {
   const statusTableId = useId();
   const [opciones, setOpciones] = useState([]); // Estado para los datos de la DB
   // const [isLoading, setIsLoading] = useState(false); //cargar order
 
-/*   useEffect(() => {
+  /*   useEffect(() => {
     fetch("http://localhost:8000/api/status")
       .then((response) => response.json())
       .then((data) => {
@@ -25,7 +25,7 @@ export function OrderTable({ orders,isLoading }) {
   };
 
   return (
-    <div className="table-container">      
+    <div className="table-container">
       <table>
         <thead>
           <tr>
@@ -39,33 +39,35 @@ export function OrderTable({ orders,isLoading }) {
         </thead>
         <tbody>
           {isLoading ? (
-        <OrdersTableSkeleton rows={6} />
-      ) :(
-          orders.map((order, index) => (
-            <tr key={order.id}>
-              {/* 1. Numeradas */}
-              <td className="col-number">
-                <strong>#{index + 1}</strong>
-              </td>
-               {/* 2. Data */}
-               <td>{formatDate(order.created_at)}</td>
+            <OrdersTableSkeleton rows={6} />
+          ) : (
+            orders.map((order, index) => (
+              <tr key={order.id}>
+                {/* 1. Numeradas */}
+                <td className="col-number">
+                  <strong>#{index + 1}</strong>
+                </td>
+                {/* 2. Data */}
+                <td>{formatDate(order.created_at)}</td>
 
-              {/* 3. Dato anidado del Cliente */}
-              <td>{order.customer?.name || "Consumidor Final"}</td>
+                {/* 3. Dato anidado del Cliente */}
+                <td>{order.customer?.name || "Consumidor Final"}</td>
 
-              {/* 4. Dato anidado del Cliente,endereco:rua,numero,bairro */}
-              <td>{/* todo arreglar esto,comprobar primero si tiene endereco */}
-                {order.customer?.addresses[0]?.neighborhood  +
-                  ", " +
-                  order.customer?.addresses[0]?.street +
-                  ", " +
-                  order.customer?.addresses[0]?.numero || "Sim endereço"}
-              </td>
+                {/* 4. Dato anidado del Cliente,endereco:rua,numero,bairro */}
+                <td>
+                  {(() => {
+                    const addr = order.customer?.addresses[0];
 
-              {/* 5. Estado */}
-              <td>
-                {order.status.name}
-             {/*    <select                 
+                    if (!addr) return "Sem endereço";
+
+                    return `${addr.neighborhood ?? ""}, ${addr.street ?? ""}, ${addr.numero ?? "S/N"},${addr.city ?? ""}`;
+                  })()}
+                </td>
+
+                {/* 5. Estado */}
+                <td>
+                  {order.status.name}
+                  {/*    <select                 
                   className="filter-select"
                   id={statusTableId}
                   value={order.status_id}
@@ -77,26 +79,26 @@ export function OrderTable({ orders,isLoading }) {
                     </option>
                   ))}
                 </select> */}
-              </td>
+                </td>
 
-              {/* 5. Columna de acciones*/}
-              <td>
-                <button
-                  className="btn-action btn-edit"
-                  onClick={() => console.log(order)}
-                >
-              <EditIcon/>
-                </button>
-                <button
-                  className="btn-action btn-del"
-                  onClick={() => console.log(order)}
-                >
-                 <TrashIcon/>
-                </button>
-              </td>
-            </tr>
-          ))
-        )}
+                {/* 5. Columna de acciones*/}
+                <td>
+                  <button
+                    className="btn-action btn-edit"
+                    onClick={() => console.log(order)}
+                  >
+                    <EditIcon />
+                  </button>
+                  <button
+                    className="btn-action btn-del"
+                    onClick={() => console.log(order)}
+                  >
+                    <TrashIcon />
+                  </button>
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
     </div>

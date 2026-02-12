@@ -47,6 +47,12 @@ export default function CreateOrder({ open, setOpen, orders }) {
   const [entries, setEntries] = useState([]);
   const debounceRef = useRef();
   const [customerSelected, setcustomerSelected] = useState(null); //al seleccionar el cliente
+  const [loadingCustomers, setLoadingCustomers] = useState(false);
+  //Saber si cambio los datos de cliente
+
+///Me quede aqui
+  const [initialData, setInitialData] = useState(null);
+const [formData, setFormData] = useState({});
 
   const getPaymets = () => {
     fetch("http://localhost:8000/api/payments")
@@ -103,7 +109,6 @@ export default function CreateOrder({ open, setOpen, orders }) {
   const agendado = watch("scheduled");
 
   const onSubmit = async (data) => {
-    console.log("PEDIDO:", data);
     setOpen(false);
     try {
       const res = await fetch("http://localhost:8000/api/orders", {
@@ -118,11 +123,11 @@ export default function CreateOrder({ open, setOpen, orders }) {
       const result = await res.json();
       showNotification("Pedido criado com sucesso", "success");
       orders();
-      customerSelected=null;
+      setcustomerSelected(null);
       console.log("Guardado:", result);
     } catch (error) {
       showNotification("Erro ao criar pedido", "error");
-     setcustomerSelected(null);
+      setcustomerSelected(null);
     }
   };
 
@@ -152,8 +157,8 @@ export default function CreateOrder({ open, setOpen, orders }) {
                 <Autocomplete
                   options={customer}
                   loading={loading}
-                  value={field.value || null}
-                  getOptionLabel={(option) => option.name}
+                  value={customerSelected}
+                  getOptionLabel={(option) => option?.name || ""}
                   isOptionEqualToValue={(option, value) =>
                     option.id === value?.id
                   }
@@ -166,14 +171,15 @@ export default function CreateOrder({ open, setOpen, orders }) {
                     clearTimeout(debounceRef.current); //cada vez que el user escribe cancelamos el timeout anterior
                     debounceRef.current = setTimeout(() => {
                       //con debounce se hace 1 sola peticion, cuando el usuario deja de escribir
-                      searchCustomer(value);
+                      setLoading(true);
+                      searchCustomer(value).finally(() => setLoading(false));
                     }, 300); //Espera 300 ms y luego ejecuta searchCustomer
                   }}
                   onChange={(event, customer) => {
                     if (!customer) return;
-                    setcustomerSelected(customer.id);
+                    // if (reason !== "input") return; //El usuario está escribiendo en el teclado
+                    setcustomerSelected(customer);
                     setValue("customer_id", customer.id);
-                    console.log(customer.id);
                     setLoading(false);
 
                     setValue("document", customer.document ?? "-");
@@ -248,15 +254,15 @@ export default function CreateOrder({ open, setOpen, orders }) {
               {customerSelected && (
                 <>
                   {[
-                    ["document", "CPF"],
-                    ["name", "Nombre"],
-                    ["phone", "Teléfono"],
+                    ["document", "CPF/CNPJ"],
+                    ["name", "Nome"],
+                    ["phone", "Telefone"],
                     ["cep", "CEP"],
-                    ["street", "Calle"],
+                    ["street", "Rua"],
                     ["number", "Número"],
                     ["complement", "Complemento"],
-                    ["neighborhood", "Barrio"],
-                    ["city", "Ciudad"],
+                    ["neighborhood", "Bairro"],
+                    ["city", "idade"],
                     ["state", "Estado"],
                   ].map(([name, label]) => (
                     <Box
@@ -279,7 +285,11 @@ export default function CreateOrder({ open, setOpen, orders }) {
           {/*  </SectionCollapse> */}
 
           {/* SECCIÓN: DATOS DD PEDIDO */}
-          <SectionCollapse title="Dados do pedido" defaultOpen={false} setOpen={!!customerSelected}>
+          <SectionCollapse
+            title="Dados do pedido"
+            defaultOpen={false}
+            setOpen={!!customerSelected}
+          >
             <Stack spacing={3}>
               {/* ITEMS DEL PEDIDO */}
               <Grid item xs={12}>
@@ -419,7 +429,7 @@ export default function CreateOrder({ open, setOpen, orders }) {
                   <>
                     {/* FECHA */}
                     <Controller
-                      name="fechaRecogida"
+                      name="delivery_date"
                       control={control}
                       render={({ field }) => (
                         <TextField
@@ -434,7 +444,7 @@ export default function CreateOrder({ open, setOpen, orders }) {
 
                     {/* HORA */}
                     <Controller
-                      name="horaRecogida"
+                      name="delivery_hour"
                       control={control}
                       render={({ field }) => (
                         <TextField

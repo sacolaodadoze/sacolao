@@ -43,8 +43,8 @@ class OrderController extends Controller
             'paid'           => 'nullable|boolean',
             'scheduled'       =>  'nullable|boolean',
 
-            'fechaRecogida' => 'nullable|date|required_if:scheduled,true',
-            'horaRecogida'  => 'nullable|required_if:scheduled,true',
+            'delivery_date' => 'nullable|date|required_if:scheduled,true',
+            'delivery_hour'  => 'nullable|time|required_if:scheduled,true',
 
             'observations'   => 'nullable|string',
             'details'       => 'nullable|string',
@@ -54,6 +54,10 @@ class OrderController extends Controller
 
 
         $order = DB::transaction(function () use ($data) {
+
+        
+
+
             $orderData = [
                 'customer_id'      => $data['customer_id'],
                 'payment_types_id' => $data['payment_types_id'],
