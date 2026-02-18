@@ -47,14 +47,7 @@ class Order extends Model
         return $this->belongsTo(PaymentType::class);
     }
 
-    /**
-     * Obtener el pagamento asociado con el pedido.
-     */
-    public function observation()
-    {
-        return $this->hasOne(Observation::class);
-    }
-
+  
     /**
      * Obtener el detalle asociado con el pedido.
      */

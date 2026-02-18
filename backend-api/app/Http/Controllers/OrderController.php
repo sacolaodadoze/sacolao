@@ -2,9 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Address;
+use App\Models\Customer;
+use App\Models\Observation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Order;
+use App\Models\Phone;
+
+use function Laravel\Prompts\alert;
 
 class OrderController extends Controller
 {
@@ -13,8 +19,19 @@ class OrderController extends Controller
      */
     public function index()
     {
-        /*  $orders=\App\Models\Order::all();
-        return response()->json($orders); */
+        // Eager Loading: Carregue todos os relacionamentos necessários de uma só vez
+        $orders = Order::with([
+            'entry:id,name',
+            'status:id,name',
+            'payment:id,name',
+            'detail:id,order_id,description',
+            'delay:id,order_id,description',
+            'customer.addresses',
+            'customer.phones:id,customer_id,number,type',
+            'customer.observation:id,customer_id,content'
+        ])->get();
+
+        return response()->json($orders);
     }
 
     /**
@@ -33,7 +50,7 @@ class OrderController extends Controller
      */
     public function store(Request $request)
     {
-
+       
         $data = $request->validate([
             'customer_id'    => 'required|exists:customers,id',
             'items'          => 'required|string',
@@ -41,31 +58,71 @@ class OrderController extends Controller
             'entry_id'       => 'required|exists:entries,id',
             'pickup'       =>  'nullable|boolean',
             'paid'           => 'nullable|boolean',
-            'scheduled'       =>  'nullable|boolean',
-
             'delivery_date' => 'nullable|date|required_if:scheduled,true',
-            'delivery_hour'  => 'nullable|time|required_if:scheduled,true',
+            'delivery_hour'  => 'nullable|date_format:H:i|required_if:scheduled,true',
 
+            'order_id'        => 'nullable|exists:orders,id',
             'observations'   => 'nullable|string',
             'details'       => 'nullable|string',
-            'order_id'        => 'nullable|exists:orders,id',
 
+            'customerChanged' => "required|boolean",
+            'phone' => 'nullable|string', //required
+            'cep' => 'required|string',
+            'street' => 'required|string',
+            'number' => 'required|string',
+            'neighborhood' => 'nullable|string',
+            'complement' => 'nullable|string',
+            'city' => 'required|string',
+            'state' => 'required|string',
         ]);
 
 
         $order = DB::transaction(function () use ($data) {
+          
 
-        
+            //Dados do cliente
+            if (($data['customerChanged'])==true) {
+                Phone::updateOrCreate(
+                    ['customer_id' => $data['customer_id']],
+                    [
+                        'number' => $data['phone']?? null
+                    ]
+                );
 
+                Address::updateOrCreate(
+                    ['customer_id' => $data['customer_id']],
+                    [
+                        'cep' => $data['cep'],
+                        'street' => $data['street'],
+                        'number' => $data['number'],
+                        'neighborhood' => $data['neighborhood'],
+                        'complement' => $data['complement'],
+                        'city' => $data['city'],
+                        'state' => $data['state'],
+                    ]
+                );
+            }
 
+            //  Observaçoes del cliente
+            if (!empty($data['observations'])) {
+                Observation::updateOrCreate(
+                    ['customer_id' => $data['customer_id']],
+                    [
+                        'content' => $data['observations'],
+                    ]
+                );
+            }
+
+            //Dados do pedido
             $orderData = [
                 'customer_id'      => $data['customer_id'],
                 'payment_types_id' => $data['payment_types_id'],
                 'entry_id'         => $data['entry_id'],
                 'items'            => $data['items'],
-                'paid'             => $data['paid'],
-                'pickup'         => $data['pickup'],
-                'scheduled'         => $data['scheduled'],
+                'paid'             => $data['paid']?? null,
+                'pickup'         => $data['pickup']?? null,
+                'delivery_date'         => $data['delivery_date'] ?? null,
+                'delivery_hour'         => $data['delivery_hour'] ?? null,
             ];
 
             if (!empty($data['order_id'])) {
@@ -75,21 +132,16 @@ class OrderController extends Controller
                 $order = Order::create($orderData);
             }
 
-               //  Observaçoes
-            if (!empty($data['observations'])) {
-                $order->observation()->updateOrCreate(
-                    [],
-                    ['content' => $data['observations'],
-                ]);
-            }
-
             //  Detalhes
             if (!empty($data['details'])) {
                 $order->detail()->updateOrCreate(
                     [],
-                    ['description' => $data['details'],
-                ]);
-            } 
+                    [
+                        'description' => $data['details'],
+                    ]
+                );
+            }
+
 
             return $order;
         });
@@ -122,10 +174,25 @@ class OrderController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Função excluir pedido
+     *
+     * @param int $id
+     * @return cod 200
      */
-    public function destroy(string $id)
+    public function destroy( $id)
     {
-        //
+         $order = Order::find($id);
+
+        if (!$order) {
+            return response()->json(['message' => 'Pedido no encontrado'], 404);
+        }
+
+        try {
+            $order->delete();
+            return response()->json(['message' => 'Pedido eliminado correctamente'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Error al eliminar el pedido'], 500);
+        }
     }
+    
 }

@@ -9,10 +9,10 @@ class Observation extends Model
 {
     protected $guarded = []; // Asignación masiva permitida
     /**
-     * Obtener el pedido asociado con esta observación.
+     * Obtener el cliente asociado con esta observación.
      */
-    public function order(): BelongsTo
+    public function customer(): BelongsTo
     {
-        return $this->belongsTo(Order::class);
+        return $this->belongsTo(Customer::class);
     }
 }

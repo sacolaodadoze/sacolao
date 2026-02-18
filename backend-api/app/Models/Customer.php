@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use  Illuminate\Database\Eloquent\Relations\HasOne;
 
 
 //tiene varios pedidos
@@ -34,6 +35,14 @@ class Customer extends Model
     public function addresses(): HasMany
     {
         return $this->hasMany(Address::class);
+    }
+
+      /**
+     * Obtener as observaçoes do pedido.
+     */
+    public function observation()
+    {
+        return $this->hasOne(Observation::class);
     }
 
     /**

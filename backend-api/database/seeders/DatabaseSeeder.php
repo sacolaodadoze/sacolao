@@ -29,6 +29,6 @@ class DatabaseSeeder extends Seeder
         $this->call(EntrySeeder::class);
         $this->call(PaymentTypeSeeder::class); 
 
-        OrderFactory::new()->count(50)->create();
+       // OrderFactory::new()->count(50)->create();
     }
 }

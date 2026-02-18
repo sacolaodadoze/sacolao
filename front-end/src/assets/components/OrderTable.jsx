@@ -2,26 +2,29 @@ import React, { use, useEffect, useId, useState } from "react";
 import { TrashIcon, EditIcon } from "./Icons";
 import { formatDate } from "../helpers/formatDate.js";
 import { OrdersTableSkeleton } from "./OrdersTableSkeleton.jsx";
+import { useDeleteOrder } from "../hooks/useDeleteOrder.jsx";
+import { useEditOrder } from "../hooks/useEditOrder.jsx";
+import EditOrder from "./EditOrder.jsx";
 
-export function OrderTable({ orders, isLoading }) {
+export function OrderTable({ orders, getOrders,paymentTypes,entries, isLoading }) {
   const statusTableId = useId();
   const [opciones, setOpciones] = useState([]); // Estado para los datos de la DB
+  const { deleteOrder } = useDeleteOrder();
+  const [openEdit, setOpenEdit] = useState(false);
+  const [orderSelected, setOrderSelected] = useState([]);
   // const [isLoading, setIsLoading] = useState(false); //cargar order
 
-  /*   useEffect(() => {
-    fetch("http://localhost:8000/api/status")
-      .then((response) => response.json())
-      .then((data) => {
-        setOpciones(data); // Guardamos os dados dos estados
-      })
-      .catch((error) => {
-        console.error("Error al traer datos:", error); //todo: manejar error
-      });
-  }, []); */
+  const handleDelete = async (order_id) => {
+    const success = await deleteOrder(order_id, orders);
+    if (success) {
+      getOrders(); // recargar lista de pedidos
+    }
+  };
 
-  const setEstatus = (newStatus) => {
-    console.log("Nuevo estado seleccionado:", newStatus);
-    // Aquí puedes agregar la lógica para actualizar el estado del pedido en el backend si es necesario
+  const handleEdit = async (order) => {
+    console.log(order);
+    setOrderSelected(order);
+    setOpenEdit(true);   
   };
 
   return (
@@ -30,10 +33,10 @@ export function OrderTable({ orders, isLoading }) {
         <thead>
           <tr>
             <th style={{ width: "97px" }}>No.</th>
-            <th>Data</th>
+            <th style={{ width: "130px" }}>Data</th>
             <th>Cliente</th>
             <th>Endereço</th>
-            <th style={{ width: "165px" }}>Estado</th>
+            {/*   <th style={{ width: "165px" }}>Estado</th> */}
             <th style={{ width: "155px" }}>Ações</th>
           </tr>
         </thead>
@@ -65,9 +68,10 @@ export function OrderTable({ orders, isLoading }) {
                 </td>
 
                 {/* 5. Estado */}
-                <td>
-                  {order.status.name}
-                  {/*    <select                 
+                {/*  <td>
+                  {order.status.name} */}
+
+                {/*    <select                 
                   className="filter-select"
                   id={statusTableId}
                   value={order.status_id}
@@ -79,19 +83,19 @@ export function OrderTable({ orders, isLoading }) {
                     </option>
                   ))}
                 </select> */}
-                </td>
+                {/*  </td> */}
 
                 {/* 5. Columna de acciones*/}
                 <td>
                   <button
                     className="btn-action btn-edit"
-                    onClick={() => console.log(order)}
+                    onClick={() => handleEdit(order)}
                   >
                     <EditIcon />
                   </button>
                   <button
                     className="btn-action btn-del"
-                    onClick={() => console.log(order)}
+                    onClick={() => handleDelete(order.id)}
                   >
                     <TrashIcon />
                   </button>
@@ -101,6 +105,7 @@ export function OrderTable({ orders, isLoading }) {
           )}
         </tbody>
       </table>
+       <EditOrder open={openEdit} setOpen={setOpenEdit} order={orderSelected} paymentTypes={paymentTypes} entries={entries} />;
     </div>
   );
 }

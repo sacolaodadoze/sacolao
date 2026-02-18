@@ -22,7 +22,7 @@ Route::get('/status', [StatusController::class, 'index']);
 Route::post('/import', [App\Http\Controllers\ImportController::class, 'store']);
 
 //Obter orders
-Route::get('/orders', [ImportController::class, 'index']);
+Route::get('/orders', [OrderController::class, 'index']);
 
 //Obter tipo pagamento
 Route::get('/payments',[PaymentTypeController::class,'index']);
@@ -33,5 +33,8 @@ Route::get('/entries',[EntryController::class,'index']);
 //Obter clientes
 Route::get('/customers/search', [CustomerController::class, 'search']);
 
-//Add orer
+//Add order
 Route::post('/orders', [OrderController::class, 'store']);
+
+//Del order
+Route::delete('/orders/{id}', [OrderController::class, 'destroy']);

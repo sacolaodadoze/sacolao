@@ -48,18 +48,6 @@ class ImportController extends Controller
      */
     public function index()
     {
-        // Eager Loading: Carregue todos os relacionamentos necessários de uma só vez
-        $orders = Order::with([
-            'entry:id,name',
-            'status:id,name',
-            'payment:id,name',
-            'observation:id,order_id,content',
-            'detail:id,order_id,description',
-            'delay:id,order_id,description',
-            'customer.addresses',
-            'customer.phones:id,customer_id,number,type'
-        ])->get();
-
-        return response()->json($orders);
+       //
     }
 }

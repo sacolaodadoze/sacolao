@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { LANG } from "../constants/languages.js";
 import { useForm, Controller } from "react-hook-form";
 import {
   Button,
@@ -17,72 +18,61 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { SectionCollapse } from "./SectionCollapse.jsx";
-import { useNotification } from "../context/NotificationContext.jsx";
+import { useNotification } from "../context/NotificationContext.jsx"; //msg de info
 
-export default function CreateOrder({ open, setOpen, orders }) {
-  const { control, handleSubmit, watch, setValue } = useForm({
+import { zodResolver } from "@hookform/resolvers/zod"; //validaciones
+import { schema } from "../../forms/orderForm.js";
+
+export default function CreateOrder({ open, setOpen, getOrders,paymentTypes,entries}) {
+   const {
+    control,
+    handleSubmit,
+    register,
+    watch,
+    setValue,
+    formState: { errors, isValid }, //disabled save
+  } = useForm({
+    resolver: zodResolver(schema),
+    mode: "onChange", //disabled save
     defaultValues: {
-      customer_id: null, // id que enviarás al backend
-      document: null,
+      customer_id: "", // id que enviarás al backend
+      // document: null,
+      items: "",
       pickup: false,
       paid: false,
-      scheduled: null,
-      // nombre: "",
+      payment_types_id: "",
+      entry_id: "",
+      observations: "",
+      details: "",
+      scheduled:false,
+      delivery_date: "",
+      delivery_hour: "",
       phone: "",
       //Endereço
-      cep: "null",
-      street: "null",
-      number: "null",
-      complement: "null",
-      neighborhood: "null",
+      cep: "",
+      street: "",
+      number: "",
+      complement: "",
+      neighborhood: "",
       city: "",
       state: "",
     },
+    shouldUnregister: false, // mantiene todos los campos aunque estén ocultos
   });
 
   const { showNotification } = useNotification();
   const [customer, setCustomer] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [paymentTypes, setPaymentTypes] = useState([]);
-  const [entries, setEntries] = useState([]);
+
   const debounceRef = useRef();
   const [customerSelected, setcustomerSelected] = useState(null); //al seleccionar el cliente
   const [loadingCustomers, setLoadingCustomers] = useState(false);
   //Saber si cambio los datos de cliente
 
-///Me quede aqui
   const [initialData, setInitialData] = useState(null);
-const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({}); //saber si cambio los datos del cliente
 
-  const getPaymets = () => {
-    fetch("http://localhost:8000/api/payments")
-      .then((response) => response.json())
-      .then((data) => {
-        setPaymentTypes(data); // Guardamos os dados das ordenes
-      })
-      .catch((error) => {
-        console.error("Error al traer los tipos de pagamentos:", error); //todo: manejar error
-      });
-  };
 
-  const getEntries = () => {
-    fetch("http://localhost:8000/api/entries")
-      .then((response) => response.json())
-      .then((data) => {
-        setEntries(data); // Guardamos os dados das ordenes
-      })
-      .catch((error) => {
-        console.error("Error al traer los tipos de entrada:", error); //todo: manejar error
-      });
-  };
-
-  useEffect(() => {
-    const initialize = async () => {
-      // Ejecuta ambas peticiones al mismo tiempo
-      await Promise.all([getPaymets(), getEntries()]);
-    };
-    initialize();
-  }, []);
 
   //Pesquisar cliente
   const searchCustomer = async (texto) => {
@@ -108,8 +98,47 @@ const [formData, setFormData] = useState({});
 
   const agendado = watch("scheduled");
 
+  const normalize = (v) => {
+  if (v === null || v === undefined || v === "null" || v === "-") {
+    return "";
+  }
+  return String(v).trim();
+};
+
   const onSubmit = async (data) => {
-    setOpen(false);
+    console.log(data);
+   // console.log(formData);
+
+    /*   const customerChanged =
+      data.phone !== formData.phones?.[0]?.number ||
+      data.cep !== formData.addresses?.[0]?.cep ||
+      data.street !== formData.addresses?.[0]?.street ||
+      data.number !== formData.addresses?.[0]?.number ||
+      data.complement !== formData.addresses?.[0]?.complement ||
+      data.neighborhood !== formData.addresses?.[0]?.neighborhood ||
+      data.city !== formData.addresses?.[0]?.city ||
+      data.state !== formData.addresses?.[0]?.state; */
+
+    const original = formData; // objeto traído del backend
+    const current = data; // datos del formulario
+
+    const customerChanged =
+      normalize(current.phone) !== normalize(original.phones?.[0]?.number) ||
+      normalize(current.cep) !== normalize(original.addresses?.[0]?.cep) ||
+      normalize(current.street) !==
+        normalize(original.addresses?.[0]?.street) ||
+      normalize(current.number) !==
+        normalize(original.addresses?.[0]?.number) ||
+      normalize(current.complement) !==
+        normalize(original.addresses?.[0]?.complement) ||
+      normalize(current.neighborhood) !==
+        normalize(original.addresses?.[0]?.neighborhood) ||
+      normalize(current.city) !== normalize(original.addresses?.[0]?.city) ||
+      normalize(current.state) !== normalize(original.addresses?.[0]?.state);
+
+    data.customerChanged = customerChanged;
+    console.log(customerChanged);
+
     try {
       const res = await fetch("http://localhost:8000/api/orders", {
         method: "POST",
@@ -122,11 +151,13 @@ const [formData, setFormData] = useState({});
 
       const result = await res.json();
       showNotification("Pedido criado com sucesso", "success");
-      orders();
+      getOrders();
       setcustomerSelected(null);
       console.log("Guardado:", result);
+      setOpen(false);
     } catch (error) {
-      showNotification("Erro ao criar pedido", "error");
+      console.log("ERRORES:", errors);
+      showNotification("Erro ao criar pedido", { error });
       setcustomerSelected(null);
     }
   };
@@ -175,6 +206,7 @@ const [formData, setFormData] = useState({});
                       searchCustomer(value).finally(() => setLoading(false));
                     }, 300); //Espera 300 ms y luego ejecuta searchCustomer
                   }}
+                  //TODO carga dos veces la peticion de buscar cliente
                   onChange={(event, customer) => {
                     if (!customer) return;
                     // if (reason !== "input") return; //El usuario está escribiendo en el teclado
@@ -182,22 +214,24 @@ const [formData, setFormData] = useState({});
                     setValue("customer_id", customer.id);
                     setLoading(false);
 
-                    setValue("document", customer.document ?? "-");
+                    setValue("document", customer.document ?? "");
                     setValue("name", customer.name ?? "");
-                    setValue("phone", customer.phones[0]?.number ?? "-");
-                    setValue("cep", customer.addresses[0]?.cep ?? "-");
-                    setValue("street", customer.addresses[0]?.street ?? "-");
+                    setValue("phone", customer.phones[0]?.number ?? "");
+                    setValue("cep", customer.addresses[0]?.cep ?? "");
+                    setValue("street", customer.addresses[0]?.street ?? "");
                     setValue("number", customer.addresses[0]?.number ?? "");
                     setValue(
                       "complement",
-                      customer.addresses[0]?.complement ?? "-",
+                      customer.addresses[0]?.complement ?? "",
                     );
                     setValue(
                       "neighborhood",
-                      customer.addresses[0]?.neighborhood ?? "-",
+                      customer.addresses[0]?.neighborhood ?? "",
                     );
                     setValue("city", customer.addresses[0]?.city ?? "");
                     setValue("state", customer.addresses[0]?.state ?? "");
+
+                    setFormData(customer);
                   }}
                   renderInput={(params) => (
                     <TextField
@@ -217,7 +251,7 @@ const [formData, setFormData] = useState({});
                       }}
                     />
                   )}
-                  /*  //todo  ponerle una lupa al buscar
+                  /*  //TODO  ponerle una lupa al buscar
                  InputProps={{
             ...params.InputProps,
             startAdornment: (
@@ -262,7 +296,7 @@ const [formData, setFormData] = useState({});
                     ["number", "Número"],
                     ["complement", "Complemento"],
                     ["neighborhood", "Bairro"],
-                    ["city", "idade"],
+                    ["city", "Cidade"],
                     ["state", "Estado"],
                   ].map(([name, label]) => (
                     <Box
@@ -273,7 +307,19 @@ const [formData, setFormData] = useState({});
                         name={name}
                         control={control}
                         render={({ field }) => (
-                          <TextField {...field} label={label} fullWidth />
+                          <TextField
+                            {...field}
+                            label={label}
+                            fullWidth
+                            value={field.value || "-"}
+                            /*  error={!!errors.order?.items}
+                          helperText={errors.order?.items?.message}*/
+                            onChange={(e) => {
+                              const value =
+                                e.target.value === "-" ? "" : e.target.value;
+                              field.onChange(value); //guardamos "" en vez de "-"
+                            }} 
+                          />
                         )}
                       />
                     </Box>
@@ -295,6 +341,7 @@ const [formData, setFormData] = useState({});
               <Grid item xs={12}>
                 <Controller
                   name="items"
+                  defaultValue=""
                   control={control}
                   render={({ field }) => (
                     <TextField
@@ -303,6 +350,8 @@ const [formData, setFormData] = useState({});
                       multiline
                       rows={4}
                       fullWidth
+                      error={!!errors?.items}
+                      helperText={errors?.items?.message}
                     />
                   )}
                 />
@@ -319,11 +368,15 @@ const [formData, setFormData] = useState({});
                   sx={{ width: { xs: "100%", md: "calc(50% - 8px)", gap: 2 } }}
                 >
                   <Controller
-                    name="payment_types_id" // 👈 usa el nombre correcto
+                    name="payment_types_id"
                     control={control}
                     defaultValue=""
                     render={({ field }) => (
-                      <FormControl fullWidth>
+                      <FormControl
+                        sx={{ width: "100%" }}
+                        error={!!errors?.payment_types_id}
+                        helperText={errors?.payment_types_id?.message}
+                      >
                         <InputLabel id="payment-label">
                           Forma do Pagamento
                         </InputLabel>
@@ -351,8 +404,13 @@ const [formData, setFormData] = useState({});
                   <Controller
                     name="entry_id"
                     control={control}
+                    defaultValue=""
                     render={({ field }) => (
-                      <FormControl fullWidth>
+                      <FormControl
+                        sx={{ width: "100%" }}
+                        error={!!errors?.entry_id}
+                        helperText={errors?.entry_id?.message}
+                      >
                         <InputLabel>Entrada do pedido</InputLabel>
                         <Select {...field} label="Entrada del pedido" fullWidth>
                           {entries.map((entry) => (
@@ -414,11 +472,12 @@ const [formData, setFormData] = useState({});
                 {/* AGENDADO */}
                 <Controller
                   name="scheduled"
+                  //defaultValue=false,
                   control={control}
                   render={({ field }) => (
                     <FormControlLabel
                       control={
-                        <Checkbox {...field} checked={field.value || null} />
+                        <Checkbox {...field} checked={field.value || false} />
                       }
                       label="Agendado"
                     />
@@ -478,7 +537,7 @@ const [formData, setFormData] = useState({});
                           <Checkbox {...field} checked={field.value || false} />
                         }
                         label="Retirada "
-                        fullWidth
+                        sx={{ width: "100%" }}
                       />
                     )}
                   />
@@ -495,7 +554,7 @@ const [formData, setFormData] = useState({});
                           <Checkbox {...field} checked={field.value || false} />
                         }
                         label="Pago "
-                        fullWidth
+                        sx={{ width: "100%" }}
                       />
                     )}
                   />
@@ -504,14 +563,18 @@ const [formData, setFormData] = useState({});
             </Stack>
           </SectionCollapse>
         </Stack>
+        <DialogActions>
+          <Button onClick={handleCancel}>Cancelar</Button>
+          <Button
+            variant="contained"
+            onClick={handleSubmit(onSubmit)}
+            disabled={!isValid}
+          >
+            {/* </Button><Button type="submit" variant="contained" disabled={!isValid}> */}
+            Guardar pedido
+          </Button>
+        </DialogActions>
       </form>
-
-      <DialogActions>
-        <Button onClick={handleCancel}>Cancelar</Button>
-        <Button variant="contained" onClick={handleSubmit(onSubmit)}>
-          Guardar pedido
-        </Button>
-      </DialogActions>
     </>
   );
 }

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->text('items'); //listagem de itens 
             $table->boolean('paid')->default(false); //pagado
             $table->boolean('pickup')->default(false); //recogida
-            $table->time('scheduled')->nullable()->default(false); //agendado
+            $table->time('scheduled')->nullable(); //agendado
             $table->foreignId('status_id')->constrained(); //id del estado  ,1-Criado                
             $table->foreignId('payment_types_id')->constrained();  // id tipo de pagamento
              $table->foreignId('entry_id')->constrained(); // id del tipo de entrada
