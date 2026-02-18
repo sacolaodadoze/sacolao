@@ -26,7 +26,7 @@ export function OrderList() {
         console.error("Error al traer datos:", error); //todo: manejar error
       });
   };
-    //TODO cuando vaya a hacer el pedido
+  //TODO cuando vaya a hacer el pedido
   /*   useEffect(() => {
     fetch("http://localhost:8000/api/status")
       .then((response) => response.json())
@@ -62,7 +62,7 @@ export function OrderList() {
     fetch("http://localhost:8000/api/payments")
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
+        // console.log(data);
         setPaymentTypes(data);
         // setPaymentTypes(Array.isArray(data) ? data : []);
       })
@@ -149,6 +149,11 @@ export function OrderList() {
             </IconButton> */}
           </DialogTitle>
           <DialogContent
+            style={{
+              paddingTop: "24px", // espacio arriba del primer input
+              paddingBottom: "24px",
+              maxHeight: "400px",            
+            }}
             disableGutters
             sx={{
               width: "100%",
@@ -166,7 +171,13 @@ export function OrderList() {
           </DialogContent>
         </Dialog>
       </div>
-      <OrderTable orders={orders} getOrders={getOrders} paymentTypes={paymentTypes} entries={entries} isLoading={isLoading} />
+      <OrderTable
+        orders={orders}
+        getOrders={getOrders}
+        paymentTypes={paymentTypes}
+        entries={entries}
+        isLoading={isLoading}
+      />
     </main>
   );
 }

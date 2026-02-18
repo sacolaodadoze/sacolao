@@ -31,13 +31,14 @@ export default function EditOrder({
   paymentTypes,
   entries,
 }) {
-  console.log(order);
+  // console.log(order);
   const { showNotification } = useNotification();
 
   const {
     control,
     handleSubmit,
     reset,
+    watch,
     formState: { errors, isValid },
   } = useForm({
     resolver: zodResolver(schema),
@@ -58,17 +59,7 @@ export default function EditOrder({
     },
   });
 
-  /*   useEffect(() => {
-  if (order) {
-    reset({
-      payment_types_id: Number(order.payment_types_id),
-    });
-  }
-}, [order, reset]); */
-
- /*  const handleClose = () => {
-    setOpen(false);
-  }; */
+  const agendado = watch("scheduled");
 
   return (
     <Dialog
@@ -81,17 +72,25 @@ export default function EditOrder({
         setOpen(false);
       }}
     >
-      <DialogTitle>{LANG.ORDERSLIST.WCREATE}</DialogTitle>
-      <DialogContent>
+      <DialogTitle>{LANG.EDITORDER.WEDIT}</DialogTitle>
+      <DialogContent
+        class
+        style={{
+          paddingTop: "24px", // espacio arriba del primer input
+          paddingBottom: "24px",
+          maxHeight: "400px",
+        }}
+      >
         {order && (
           <form style={{ width: "100%", gap: 2 }}>
-            <TextField
-              label="Cliente"
-              value={order.customer?.name || ""}
-              fullWidth
-              disabled
-            />
             <Stack spacing={3}>
+              <TextField
+                label="Cliente"
+                value={order.customer?.name || ""}
+                fullWidth
+                disabled
+              />
+
               <Grid item xs={12}>
                 <Controller
                   name="items"
@@ -177,14 +176,152 @@ export default function EditOrder({
                   />
                 </Box>
               </Box>
+
+              {/* Detalhes */}
+              <Grid item xs={12}>
+                <Controller
+                  name="details"
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label="Detalhes"
+                      value={order.details || ""}
+                      multiline
+                      rows={2}
+                      fullWidth
+                    />
+                  )}
+                />
+              </Grid>
+              {/* Observaciones */}
+              <Grid item xs={12}>
+                <Controller
+                  name="observations"
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label="Observaçoes"
+                      value={order.observations || ""}
+                      multiline
+                      rows={2}
+                      fullWidth
+                    />
+                  )}
+                />
+              </Grid>
+
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: {
+                    xs: "1fr",
+                    md: "1fr 1fr 1fr",
+                  },
+                  gap: 2,
+                  alignItems: "center",
+                }}
+              >
+                {/* AGENDADO */}
+                <Controller
+                  name="scheduled"
+                  //defaultValue=false,
+                  control={control}
+                  render={({ field }) => (
+                    <FormControlLabel
+                      control={
+                        <Checkbox {...field} checked={field.value || false} />
+                      }
+                      label="Agendado"
+                    />
+                  )}
+                />
+
+                {agendado && (
+                  <>
+                    {/* FECHA */}
+                    <Controller
+                      name="delivery_date"
+                      control={control}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          label="Data de retirada"
+                          type="date"
+                          fullWidth
+                          InputLabelProps={{ shrink: true }} // para que la etiqueta no se superponga
+                        />
+                      )}
+                    />
+
+                    {/* HORA */}
+                    <Controller
+                      name="delivery_hour"
+                      control={control}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          type="time"
+                          label="Hora"
+                          fullWidth
+                          InputLabelProps={{ shrink: true }}
+                        />
+                      )}
+                    />
+                  </>
+                )}
+              </Box>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: 2,
+                  alignItems: "flex-end",
+                }}
+              >
+                {/* Recogida */}
+                <Box sx={{ width: { xs: "100%", md: "calc(50% - 8px)" } }}>
+                  <Controller
+                    name="pickup"
+                    control={control}
+                    render={({ field }) => (
+                      <FormControlLabel
+                        control={
+                          <Checkbox {...field} checked={field.value || false} />
+                        }
+                        label="Retirada "
+                        sx={{ width: "100%" }}
+                      />
+                    )}
+                  />
+                </Box>
+
+                {/* Pago */}
+                <Box sx={{ width: { xs: "100%", md: "calc(50% - 8px)" } }}>
+                  <Controller
+                    name="paid"
+                    control={control}
+                    render={({ field }) => (
+                      <FormControlLabel
+                        control={
+                          <Checkbox {...field} checked={field.value || false} />
+                        }
+                        label="Pago "
+                        sx={{ width: "100%" }}
+                      />
+                    )}
+                  />
+                </Box>
+              </Box>
             </Stack>
           </form>
         )}
       </DialogContent>
 
       <DialogActions>
-        <Button onClick={()=>setOpen(false)}>Cancelar</Button>
-        <Button variant="contained">Guardar cambios</Button>
+        <Button onClick={() => setOpen(false)}>Cancelar</Button>
+        <Button variant="contained">Salvar mudanças</Button>
       </DialogActions>
     </Dialog>
   );

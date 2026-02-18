@@ -40,4 +40,7 @@ export const LANG = {
     ERROR: "Erro ao excluir",
     CONFIRM:"Sím, excluir"
   },
+  EDITORDER:{
+     WEDIT: "Editar pedido",
+  }
 };

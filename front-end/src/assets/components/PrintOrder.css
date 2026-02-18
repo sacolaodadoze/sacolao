@@ -1,0 +1,103 @@
+/* @media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .print-container, .print-container * {
+    visibility: visible;
+  }
+
+  .print-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+} */
+
+.ticket {
+  width: 100%;
+  max-width: 80mm;
+  margin: 0;
+  padding: 5px;
+  box-sizing: border-box;
+  font-family: monospace;
+  font-size: 14px; /* tamaño legible */
+  line-height: 1.4;
+}
+
+.center {
+  text-align: center;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.divider {
+  border-top: 1px dashed black;
+  margin: 5px 0;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .ticket,
+  .ticket * {
+    visibility: visible;
+  }
+
+  .ticket {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+
+  .row {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 2px;
+  }
+
+  .row strong {
+    display: inline-block;
+    width: 40mm;
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;   
+    font-size: 14px;
+  }
+
+  .row span {
+    flex: 1;
+    white-space: pre-wrap;
+    font-size: 14px;
+  }
+  .div-pedido {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 2px;
+  }
+  .div-pedido > div:first-child {
+    display: inline-block;
+ 
+    width: 25mm;
+    font-weight: bold;   
+  }
+  .div-pedido > div:last-child {
+  flex: 1;
+  font-size: 14px;
+   margin-left: -3mm
+}
+  .item span {
+    display: block; /* cada item en su propia línea */
+  }
+
+  @page {
+    size: 80mm auto;
+    margin: 0;
+  }
+}

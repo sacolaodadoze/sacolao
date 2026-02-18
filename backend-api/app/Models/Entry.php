@@ -8,9 +8,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Entry extends Model
 {
     protected $guarded = []; 
-    /**
-     * Obtener todos los pedidos asociados con esta entrada.
-     */
+   /**
+    * Entrada do pedid
+    *
+    * @return HasMany
+    */
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class);

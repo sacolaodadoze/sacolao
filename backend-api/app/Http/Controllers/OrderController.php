@@ -50,7 +50,7 @@ class OrderController extends Controller
      */
     public function store(Request $request)
     {
-       
+
         $data = $request->validate([
             'customer_id'    => 'required|exists:customers,id',
             'items'          => 'required|string',
@@ -78,14 +78,14 @@ class OrderController extends Controller
 
 
         $order = DB::transaction(function () use ($data) {
-          
+
 
             //Dados do cliente
-            if (($data['customerChanged'])==true) {
+            if (($data['customerChanged']) == true) {
                 Phone::updateOrCreate(
                     ['customer_id' => $data['customer_id']],
                     [
-                        'number' => $data['phone']?? null
+                        'number' => $data['phone'] ?? null
                     ]
                 );
 
@@ -119,8 +119,8 @@ class OrderController extends Controller
                 'payment_types_id' => $data['payment_types_id'],
                 'entry_id'         => $data['entry_id'],
                 'items'            => $data['items'],
-                'paid'             => $data['paid']?? null,
-                'pickup'         => $data['pickup']?? null,
+                'paid'             => $data['paid'] ?? null,
+                'pickup'         => $data['pickup'] ?? null,
                 'delivery_date'         => $data['delivery_date'] ?? null,
                 'delivery_hour'         => $data['delivery_hour'] ?? null,
             ];
@@ -145,7 +145,8 @@ class OrderController extends Controller
 
             return $order;
         });
-
+        $order->load(['detail','entry','payment','customer','customer.observation','customer.addresses','customer.phones']);      
+      
         return response()->json($order, 201);
     }
 
@@ -179,9 +180,9 @@ class OrderController extends Controller
      * @param int $id
      * @return cod 200
      */
-    public function destroy( $id)
+    public function destroy($id)
     {
-         $order = Order::find($id);
+        $order = Order::find($id);
 
         if (!$order) {
             return response()->json(['message' => 'Pedido no encontrado'], 404);
@@ -194,5 +195,4 @@ class OrderController extends Controller
             return response()->json(['message' => 'Error al eliminar el pedido'], 500);
         }
     }
-    
 }

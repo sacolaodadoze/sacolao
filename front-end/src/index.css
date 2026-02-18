@@ -63,7 +63,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  box-shadow: var(--shadow-sm);  
+  box-shadow: var(--shadow-sm);
 }
 
 .logo-container {
@@ -132,8 +132,7 @@ body {
   gap: 2rem;
   height: 50px; /* O la altura exacta que quieras mantener */
   overflow: hidden; /* Corta cualquier cosa que intente estirarlo */
-  box-sizing: border-box; /*  Asegura que el padding se incluya en la altura total */ 
-   
+  box-sizing: border-box; /*  Asegura que el padding se incluya en la altura total */
 }
 
 .nav-links {
@@ -176,7 +175,6 @@ body {
   background-color: var(--background);
   color: var(--text-main);
   outline: none;
-
 }
 
 .submenu-select:focus {
@@ -190,7 +188,7 @@ body {
   margin: 1rem auto;
   width: 95%;
   flex: 1;
- /*    z-index: 10;
+  /*    z-index: 10;
   position: sticky;
   top: 0; */
 }
@@ -275,7 +273,7 @@ body {
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   overflow: hidden;
- /* min-height: 400px;*/
+  /* min-height: 400px;*/
 }
 
 /*
@@ -292,7 +290,7 @@ body {
 table {
   width: 100%;
   border-spacing: 0;
-  border-collapse: collapse;  
+  border-collapse: collapse;
 
   table-layout: fixed; /* Fuerza a las columnas a respetar el ancho total */
   word-wrap: break-word; /* Rompe palabras largas para que no ensanchen la celda */
@@ -307,7 +305,7 @@ table {
   height: 48px;
   color: #706f6f;
   padding: 1rem 1rem;
- /* border-radius: 13px;*/
+  /* border-radius: 13px;*/
 }
 
 th,
@@ -315,7 +313,7 @@ td {
   padding: 1rem;
   text-align: left;
   border-bottom: 1px solid var(--border);
-   width: 90%;
+  width: 90%;
 }
 
 th {
@@ -327,7 +325,7 @@ th {
   text-transform: uppercase;
   letter-spacing: 0.05em;
   background-color: #f0fdf4;
- 
+
   /* Green tint header bg */
 }
 
@@ -335,8 +333,7 @@ tr:hover td {
   background-color: #fefce8;
   /* Hover row is light yellow */
 
-
- /* #f9fafb; /* Un gris muy sutil 
+  /* #f9fafb; /* Un gris muy sutil 
  cursor: pointer;
  */
 }
@@ -416,14 +413,20 @@ tr:hover td {
 }
 
 .btn-action.btn-del:hover {
- /*background-color: #fee2e2; /* Rojo claro */
+  /*background-color: #fee2e2; /* Rojo claro */
   /*  color: #991b1b;            /* Texto rojo oscuro */
-   background-color: red;
-  color: white; 
+  background-color: red;
+  color: white;
 }
 
 .btn-edit {
-margin-bottom: 1.5px;
+  margin-bottom: 1.5px;
+}
+
+.dialog-content {
+  padding-top: "24px";
+  padding-bottom: "24px";
+  max-height: "400px";
 }
 
 /* Keyframes */

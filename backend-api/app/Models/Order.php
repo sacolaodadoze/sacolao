@@ -44,7 +44,7 @@ class Order extends Model
      */
     public function payment(): BelongsTo
     {
-        return $this->belongsTo(PaymentType::class);
+        return $this->belongsTo(PaymentType::class,'payment_types_id');
     }
 
   
