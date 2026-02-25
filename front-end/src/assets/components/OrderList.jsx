@@ -239,8 +239,7 @@ export function OrderList() {
               paddingTop: "24px", // espacio arriba del primer input
               paddingBottom: "24px",
               maxHeight: "400px",
-            }}
-            disableGutters
+            }}          
             sx={{
               width: "100%",
               boxSizing: "border-box",

@@ -33,7 +33,6 @@ export default function EditOrder({
   paymentTypes,
   entries,
 }) {
-  // console.log(order);
   const { showNotification } = useNotification();
   const [orders, setOrders] = useState([]); //update la order actuaçizada si recargar toda la tabla
 
@@ -62,6 +61,7 @@ export default function EditOrder({
       delivery_hour: "",
       pickup: false,
       paid: false,
+      taxa: false,
     },
   });
   const horaFormateada = order.delivery_hour?.substring(0, 5);
@@ -81,6 +81,7 @@ export default function EditOrder({
         delivery_hour: horaFormateada || "",
         pickup: order.pickup,
         paid: order.paid,
+        taxa: order.taxa,
       });
     }
   }, [order, reset]);
@@ -360,7 +361,7 @@ export default function EditOrder({
                 }}
               >
                 {/* Recogida */}
-                <Box sx={{ width: { xs: "100%", md: "calc(50% - 8px)" } }}>
+                <Box sx={{ width: { xs: "100%", md: "calc(33% - 8px)" } }}>
                   <Controller
                     name="pickup"
                     control={control}
@@ -378,7 +379,7 @@ export default function EditOrder({
                 </Box>
 
                 {/* Pago */}
-                <Box sx={{ width: { xs: "100%", md: "calc(50% - 8px)" } }}>
+                <Box sx={{ width: { xs: "100%", md: "calc(32% - 8px)" } }}>
                   <Controller
                     name="paid"
                     control={control}
@@ -389,6 +390,23 @@ export default function EditOrder({
                           <Checkbox {...field} checked={field.value || false} />
                         }
                         label="Pago "
+                        sx={{ width: "100%" }}
+                      />
+                    )}
+                  />
+                </Box>
+                {/* Taxa entrega */}
+                <Box sx={{ width: { xs: "100%", md: "calc(33% - 8px)" } }}>
+                  <Controller
+                    name="taxa"
+                    control={control}
+                    defaultValue={order.taxa}
+                    render={({ field }) => (
+                      <FormControlLabel
+                        control={
+                          <Checkbox {...field} checked={field.value || false} />
+                        }
+                        label="Taxa de pago "
                         sx={{ width: "100%" }}
                       />
                     )}

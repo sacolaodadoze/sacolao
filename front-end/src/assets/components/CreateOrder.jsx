@@ -49,6 +49,7 @@ export default function CreateOrder({
       items: "",
       pickup: false,
       paid: false,
+      taxa:false,
       payment_types_id: "",
       entry_id: "",
       observations: "",
@@ -197,8 +198,7 @@ export default function CreateOrder({
               control={control}
               render={({ field }) => (
                 <Autocomplete
-                  options={customer}
-                  inputRef={firstInputRef}
+                  options={customer}                 
                   loading={loading}
                   value={customerSelected}
                   getOptionLabel={(option) => option?.name || ""}
@@ -554,7 +554,7 @@ export default function CreateOrder({
                 }}
               >
                 {/* Recogida */}
-                <Box sx={{ width: { xs: "100%", md: "calc(50% - 8px)" } }}>
+                <Box sx={{ width: { xs: "100%", md: "calc(32% - 8px)" } }}>
                   <Controller
                     name="pickup"
                     control={control}
@@ -571,7 +571,7 @@ export default function CreateOrder({
                 </Box>
 
                 {/* Pago */}
-                <Box sx={{ width: { xs: "100%", md: "calc(50% - 8px)" } }}>
+                <Box sx={{ width: { xs: "100%", md: "calc(33% - 8px)" } }}>
                   <Controller
                     name="paid"
                     control={control}
@@ -581,6 +581,22 @@ export default function CreateOrder({
                           <Checkbox {...field} checked={field.value || false} />
                         }
                         label="Pago "
+                        sx={{ width: "100%" }}
+                      />
+                    )}
+                  />
+                </Box>
+                  {/* Taxa entrega */}
+                <Box sx={{ width: { xs: "100%", md: "calc(33% - 8px)" } }}>
+                  <Controller
+                    name="taxa"
+                    control={control}
+                    render={({ field }) => (
+                      <FormControlLabel
+                        control={
+                          <Checkbox {...field} checked={field.value || false} />
+                        }
+                        label="Taxa de entrega "
                         sx={{ width: "100%" }}
                       />
                     )}

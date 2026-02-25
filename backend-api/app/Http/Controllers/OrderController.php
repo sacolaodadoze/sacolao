@@ -63,9 +63,10 @@ class OrderController extends Controller
         //}
         //dd($request->perPage);
         $orders = $query->orderBy('created_at', 'desc')->paginate(
-            $request->perPage,['*'],
+            $request->perPage,
+            ['*'],
             'page',
-             $request->page 
+            $request->page
         ); //->get();
 
         return response()->json($orders);
@@ -96,6 +97,7 @@ class OrderController extends Controller
             'entry_id' => 'required|exists:entries,id',
             'pickup' => 'nullable|boolean',
             'paid' => 'nullable|boolean',
+            'taxa' => 'nullable|boolean',
             'delivery_date' => 'nullable|date|required_if:scheduled,true',
             'delivery_hour' => 'nullable|date_format:H:i|required_if:scheduled,true',
             'order_id' => 'nullable|exists:orders,id',
@@ -168,8 +170,9 @@ class OrderController extends Controller
                 'payment_types_id' => $data['payment_types_id'],
                 'entry_id'         => $data['entry_id'],
                 'items'            => $data['items'],
-                'paid'             => $data['paid'] ?? null,
-                'pickup'         => $data['pickup'] ?? null,
+                'paid'             => $data['paid'],
+                'pickup'         => $data['pickup'],
+                'taxa'         => $data['taxa'],
                 'delivery_date'         => $data['delivery_date'] ?? null,
                 'delivery_hour'         => $data['delivery_hour'] ?? null,
             ];

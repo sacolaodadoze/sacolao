@@ -26,6 +26,7 @@ export const schema = z
     delivery_hour: z.string().optional(),
     pickup: z.boolean().optional(),
     paid: z.boolean().optional(),
+    taxa:z.boolean().optional(),
   }) //Validar fecha y hr si esta agendado
   .superRefine((data, ctx) => {
     if (data.scheduled) {

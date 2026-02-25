@@ -20,6 +20,7 @@ export const schema = z
     delivery_hour: z.string().optional(),
     pickup: z.boolean().optional(),
     paid: z.boolean().optional(),
+    taxa:z.boolean().optional(),
   })
   .superRefine((data, ctx) => {
     if (data.scheduled) {
