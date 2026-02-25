@@ -62,7 +62,7 @@ class OrderController extends Controller
         });  */
         //}
         //dd($request->perPage);
-        $orders = $query->latest()->paginate(
+        $orders = $query->orderBy('created_at', 'desc')->paginate(
             $request->perPage,['*'],
             'page',
              $request->page 
@@ -87,7 +87,6 @@ class OrderController extends Controller
      */
     public function store(Request $request)
     {
-
         //dd($request['id']!=null);
         $rules = [
             'id' => 'nullable|numeric',

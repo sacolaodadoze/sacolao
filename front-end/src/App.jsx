@@ -20,7 +20,7 @@ const Layout = () => {
   );
 };
 // 2. Componente de ejemplo para el Home
-const Home = () => <h1>Bienvenido al Sistema de Gestión</h1>;
+const Home = () => <h1 style={{marginTop:"50px"}}>Bem-vindo ao Sistema de Gestão de Pedidos</h1>;
 
 function App() {
   return (
@@ -40,16 +40,5 @@ function App() {
     </BrowserRouter>
   );
 }
-
-/* function App() {
-
-  return (
-    <>
-    <Header/>
-    <Order/>
-    </>
-    
-  )
-}*/
 
 export default App;

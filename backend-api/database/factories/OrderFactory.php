@@ -32,10 +32,10 @@ class OrderFactory extends Factory
             'payment_types_id' => PaymentType::inRandomOrder()->value('id'),
             'entry_id' => Entry::inRandomOrder()->value('id'),
 
-            'items' => json_encode([
+            'items' => json_encode(
                 $this->faker->randomDigitNotNull(),
                 $this->faker->word(),
-            ]),
+            ),
 
             'paid' => $this->faker->boolean(),
             'pickup' => $this->faker->boolean(),

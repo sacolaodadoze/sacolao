@@ -58,65 +58,46 @@ export function OrderList() {
   };
   */
 
-  //Busqueda
-  useEffect(() => {
-    const delayDebounce = setTimeout(() => {
-      // Si está vacío → trae todo
-      if (search.trim() === "") {
-        getOrders(perPage, currentPage);
-        return;
-      }
-
-      // Si tiene 3 o más caracteres → buscar
-      if (search.trim().length >= 3) {
-        getOrders(perPage, currentPage);
-      }
-    }, 800);
-
-    return () => clearTimeout(delayDebounce);
-  }, [search]);
-
-  const getOrders = (search, perPage, currentPage) => {
+  const getOrders = async (search = "", perPage = 20, currentPage = 1) => {
     setIsLoading(true);
-    fetch(
-      `http://localhost:8000/api/orders?search=${encodeURIComponent(search ?? "")}&perPage=${perPage}&page=${currentPage}`,
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        setOrders(data.data); // Guardamos os dados das ordenes
-        setCurrentPage(data.current_page);
-        setTotal(data.total);
-        setIsLoading(false);
-        console.log(data);
-      })
+    try {
+     const response= await fetch(
+        `http://localhost:8000/api/orders?search=${encodeURIComponent(search ?? "")}&perPage=${perPage}&page=${currentPage}`,
+      );
+     
+      if (!response.ok) {
+        throw new Error("Error al traer las órdenes"); // lanza error si status no es 2xx
+      }
+     
+      const data = await response.json();
+      setOrders(data.data); // Guardamos os dados das ordenes
+      setCurrentPage(data.current_page);
+      setTotal(data.total);     
 
-      .catch((error) => {
-        console.error("Error al traer pedidos:", error); //todo: manejar error
-        setIsLoading(false);
-      });
+      if (data.data.length === 0) {
+        showNotification(LANG.ORDERSLIST.NOSHOW, "warning");
+      }
+    } catch (error) {     
+      showNotification(error.message ||LANG.ORDERSLIST.ERROROREDR , "error");
+    
+    } finally {
+      setIsLoading(false);
+    }
   };
-
-  useEffect(() => {
-    const delayDebounce = setTimeout(() => {
-      getOrders(search, perPage, currentPage);
-    }, 400);
-
-    return () => clearTimeout(delayDebounce);
-  }, [search]);
 
   const getPaymets = () => {
     fetch("http://localhost:8000/api/payments")
       .then((response) => {
         if (!response.ok) {
-          throw new Error("Error al traer los tipos de entrada");
+          throw new Error();
         }
         return response.json();
       })
       .then((data) => {
         setPaymentTypes(data);
       })
-      .catch((error) => {
-        console.error("Error al traer los tipos de pagamentos:", error); //TODO: manejar error
+      .catch((error) => {       
+         showNotification(error.message || LANG.ORDERSLIST.ERRORPAYMENTS, "error");
       });
   };
 
@@ -124,7 +105,7 @@ export function OrderList() {
     fetch("http://localhost:8000/api/entries")
       .then((response) => {
         if (!response.ok) {
-          throw new Error("Error al traer los tipos de entrada");
+          throw new Error();
         }
         return response.json();
       })
@@ -132,8 +113,7 @@ export function OrderList() {
         setEntries(data);
       })
       .catch((error) => {
-        showNotification("Erro ao criar pedido", { error });
-        console.error("Error al traer los tipos de entrada:", error);
+       showNotification(error.message || LANG.ORDERSLIST.ERRORENTRIES, "error");       
       });
   };
 
@@ -141,15 +121,25 @@ export function OrderList() {
     const inicializarSistema = async () => {
       // Ejecuta ambas peticiones al mismo tiempo
       await Promise.all([
-        // getOrders(perPage,currentPage),
+        getOrders(search, perPage, currentPage),
         getPaymets(),
         getEntries(),
         fetchStatus(),
-      ]);
-      // console.log("Sistema listo y datos cargados");
+      ]);      
     };
     inicializarSistema();
   }, []);
+
+  //Busqueda
+  useEffect(() => {
+    const delayDebounce = setTimeout(() => {
+      if (search.trim() === "" || search.trim().length >= 3) {
+        getOrders(search, perPage, currentPage);
+      }
+    }, 500);
+
+    return () => clearTimeout(delayDebounce);
+  }, [search, perPage, currentPage]);
 
   return (
     <main class="main-container">
@@ -158,13 +148,52 @@ export function OrderList() {
       </div>
 
       <div className="controls-row">
-        <input
+        {/*  <input
           type="text"
           className="search-input"
           placeholder={LANG.ORDERSLIST.SEARCH}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-        />
+        /> */}
+
+        <div
+          className="search-wrapper"
+          style={{ position: "relative", width: "86%", paddingRight: "30px" }}
+        >
+          <input
+            type="text"
+            className="search-input"
+            placeholder={LANG.ORDERSLIST.SEARCH}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            style={{ width: "100%" }}
+          />
+          {/* TODO ver como coloco la x de cerrar  */}
+          {/*  {search && (
+            <button
+              onClick={() => setSearch("")}
+              style={{
+                position: "absolute",
+               // right: "0px",
+                left:"0px",
+                top: "50%",
+                transform: "translateY(-50%)",
+                border: "none",
+                background: "transparent",
+                cursor: "pointer",
+                fontSize: "16px",
+                width: "100%", // ocupa todo el ancho del div
+              //  paddingLeft: "900px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              ✕
+            </button>
+          )} */}
+        </div>
+
         {/*  <select
           className="filter-select"
           id={statusId}
@@ -240,18 +269,17 @@ export function OrderList() {
 
       <TablePagination
         component="div"
-        labelRowsPerPage="Quantidade por página: "
+        labelRowsPerPage={LANG.ORDERSLIST.PERPAGE}
         count={total}
         page={currentPage - 1} // MUI base 0
         rowsPerPage={perPage}
-        onPageChange={(event, currentPage) =>
-          getOrders(search, perPage, currentPage + 1)
+        onPageChange={
+          (event, currentPage) => setCurrentPage(currentPage + 1)         
         }
         onRowsPerPageChange={(event) => {
           const newPerPage = parseInt(event.target.value, 10);
           setPerPage(newPerPage);
-          setCurrentPage(1);
-          getOrders(search, newPerPage, 1);
+          setCurrentPage(1);          
         }}
         rowsPerPageOptions={[5, 10, 20, 50]}
       />

@@ -1,10 +1,12 @@
 import React, { use, useEffect, useId, useState } from "react";
-import { TrashIcon, EditIcon } from "./Icons";
+import { TrashIcon, EditIcon, PrintIcon } from "./Icons";
+import { Tooltip } from "@mui/material";
 import { formatDate } from "../helpers/formatDate.js";
 import { OrdersTableSkeleton } from "./OrdersTableSkeleton.jsx";
 import { useDeleteOrder } from "../hooks/useDeleteOrder.jsx";
 import { useEditOrder } from "../hooks/useEditOrder.jsx";
 import EditOrder from "./EditOrder.jsx";
+import PrintOrder from "./PrintOrder.jsx";
 
 export function OrderTable({
   orders,
@@ -13,25 +15,32 @@ export function OrderTable({
   entries,
   isLoading,
   currentPage,
-  perPage
+  perPage,
 }) {
   const statusTableId = useId();
   const [opciones, setOpciones] = useState([]); // Estado para los datos de la DB
   const { deleteOrder } = useDeleteOrder();
   const [openEdit, setOpenEdit] = useState(false);
   const [orderSelected, setOrderSelected] = useState([]);
+  const [shouldPrint, setShouldPrint] = useState(false);
 
+  
   const handleDelete = async (order_id) => {
     const success = await deleteOrder(order_id, orders);
     if (success) {
-      getOrders(perPage,currentPage); // recargar lista de pedidos
+      getOrders(); // recargar lista de pedidos
     }
   };
 
   const handleEdit = async (order) => {
-   
     setOrderSelected(order);
-    setOpenEdit(true);   
+    setOpenEdit(true);
+  };
+
+  const handlePrint = async (order) => {
+    console.log(order);
+    setOrderSelected(order);
+    setShouldPrint(true);
   };
 
   return (
@@ -55,9 +64,12 @@ export function OrderTable({
             orders.map((order, index) => (
               <tr key={order.id}>
                 {/* 1. Numeradas */}
-                <td className="col-number">  </td>
-                <td>{(currentPage - 1) * perPage + index + 1}</td>              
-                {/* 2. NUmber */}
+                <td className="col-number">
+                  {" "}
+                  {(currentPage - 1) * perPage + index + 1}{" "}
+                </td>
+
+                {/* 2. Number */}
                 <td>{order.number}</td>
 
                 {/* 3. Data */}
@@ -97,18 +109,31 @@ export function OrderTable({
 
                 {/* 7. Columna de acciones*/}
                 <td>
-                  <button
-                    className="btn-action btn-edit"
-                    onClick={() => handleEdit(order)}
-                  >
-                    <EditIcon />
-                  </button>
-                  <button
-                    className="btn-action btn-del"
-                    onClick={() => handleDelete(order.id)}
-                  >
-                    <TrashIcon />
-                  </button>
+                  <Tooltip title="Alterar pedido">
+                    <button
+                      className="btn-action btn-edit"
+                      onClick={() => handleEdit(order)}
+                    >
+                      <EditIcon />
+                    </button>
+                  </Tooltip>
+
+                  <Tooltip title="Imprimir pedido">
+                    <button
+                      className="btn-action"
+                      onClick={() => handlePrint(order)}
+                    >
+                      <PrintIcon />
+                    </button>
+                  </Tooltip>
+                  <Tooltip title="Excluir  pedido">
+                    <button
+                      className="btn-action btn-del"
+                      onClick={() => handleDelete(order.id)}
+                    >
+                      <TrashIcon />
+                    </button>
+                  </Tooltip>
                 </td>
               </tr>
             ))
@@ -119,10 +144,17 @@ export function OrderTable({
         open={openEdit}
         setOpen={setOpenEdit}
         order={orderSelected}
+        getOrders={getOrders}
         paymentTypes={paymentTypes}
         entries={entries}
       />
-      
+      {orderSelected && (
+        <PrintOrder
+          order={orderSelected}
+          shouldPrint={shouldPrint}
+          onPrinted={() => setShouldPrint(false)}
+        />
+      )}
     </div>
   );
 }

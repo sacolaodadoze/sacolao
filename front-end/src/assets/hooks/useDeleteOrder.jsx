@@ -45,6 +45,5 @@ export function useDeleteOrder() {
       }
     }
   };
-
   return { deleteOrder };
 }

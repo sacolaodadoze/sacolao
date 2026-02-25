@@ -30,8 +30,7 @@ export default function CreateOrder({
   getOrders,
   paymentTypes,
   entries,
-}) {
-   console.log("Create");
+}) {   
   const {
     control,
     handleSubmit,
@@ -152,7 +151,7 @@ export default function CreateOrder({
       const result = await res.json();
       console.log(result);
       setOrder(result);
-      showNotification("Pedido criado com sucesso", "success");
+      showNotification(LANG.CREATEORDER.CREATEDSUCC, "success");
       // Activamos impresión
       setShouldPrint(true);
 
@@ -267,8 +266,7 @@ export default function CreateOrder({
                         ...params.InputProps,
                         endAdornment: (
                           <>
-                            {loading && <CircularProgress size={30} />}
-                            {/* TODO ,quitar el cargar */}
+                            {loading && <CircularProgress size={30} />}                       
                             {params.InputProps.endAdornment}
                           </>
                         ),
@@ -316,12 +314,12 @@ export default function CreateOrder({
                     ["name", LANG.CREATEORDER.NOME],
                     ["phone", LANG.CREATEORDER.TELEFONE],
                     ["cep", LANG.CREATEORDER.CEP],
-                    ["street", LANG.CREATEORDER.RUA],
-                    ["number", "Número"],
-                    ["complement", "Complemento"],
-                    ["neighborhood", "Bairro"],
-                    ["city", "Cidade"],
-                    ["state", "Estado"],
+                    ["street", LANG.CREATEORDER.STREET],
+                    ["number", LANG.CREATEORDER.NUMBER],
+                    ["complement",LANG.CREATEORDER.COMPLEMENT],
+                    ["neighborhood", LANG.CREATEORDER.NEIGHBORHOOD],
+                    ["city", LANG.CREATEORDER.CITY],
+                    ["state", LANG.CREATEORDER.STATE],
                   ].map(([name, label]) => (
                     <Box
                       key={name}
@@ -335,9 +333,7 @@ export default function CreateOrder({
                             {...field}
                             label={label}
                             fullWidth
-                            value={field.value || "-"}
-                            /*  error={!!errors.order?.items}
-                          helperText={errors.order?.items?.message}*/
+                            value={field.value || "-"}                           
                             onChange={(e) => {
                               const value =
                                 e.target.value === "-" ? "" : e.target.value;

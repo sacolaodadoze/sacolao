@@ -3,6 +3,7 @@ import { LANG } from "../constants/languages.js";
 
 import { showAlert } from "../helpers/alertHelper.js";
 import { useImport } from "../hooks/useImport.js";
+import { Tooltip } from "@mui/material";
 
 export function Import() {
   // Referencia para conectar el Select con el Input de archivo
@@ -26,6 +27,7 @@ export function Import() {
 
   return (
     <div style={{ padding: "20px" }}>
+        <Tooltip title={LANG.IMPORT.TOOLTSELECT}>
       <select
         className="submenu-select"
         //todo ,ver si uso el Useid
@@ -38,6 +40,7 @@ export function Import() {
         <option value="customer">{LANG.IMPORT.CLIENTES}</option>
         <option value="products">{LANG.IMPORT.PRODUCTS}</option>
       </select>
+      </Tooltip>
 
      {/*  Este input hace el trabajo pero no se ve  */}
       <input

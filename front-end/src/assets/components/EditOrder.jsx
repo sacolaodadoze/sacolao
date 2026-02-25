@@ -29,6 +29,7 @@ export default function EditOrder({
   open,
   setOpen,
   order,
+  getOrders,
   paymentTypes,
   entries,
 }) {
@@ -94,8 +95,8 @@ export default function EditOrder({
   }, [agendado]);
 
   const onSubmit = async (data) => {
-    //const payload = order?.id ? { ...data, id: order.id } : data;   
-    data.customerChanged = false; //obrigatorio, significa que não tem mudanças o cliente  
+    //const payload = order?.id ? { ...data, id: order.id } : data;
+    data.customerChanged = false; //obrigatorio, significa que não tem mudanças o cliente
 
     try {
       const res = await fetch("http://localhost:8000/api/orders", {
@@ -108,10 +109,7 @@ export default function EditOrder({
       });
 
       const result = await res.json();
-      console.log(result);
-      /*   setOrders((prevOrders) =>
-        prevOrders.map((o) => (o.id === result.id ? result : o)),
-      ); */
+      getOrders();
 
       if (!res.ok) {
         throw new Error(result.message || "Erro ao criar pedido");

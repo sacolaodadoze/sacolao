@@ -19,24 +19,36 @@ export const LANG = {
     ACTIONS: "--Ações--",
     CLIENTES: "Impotar clientes",
     PRODUCTS: "Impotar produtos",
+    TOOLTSELECT:"Importar CLientes/Produtos",
   },
   ORDERSLIST: {
     TITLE: "Lista de Pedidos",
-    SEARCH: "Pesquisar pedido...",
+    SEARCH: "Pesquisar pedido por número ou nome do cliente ...",
     STATUS: "--Estados--",
     CREATE: "Criar Pedido",
     WCREATE: " Adicionar pedido",
     SAVE_BUTTON: "Salvar Alterações",
+    PERPAGE:"Quantidade por página: ",
+    NOSHOW:"Sim dados a mostrar",
+    ERROROREDR:"Error al traer pedidos",
+    ERRORENTRIES:"Error al traer los tipos de entrada",
+    ERRORPAYMENTS:"Error al traer los tipos de pagamentos",
   },
   CREATEORDER: {
     DOCUMENT:"CPF/CNPJ",
     NOME:"Nome",
     TELEFONE:"Telefone",
     CEP:"CEP",
-    RUA: "Rua",
-    REQUIRED: "Campo obrigatório",
+    STREET: "Rua",
+    NUMBER:"Número",
+   COMPLEMENT: "Complemento",
+    REQUIRED: "Campo obrigatório",    
+    NEIGHBORHOOD:"Bairro",
+    CITY:"Cidade",
+    STATE:"Estado",
     VALIDATION_DATE: "A data é obrigatória se estiver agendada",
     VALIDATION_HOUR: "O horário é obrigatório se estiver agendado",
+    CREATEDSUCC:"Pedido criado com sucesso",
   },
   DELETEORDER: {
     TITLE: "¿Deseja cancelar este pedido?",
@@ -46,6 +58,6 @@ export const LANG = {
     CONFIRM:"Sím, excluir"
   },
   EDITORDER:{
-     WEDIT: "Editar pedido",
+     WEDIT: "Alterar pedido",
   }
 };
