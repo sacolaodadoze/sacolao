@@ -9,6 +9,7 @@ export const schema = z
     name: z.string().optional(),
 
     // Order
+    id:z.coerce.number(),
     items: z.string().min(1, LANG.CREATEORDER.REQUIRED),
     payment_types_id: z.coerce.number().min(1, LANG.CREATEORDER.REQUIRED),
     entry_id: z.coerce.number().min(1, LANG.CREATEORDER.REQUIRED),

@@ -25,9 +25,9 @@ class DatabaseSeeder extends Seeder
             'email' => 'test@example.com',
         ]); */
 
-        $this->call(StatusSeeder::class);
+         $this->call(StatusSeeder::class);
         $this->call(EntrySeeder::class);
-        $this->call(PaymentTypeSeeder::class); 
+        $this->call(PaymentTypeSeeder::class);  
 
        // OrderFactory::new()->count(50)->create();
     }

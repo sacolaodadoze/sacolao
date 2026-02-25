@@ -6,23 +6,30 @@ import { useDeleteOrder } from "../hooks/useDeleteOrder.jsx";
 import { useEditOrder } from "../hooks/useEditOrder.jsx";
 import EditOrder from "./EditOrder.jsx";
 
-export function OrderTable({ orders, getOrders,paymentTypes,entries, isLoading }) {
+export function OrderTable({
+  orders,
+  getOrders,
+  paymentTypes,
+  entries,
+  isLoading,
+  currentPage,
+  perPage
+}) {
   const statusTableId = useId();
   const [opciones, setOpciones] = useState([]); // Estado para los datos de la DB
   const { deleteOrder } = useDeleteOrder();
   const [openEdit, setOpenEdit] = useState(false);
   const [orderSelected, setOrderSelected] = useState([]);
-  // const [isLoading, setIsLoading] = useState(false); //cargar order
 
   const handleDelete = async (order_id) => {
     const success = await deleteOrder(order_id, orders);
     if (success) {
-      getOrders(); // recargar lista de pedidos
+      getOrders(perPage,currentPage); // recargar lista de pedidos
     }
   };
 
   const handleEdit = async (order) => {
-    console.log(order);
+   
     setOrderSelected(order);
     setOpenEdit(true);   
   };
@@ -32,7 +39,8 @@ export function OrderTable({ orders, getOrders,paymentTypes,entries, isLoading }
       <table>
         <thead>
           <tr>
-            <th style={{ width: "97px" }}>No.</th>
+            <th style={{ width: "95px" }}></th>
+            <th style={{ width: "127px" }}>No.</th>
             <th style={{ width: "130px" }}>Data</th>
             <th>Cliente</th>
             <th>Endereço</th>
@@ -47,16 +55,18 @@ export function OrderTable({ orders, getOrders,paymentTypes,entries, isLoading }
             orders.map((order, index) => (
               <tr key={order.id}>
                 {/* 1. Numeradas */}
-                <td className="col-number">
-                  <strong>#{index + 1}</strong>
-                </td>
-                {/* 2. Data */}
+                <td className="col-number">  </td>
+                <td>{(currentPage - 1) * perPage + index + 1}</td>              
+                {/* 2. NUmber */}
+                <td>{order.number}</td>
+
+                {/* 3. Data */}
                 <td>{formatDate(order.created_at)}</td>
 
-                {/* 3. Dato anidado del Cliente */}
+                {/* 4. Dato anidado del Cliente */}
                 <td>{order.customer?.name || "Consumidor Final"}</td>
 
-                {/* 4. Dato anidado del Cliente,endereco:rua,numero,bairro */}
+                {/* 5. Dato anidado del Cliente,endereco:rua,numero,bairro */}
                 <td>
                   {(() => {
                     const addr = order.customer?.addresses[0];
@@ -67,7 +77,7 @@ export function OrderTable({ orders, getOrders,paymentTypes,entries, isLoading }
                   })()}
                 </td>
 
-                {/* 5. Estado */}
+                {/* 6. Estado */}
                 {/*  <td>
                   {order.status.name} */}
 
@@ -85,7 +95,7 @@ export function OrderTable({ orders, getOrders,paymentTypes,entries, isLoading }
                 </select> */}
                 {/*  </td> */}
 
-                {/* 5. Columna de acciones*/}
+                {/* 7. Columna de acciones*/}
                 <td>
                   <button
                     className="btn-action btn-edit"
@@ -105,7 +115,14 @@ export function OrderTable({ orders, getOrders,paymentTypes,entries, isLoading }
           )}
         </tbody>
       </table>
-       <EditOrder open={openEdit} setOpen={setOpenEdit} order={orderSelected} paymentTypes={paymentTypes} entries={entries} />;
+      <EditOrder
+        open={openEdit}
+        setOpen={setOpenEdit}
+        order={orderSelected}
+        paymentTypes={paymentTypes}
+        entries={entries}
+      />
+      
     </div>
   );
 }

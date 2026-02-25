@@ -3,7 +3,9 @@
 namespace Database\Factories;
 
 use App\Models\Customer;
+use App\Models\Order;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Carbon;
 use App\Models\Status;
 use App\Models\PaymentType;
 use App\Models\Entry;
@@ -20,32 +22,25 @@ class OrderFactory extends Factory
      */
     public function definition(): array
     {
-        // Obtén el rango de IDs válidos para tus nomencladores
-        // Asume que los IDs van de 1 al total de registros que sembraste
-        $customer_id = Customer::pluck('id')->toArray();
-        $statusIds = Status::pluck('id')->toArray();
-        $paymentTypeIds = PaymentType::pluck('id')->toArray();
-        $entryIds = Entry::pluck('id')->toArray();
+        static $counter = 1;
 
-        return [       
-          
-           'customer_id' => $this->faker->randomElement($customer_id),
-            
-            // Genera un JSON falso de items (ej: 3 productos con cantidad)
+        $today = now()->format('dm');
+
+        return [
+            'customer_id' => Customer::inRandomOrder()->value('id'),
+            'status_id' => Status::inRandomOrder()->value('id'),
+            'payment_types_id' => PaymentType::inRandomOrder()->value('id'),
+            'entry_id' => Entry::inRandomOrder()->value('id'),
+
             'items' => json_encode([
-                ['product' => $this->faker->word(), 'qty' => $this->faker->randomDigitNotNull()],
-                ['product' => $this->faker->word(), 'qty' => $this->faker->randomDigitNotNull()],
+                $this->faker->randomDigitNotNull(),
+                $this->faker->word(),
             ]),
-            
+
             'paid' => $this->faker->boolean(),
             'pickup' => $this->faker->boolean(),
-            //'scheduled' => $this->faker->time(), // Genera una hora aleatoria
-            
-            // Relaciones con nomencladores
-           // Asigna un ID aleatorio del array que creamos:
-            'status_id' => $this->faker->randomElement($statusIds),
-            'payment_types_id' => $this->faker->randomElement($paymentTypeIds),
-            'entry_id' => $this->faker->randomElement($entryIds),
+
+            'number' => "#{$today}_" . $counter++,
         ];
     }
 }

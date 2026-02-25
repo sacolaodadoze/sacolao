@@ -31,13 +31,15 @@ export default function CreateOrder({
   paymentTypes,
   entries,
 }) {
+   console.log("Create");
   const {
     control,
     handleSubmit,
     register,
     watch,
     setValue,
-    reason ,
+    reason,
+    reset,
     formState: { errors, isValid }, //disabled save
   } = useForm({
     resolver: zodResolver(schema),
@@ -73,7 +75,7 @@ export default function CreateOrder({
   const [loading, setLoading] = useState(false);
 
   const debounceRef = useRef();
-  const firstInputRef = useRef(null)
+  const firstInputRef = useRef(null);
   const [customerSelected, setcustomerSelected] = useState(null); //al seleccionar el cliente
   const [loadingCustomers, setLoadingCustomers] = useState(false);
   //Saber si cambio los datos de cliente
@@ -98,7 +100,6 @@ export default function CreateOrder({
 
       const data = await res.json();
       setCustomer(data);
-      //setCustomer(Array.isArray(data) ? data : [])
     } catch (error) {
       console.error(error);
     } finally {
@@ -116,7 +117,7 @@ export default function CreateOrder({
   };
 
   const onSubmit = async (data) => {
-   // console.log(data);
+    // console.log(data);
 
     const original = formData; // objeto traído del backend
     const current = data; // datos del formulario
@@ -151,10 +152,9 @@ export default function CreateOrder({
       const result = await res.json();
       console.log(result);
       setOrder(result);
-         
-        // Activamos impresión
+      showNotification("Pedido criado com sucesso", "success");
+      // Activamos impresión
       setShouldPrint(true);
-      showNotification("Pedido criado com sucesso", "success");    
 
       getOrders();
       setcustomerSelected(null);
@@ -181,10 +181,10 @@ export default function CreateOrder({
     }
   };
 
- // Espera un tick para que el DOM exista, para poner el focus
-    useEffect(() => {
-    if (open) {     
-      firstInputRef.current.focus();        
+  // Espera un tick para que el DOM exista, para poner el focus
+  useEffect(() => {
+    if (open) {
+      firstInputRef.current.focus();
     }
   }, [open]);
 
@@ -206,8 +206,8 @@ export default function CreateOrder({
                   isOptionEqualToValue={(option, value) =>
                     option.id === value?.id
                   }
-                  onInputChange={(event, value,reason) => {
-                      if (reason !== "input") return; //El usuario está escribiendo en el teclado
+                  onInputChange={(event, value, reason) => {
+                    if (reason !== "input") return; //El usuario está escribiendo en el teclado
                     if (value.length < 3) {
                       setCustomer([]);
                       return;
@@ -222,7 +222,12 @@ export default function CreateOrder({
                   }}
                   //TODO carga dos veces la peticion de buscar cliente
                   onChange={(event, customer) => {
-                    if (!customer) return;                  
+                    if (!customer) {
+                      setcustomerSelected(null);
+                      reset();
+                      setValue("observations", "");
+                      return;
+                    }
                     setcustomerSelected(customer);
                     setValue("customer_id", customer.id);
                     setLoading(false);
@@ -233,10 +238,21 @@ export default function CreateOrder({
                     setValue("cep", customer.addresses[0]?.cep ?? "");
                     setValue("street", customer.addresses[0]?.street ?? "");
                     setValue("number", customer.addresses[0]?.number ?? "");
-                    setValue("complement",customer.addresses[0]?.complement ?? "");
-                    setValue("neighborhood",customer.addresses[0]?.neighborhood ?? "");
+                    setValue(
+                      "complement",
+                      customer.addresses[0]?.complement ?? "",
+                    );
+                    setValue(
+                      "neighborhood",
+                      customer.addresses[0]?.neighborhood ?? "",
+                    );
                     setValue("city", customer.addresses[0]?.city ?? "");
                     setValue("state", customer.addresses[0]?.state ?? "");
+
+                    setValue(
+                      "observations",
+                      customer.observation?.content ?? "",
+                    );
 
                     setFormData(customer);
                   }}
@@ -244,7 +260,7 @@ export default function CreateOrder({
                     <TextField
                       {...params}
                       label="Pesquisar cliente"
-                      inputRef={firstInputRef} 
+                      inputRef={firstInputRef}
                       fullWidth
                       disabled={loading}
                       InputProps={{
@@ -296,11 +312,11 @@ export default function CreateOrder({
               {customerSelected && (
                 <>
                   {[
-                    ["document", "CPF/CNPJ"],
-                    ["name", "Nome"],
-                    ["phone", "Telefone"],
-                    ["cep", "CEP"],
-                    ["street", "Rua"],
+                    ["document", LANG.CREATEORDER.DOCUMENT],
+                    ["name", LANG.CREATEORDER.NOME],
+                    ["phone", LANG.CREATEORDER.TELEFONE],
+                    ["cep", LANG.CREATEORDER.CEP],
+                    ["street", LANG.CREATEORDER.RUA],
                     ["number", "Número"],
                     ["complement", "Complemento"],
                     ["neighborhood", "Bairro"],
@@ -380,20 +396,19 @@ export default function CreateOrder({
                     control={control}
                     defaultValue=""
                     render={({ field }) => (
-                      <FormControl
-                        sx={{ width: "100%" }}
-                        error={!!errors?.payment_types_id}
-                        helperText={errors?.payment_types_id?.message}
-                      >
+                      <FormControl sx={{ width: "100%" }}>
                         <InputLabel id="payment-label">
                           Forma de Pagamento
                         </InputLabel>
 
                         <Select
                           {...field}
-                          labelId="payment-label"                          
+                          label="Forma de Pagamento"
+                          labelId="payment-label"
                           value={field.value ?? ""}
                           onChange={(e) => field.onChange(e.target.value)}
+                          error={!!errors?.payment_types_id}
+                          helperText={errors?.payment_types_id?.message}
                         >
                           {paymentTypes.map((payment) => (
                             <MenuItem key={payment.id} value={payment.id}>
@@ -413,18 +428,23 @@ export default function CreateOrder({
                     control={control}
                     defaultValue=""
                     render={({ field }) => (
-                      <FormControl
-                        sx={{ width: "100%" }}
-                        error={!!errors?.entry_id}
-                        helperText={errors?.entry_id?.message}
-                      >
-                        <InputLabel>Entrada do pedido</InputLabel>
-                        <Select {...field} label="Entrada del pedido" fullWidth>
+                      <FormControl sx={{ width: "100%" }}>
+                        <InputLabel id="entry-label">
+                          Entrada do pedido
+                        </InputLabel>
+                        <Select
+                          {...field}
+                          labelId="entry-label"
+                          label="Entrada del pedido"
+                          fullWidth
+                        >
                           {entries.map((entry) => (
                             <MenuItem key={entry.id} value={entry.id}>
                               {entry.name}
                             </MenuItem>
                           ))}
+                          error={!!errors?.entry_id}
+                          helperText={errors?.entry_id?.message}
                         </Select>
                       </FormControl>
                     )}
@@ -504,6 +524,8 @@ export default function CreateOrder({
                           type="date"
                           fullWidth
                           InputLabelProps={{ shrink: true }} // para que la etiqueta no se superponga
+                          error={!!errors?.delivery_date}
+                          helperText={errors?.delivery_date?.message}
                         />
                       )}
                     />
@@ -519,6 +541,8 @@ export default function CreateOrder({
                           label="Hora"
                           fullWidth
                           InputLabelProps={{ shrink: true }}
+                          error={!!errors?.delivery_hour}
+                          helperText={errors?.delivery_hour?.message}
                         />
                       )}
                     />
@@ -583,7 +607,7 @@ export default function CreateOrder({
         </DialogActions>
       </form>
       <PrintOrder
-        order={order}       
+        order={order}
         shouldPrint={shouldPrint}
         onPrinted={() => setShouldPrint(false)}
       />

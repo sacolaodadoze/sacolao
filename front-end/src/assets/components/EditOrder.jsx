@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import Swal from "sweetalert2";
 import { useNotification } from "../context/NotificationContext.jsx"; //msg de info
@@ -24,6 +24,7 @@ import {
   Box,
   CircularProgress,
 } from "@mui/material";
+
 export default function EditOrder({
   open,
   setOpen,
@@ -33,40 +34,111 @@ export default function EditOrder({
 }) {
   // console.log(order);
   const { showNotification } = useNotification();
+  const [orders, setOrders] = useState([]); //update la order actuaçizada si recargar toda la tabla
 
   const {
     control,
     handleSubmit,
     reset,
     watch,
+    register,
+    setValue,
     formState: { errors, isValid },
   } = useForm({
     resolver: zodResolver(schema),
     mode: "onChange",
     defaultValues: {
-      customer_id: order.customer_id,
-      name: order.customer?.name,
-      items: order.items,
-      payment_types_id: order.payment_types_id,
-      entry_id: order.entry_id,
-      details: order.details,
-      observations: order.observations,
-      scheduled: order.scheduled,
-      delivery_date: order.delivery_date || "",
-      delivery_hour: order.delivery_hour || "",
-      pickup: order.pickup,
-      paid: order.paid,
+      id: order?.id || null,
+      customer_id: "",
+      name: "",
+      items: "",
+      payment_types_id: "",
+      entry_id: "",
+      details: "",
+      observations: "",
+      scheduled: false,
+      delivery_date: "",
+      delivery_hour: "",
+      pickup: false,
+      paid: false,
     },
   });
+  const horaFormateada = order.delivery_hour?.substring(0, 5);
+  useEffect(() => {
+    if (order) {
+      reset({
+        id: order.id,
+        customer_id: order.customer_id,
+        name: order.customer?.name,
+        items: order.items,
+        payment_types_id: order.payment_types_id,
+        entry_id: order.entry_id,
+        details: order.detail?.description || "",
+        observations: order.customer?.observation?.content || "",
+        scheduled: order.delivery_hour && order.delivery_date ? true : false,
+        delivery_date: order.delivery_date || "",
+        delivery_hour: horaFormateada || "",
+        pickup: order.pickup,
+        paid: order.paid,
+      });
+    }
+  }, [order, reset]);
 
   const agendado = watch("scheduled");
+
+  useEffect(() => {
+    if (!agendado) {
+      setValue("delivery_date", "");
+      setValue("delivery_hour", "");
+    }
+  }, [agendado]);
+
+  const onSubmit = async (data) => {
+    //const payload = order?.id ? { ...data, id: order.id } : data;   
+    data.customerChanged = false; //obrigatorio, significa que não tem mudanças o cliente  
+
+    try {
+      const res = await fetch("http://localhost:8000/api/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await res.json();
+      console.log(result);
+      /*   setOrders((prevOrders) =>
+        prevOrders.map((o) => (o.id === result.id ? result : o)),
+      ); */
+
+      if (!res.ok) {
+        throw new Error(result.message || "Erro ao criar pedido");
+      }
+
+      showNotification("Pedido mudado com sucesso", "success");
+
+      //TODO ver si imprimo aqui
+      // Activamos impresión
+      // setShouldPrint(true);
+
+      //GetOrder();
+
+      console.log("Guardado:", result);
+      setOpen(false);
+    } catch (error) {
+      console.log("ERRORES:", error);
+      showNotification(error.message || "Erro ao criar pedido", "error");
+    }
+  };
 
   return (
     <Dialog
       open={open}
-      //onClose={handleClose}
       fullWidth
       maxWidth="sm"
+      scroll="paper"
       onClose={(event, reason) => {
         if (reason === "backdropClick") return;
         setOpen(false);
@@ -74,11 +146,10 @@ export default function EditOrder({
     >
       <DialogTitle>{LANG.EDITORDER.WEDIT}</DialogTitle>
       <DialogContent
-        class
-        style={{
-          paddingTop: "24px", // espacio arriba del primer input
-          paddingBottom: "24px",
-          maxHeight: "400px",
+        dividers
+        sx={{
+          paddingTop: 3,
+          paddingBottom: 3,
         }}
       >
         {order && (
@@ -94,13 +165,11 @@ export default function EditOrder({
               <Grid item xs={12}>
                 <Controller
                   name="items"
-                  // defaultValue=""
                   control={control}
                   render={({ field }) => (
                     <TextField
                       {...field}
                       label="Itens do pedido"
-                      value={order.items || ""}
                       multiline
                       rows={4}
                       fullWidth
@@ -123,23 +192,20 @@ export default function EditOrder({
                   <Controller
                     name="payment_types_id"
                     control={control}
-                    defaultValue={order?.payment_types_id || ""}
                     render={({ field }) => (
-                      <FormControl
-                        sx={{ width: "100%" }}
-                        error={!!errors?.payment_types_id}
-                        helperText={errors?.payment_types_id?.message}
-                      >
+                      <FormControl sx={{ width: "100%" }}>
                         <InputLabel id="payment-label">
-                          Forma do Pagamento
+                          Forma de Pagamento
                         </InputLabel>
 
                         <Select
                           {...field}
                           labelId="payment-label"
-                          label="Forma do Pagamento"
+                          label="Forma de Pagamento"
                           value={field.value ?? ""}
                           onChange={(e) => field.onChange(e.target.value)}
+                          error={!!errors?.payment_types_id}
+                          helperText={errors?.payment_types_id?.message}
                         >
                           {paymentTypes.map((payment) => (
                             <MenuItem key={payment.id} value={payment.id}>
@@ -156,15 +222,20 @@ export default function EditOrder({
                   <Controller
                     name="entry_id"
                     control={control}
-                    defaultValue={order?.entry_id || ""}
                     render={({ field }) => (
-                      <FormControl
-                        sx={{ width: "100%" }}
-                        error={!!errors?.entry_id}
-                        helperText={errors?.entry_id?.message}
-                      >
-                        <InputLabel>Entrada do pedido</InputLabel>
-                        <Select {...field} label="Entrada del pedido" fullWidth>
+                      <FormControl sx={{ width: "100%" }}>
+                        <InputLabel id="entry-label">
+                          Entrada do pedido
+                        </InputLabel>
+
+                        <Select
+                          {...field}
+                          labelId="entry-label"
+                          label="Entrada del pedido"
+                          fullWidth
+                          error={!!errors?.entry_id}
+                          helperText={errors?.entry_id?.message}
+                        >
                           {entries.map((entry) => (
                             <MenuItem key={entry.id} value={entry.id}>
                               {entry.name}
@@ -185,8 +256,7 @@ export default function EditOrder({
                   render={({ field }) => (
                     <TextField
                       {...field}
-                      label="Detalhes"
-                      value={order.details || ""}
+                      label="Detalhes do pedido"
                       multiline
                       rows={2}
                       fullWidth
@@ -198,12 +268,12 @@ export default function EditOrder({
               <Grid item xs={12}>
                 <Controller
                   name="observations"
+                  defaultValue={order?.customer?.observation?.content || ""}
                   control={control}
                   render={({ field }) => (
                     <TextField
                       {...field}
-                      label="Observaçoes"
-                      value={order.observations || ""}
+                      label="Observaçoes do cliente"
                       multiline
                       rows={2}
                       fullWidth
@@ -226,12 +296,15 @@ export default function EditOrder({
                 {/* AGENDADO */}
                 <Controller
                   name="scheduled"
-                  //defaultValue=false,
                   control={control}
                   render={({ field }) => (
                     <FormControlLabel
                       control={
-                        <Checkbox {...field} checked={field.value || false} />
+                        <Checkbox
+                          {...field}
+                          checked={field.value || false}
+                          onChange={(e) => field.onChange(e.target.checked)}
+                        />
                       }
                       label="Agendado"
                     />
@@ -243,14 +316,18 @@ export default function EditOrder({
                     {/* FECHA */}
                     <Controller
                       name="delivery_date"
+                      //  defaultValue={order.delivery_date || ""}
                       control={control}
                       render={({ field }) => (
                         <TextField
                           {...field}
+                          value={field.value ?? ""}
                           label="Data de retirada"
                           type="date"
                           fullWidth
                           InputLabelProps={{ shrink: true }} // para que la etiqueta no se superponga
+                          error={!!errors?.delivery_date}
+                          helperText={errors?.delivery_date?.message}
                         />
                       )}
                     />
@@ -259,13 +336,17 @@ export default function EditOrder({
                     <Controller
                       name="delivery_hour"
                       control={control}
+                      // defaultValue={order.delivery_hour || ""}
                       render={({ field }) => (
                         <TextField
                           {...field}
+                          value={field.value ?? ""}
                           type="time"
                           label="Hora"
                           fullWidth
                           InputLabelProps={{ shrink: true }}
+                          error={!!errors?.delivery_hour}
+                          helperText={errors?.delivery_hour?.message}
                         />
                       )}
                     />
@@ -285,6 +366,7 @@ export default function EditOrder({
                   <Controller
                     name="pickup"
                     control={control}
+                    defaultValue={order.pickup}
                     render={({ field }) => (
                       <FormControlLabel
                         control={
@@ -302,6 +384,7 @@ export default function EditOrder({
                   <Controller
                     name="paid"
                     control={control}
+                    defaultValue={order.paid}
                     render={({ field }) => (
                       <FormControlLabel
                         control={
@@ -315,13 +398,16 @@ export default function EditOrder({
                 </Box>
               </Box>
             </Stack>
+            <input type="hidden" value={order?.id} {...register("id")} />
           </form>
         )}
       </DialogContent>
 
       <DialogActions>
         <Button onClick={() => setOpen(false)}>Cancelar</Button>
-        <Button variant="contained">Salvar mudanças</Button>
+        <Button variant="contained" onClick={handleSubmit(onSubmit)}>
+          Salvar mudanças
+        </Button>
       </DialogActions>
     </Dialog>
   );

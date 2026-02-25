@@ -9,18 +9,22 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Order;
 use App\Models\Phone;
+use Illuminate\Support\Facades\Log;
 
 use function Laravel\Prompts\alert;
+
 
 class OrderController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        // dd($request->page);
+        //dd($request->search);
         // Eager Loading: Carregue todos os relacionamentos necessários de uma só vez
-        $orders = Order::with([
+        $query = Order::with([
             'entry:id,name',
             'status:id,name',
             'payment:id,name',
@@ -29,7 +33,40 @@ class OrderController extends Controller
             'customer.addresses',
             'customer.phones:id,customer_id,number,type',
             'customer.observation:id,customer_id,content'
-        ])->get();
+        ]);
+        //  dd($query->toSql(), $query->getBindings());
+        /* dd([
+    'search' => $request->query('search'),
+    'type' => gettype($request->query('search')),
+]);
+     */
+        $search = trim((string)$request->query('search', ''));
+        // if (isset($search) && strlen(trim($search)) > 0) {
+        //dump($request->query('search')); 
+        if (!empty($search)) {
+            $query->where(function ($q) use ($search) {
+                // Buscar exacto por número de orden
+                $q->where('number', 'ilike', "%{$search}%")
+                    // O buscar exacto por el nombre del cliente relacionado
+                    ->orWhereHas('customer', function ($q2) use ($search) {
+                        $q2->where('name', 'ilike', "%{$search}%");
+                    });
+            });
+        }
+        /*   DB::listen(function ($query) {
+            dump([
+                'sql' => $query->sql,
+                'bindings' => $query->bindings,
+                'time' => $query->time,
+            ]);
+        });  */
+        //}
+        //dd($request->perPage);
+        $orders = $query->latest()->paginate(
+            $request->perPage,['*'],
+            'page',
+             $request->page 
+        ); //->get();
 
         return response()->json($orders);
     }
@@ -51,22 +88,22 @@ class OrderController extends Controller
     public function store(Request $request)
     {
 
-        $data = $request->validate([
-            'customer_id'    => 'required|exists:customers,id',
-            'items'          => 'required|string',
-            'payment_types_id'     => 'required|exists:payment_types,id',
-            'entry_id'       => 'required|exists:entries,id',
-            'pickup'       =>  'nullable|boolean',
-            'paid'           => 'nullable|boolean',
+        //dd($request['id']!=null);
+        $rules = [
+            'id' => 'nullable|numeric',
+            'customer_id' => 'required|exists:customers,id',
+            'items' => 'required|string',
+            'payment_types_id' => 'required|exists:payment_types,id',
+            'entry_id' => 'required|exists:entries,id',
+            'pickup' => 'nullable|boolean',
+            'paid' => 'nullable|boolean',
             'delivery_date' => 'nullable|date|required_if:scheduled,true',
-            'delivery_hour'  => 'nullable|date_format:H:i|required_if:scheduled,true',
-
-            'order_id'        => 'nullable|exists:orders,id',
-            'observations'   => 'nullable|string',
-            'details'       => 'nullable|string',
-
-            'customerChanged' => "required|boolean",
-            'phone' => 'nullable|string', //required
+            'delivery_hour' => 'nullable|date_format:H:i|required_if:scheduled,true',
+            'order_id' => 'nullable|exists:orders,id',
+            'observations' => 'nullable|string',
+            'details' => 'nullable|string',
+            'customerChanged' => 'required|boolean',
+            'phone' => 'nullable|string',
             'cep' => 'required|string',
             'street' => 'required|string',
             'number' => 'required|string',
@@ -74,11 +111,24 @@ class OrderController extends Controller
             'complement' => 'nullable|string',
             'city' => 'required|string',
             'state' => 'required|string',
-        ]);
+        ];
 
+        if ($request->filled('id')) {
+            unset(
+                $rules['phone'],
+                $rules['cep'],
+                $rules['street'],
+                $rules['number'],
+                $rules['neighborhood'],
+                $rules['complement'],
+                $rules['city'],
+                $rules['state']
+            );
+        }
+        $data = $request->validate($rules);
 
+        // dd($data);
         $order = DB::transaction(function () use ($data) {
-
 
             //Dados do cliente
             if (($data['customerChanged']) == true) {
@@ -125,8 +175,9 @@ class OrderController extends Controller
                 'delivery_hour'         => $data['delivery_hour'] ?? null,
             ];
 
-            if (!empty($data['order_id'])) {
-                $order = Order::findOrFail($data['order_id']);
+            if (!empty($data['id'])) {
+                //  Log::info('order');
+                $order = Order::findOrFail($data['id']);
                 $order->update($orderData);
             } else {
                 $order = Order::create($orderData);
@@ -135,7 +186,7 @@ class OrderController extends Controller
             //  Detalhes
             if (!empty($data['details'])) {
                 $order->detail()->updateOrCreate(
-                    [],
+                    ['order_id' => $order->id], //data.detail.id
                     [
                         'description' => $data['details'],
                     ]
@@ -145,8 +196,9 @@ class OrderController extends Controller
 
             return $order;
         });
-        $order->load(['detail','entry','payment','customer','customer.observation','customer.addresses','customer.phones']);      
-      
+
+        $order->load(['detail', 'entry', 'payment', 'customer', 'customer.observation', 'customer.addresses', 'customer.phones']);
+
         return response()->json($order, 201);
     }
 

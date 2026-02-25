@@ -1,9 +1,15 @@
 import { useEffect, useState, useId, useRef } from "react";
-import { Dialog, DialogTitle, DialogContent } from "@mui/material";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  TablePagination,
+} from "@mui/material";
 import { LANG } from "../constants/languages.js";
 import { Import } from "./Import.jsx";
 import { OrderTable } from "./OrderTable.jsx";
 import CreateOrder from "./CreateOrder.jsx";
+import { useNotification } from "../context/NotificationContext.jsx"; //msg de info
 
 export function OrderList() {
   const [opciones, setOpciones] = useState([]); // Estado para los datos de la DB
@@ -13,6 +19,14 @@ export function OrderList() {
   const [entries, setEntries] = useState([]);
   const [isLoading, setIsLoading] = useState(false); //cargar order
   const [open, setOpen] = useState(false); //modal de criar pedidos
+  const [search, setSearch] = useState("");
+  const { showNotification } = useNotification();
+
+  //Paginado
+  const [currentPage, setCurrentPage] = useState(1);
+  // const [lastPage, setLastPage] = useState(1); //
+  const [perPage, setPerPage] = useState(20);
+  const [total, setTotal] = useState(0);
 
   const statusId = useId();
   const fetchStatus = () => {
@@ -44,27 +58,62 @@ export function OrderList() {
   };
   */
 
-  const getOrders = () => {
+  //Busqueda
+  useEffect(() => {
+    const delayDebounce = setTimeout(() => {
+      // Si está vacío → trae todo
+      if (search.trim() === "") {
+        getOrders(perPage, currentPage);
+        return;
+      }
+
+      // Si tiene 3 o más caracteres → buscar
+      if (search.trim().length >= 3) {
+        getOrders(perPage, currentPage);
+      }
+    }, 800);
+
+    return () => clearTimeout(delayDebounce);
+  }, [search]);
+
+  const getOrders = (search, perPage, currentPage) => {
     setIsLoading(true);
-    fetch("http://localhost:8000/api/orders")
+    fetch(
+      `http://localhost:8000/api/orders?search=${encodeURIComponent(search ?? "")}&perPage=${perPage}&page=${currentPage}`,
+    )
       .then((response) => response.json())
       .then((data) => {
-        setOrders(data); // Guardamos os dados das ordenes
+        setOrders(data.data); // Guardamos os dados das ordenes
+        setCurrentPage(data.current_page);
+        setTotal(data.total);
         setIsLoading(false);
+        console.log(data);
       })
+
       .catch((error) => {
         console.error("Error al traer pedidos:", error); //todo: manejar error
         setIsLoading(false);
       });
   };
 
+  useEffect(() => {
+    const delayDebounce = setTimeout(() => {
+      getOrders(search, perPage, currentPage);
+    }, 400);
+
+    return () => clearTimeout(delayDebounce);
+  }, [search]);
+
   const getPaymets = () => {
     fetch("http://localhost:8000/api/payments")
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Error al traer los tipos de entrada");
+        }
+        return response.json();
+      })
       .then((data) => {
-        // console.log(data);
         setPaymentTypes(data);
-        // setPaymentTypes(Array.isArray(data) ? data : []);
       })
       .catch((error) => {
         console.error("Error al traer los tipos de pagamentos:", error); //TODO: manejar error
@@ -73,12 +122,18 @@ export function OrderList() {
 
   const getEntries = () => {
     fetch("http://localhost:8000/api/entries")
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Error al traer los tipos de entrada");
+        }
+        return response.json();
+      })
       .then((data) => {
         setEntries(data);
       })
       .catch((error) => {
-        console.error("Error al traer los tipos de entrada:", error); //TODO: manejar error
+        showNotification("Erro ao criar pedido", { error });
+        console.error("Error al traer los tipos de entrada:", error);
       });
   };
 
@@ -86,7 +141,7 @@ export function OrderList() {
     const inicializarSistema = async () => {
       // Ejecuta ambas peticiones al mismo tiempo
       await Promise.all([
-        getOrders(),
+        // getOrders(perPage,currentPage),
         getPaymets(),
         getEntries(),
         fetchStatus(),
@@ -107,8 +162,10 @@ export function OrderList() {
           type="text"
           className="search-input"
           placeholder={LANG.ORDERSLIST.SEARCH}
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
         />
-        <select
+        {/*  <select
           className="filter-select"
           id={statusId}
           value={selectedEstatus}
@@ -120,7 +177,7 @@ export function OrderList() {
               {opcion.name}
             </option>
           ))}
-        </select>
+        </select> */}
         <button
           id="btn-add-listato"
           className="btn-add"
@@ -152,7 +209,7 @@ export function OrderList() {
             style={{
               paddingTop: "24px", // espacio arriba del primer input
               paddingBottom: "24px",
-              maxHeight: "400px",            
+              maxHeight: "400px",
             }}
             disableGutters
             sx={{
@@ -177,6 +234,26 @@ export function OrderList() {
         paymentTypes={paymentTypes}
         entries={entries}
         isLoading={isLoading}
+        currentPage={currentPage}
+        perPage={perPage}
+      />
+
+      <TablePagination
+        component="div"
+        labelRowsPerPage="Quantidade por página: "
+        count={total}
+        page={currentPage - 1} // MUI base 0
+        rowsPerPage={perPage}
+        onPageChange={(event, currentPage) =>
+          getOrders(search, perPage, currentPage + 1)
+        }
+        onRowsPerPageChange={(event) => {
+          const newPerPage = parseInt(event.target.value, 10);
+          setPerPage(newPerPage);
+          setCurrentPage(1);
+          getOrders(search, newPerPage, 1);
+        }}
+        rowsPerPageOptions={[5, 10, 20, 50]}
       />
     </main>
   );

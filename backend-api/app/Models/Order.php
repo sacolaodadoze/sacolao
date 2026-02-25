@@ -4,22 +4,42 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-
+use Carbon\Carbon;
 
 class Order extends Model
 {
-    protected $guarded = []; // Asignación masiva permitida
-    
+    // Asignación masiva permitida
+    protected $guarded = [];
+
+    // Convierte el JSON a Array automáticamente
     protected $casts = [
-        'items' => 'array', // Esto convierte el JSON a Array automáticamente
+        'items' => 'array',
     ];
+
+    /**
+     * Criar o numero do pedido     
+     *
+     * @return void
+     */
+
+  protected static function booted()
+{
+    static::creating(function ($order) {
+
+        $today = Carbon::now()->format('dm');
+
+        $countToday = self::whereDate('created_at', Carbon::today())->count();
+
+        $order->number = "#{$today}_" . ($countToday + 1);
+    });
+}
 
     /**
      * Obtener el cliente al que pertenece el pedido.
      */
     public function customer(): BelongsTo
     {
-        return $this->belongsTo(Customer::class);
+        return $this->belongsTo(Customer::class, 'customer_id');
     }
 
     /**
@@ -44,10 +64,10 @@ class Order extends Model
      */
     public function payment(): BelongsTo
     {
-        return $this->belongsTo(PaymentType::class,'payment_types_id');
+        return $this->belongsTo(PaymentType::class, 'payment_types_id');
     }
 
-  
+
     /**
      * Obtener el detalle asociado con el pedido.
      */

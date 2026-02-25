@@ -80,7 +80,7 @@ class CustomerController extends Controller
         $customers = Customer::search($search)
             ->with([
                 'addresses:id,customer_id,street,number,city,state,cep,complement,neighborhood,is_primary',
-                'phones:id,customer_id,number,type',
+                'phones:id,customer_id,number,type','observation'
             ])
             ->select('*')
             // ->limit(10)
