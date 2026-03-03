@@ -56,5 +56,5 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
     Route::post('/orders', [OrderController::class, 'store']);
 
     //Del order
-    Route::delete('/orders/{id}', [OrderController::class, 'destroy']);
+    Route::delete('/orders/{id}', [OrderController::class, 'destroy'])->middleware('admin');;
 });
