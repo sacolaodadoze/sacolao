@@ -9,32 +9,52 @@ use App\Http\Controllers\ImportController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentTypeController;
 use App\Http\Controllers\StatusController;
+use App\Http\Controllers\Auth\LoginController;
 
-Route::get('/user', function (Request $request) {
+
+/* Route::get('/user', function (Request $request) {
     return $request->user();
-})->middleware('auth:sanctum');
+})->middleware('auth:sanctum'); */
+
+/* Route::get('/sanctum/csrf-cookie', function() {
+    return response()->json(['message' => 'CSRF cookie set']);
+}); */
 
 
-//Obter todos os estados
-Route::get('/status', [StatusController::class, 'index']); 
+// Forzamos el middleware 'web' para que Laravel lea las cookies y el CSRF
+Route::middleware('web')->group(function () {
+    Route::post('/login', [LoginController::class, 'login']);
+});
 
-//Importar CSV
-Route::post('/import', [App\Http\Controllers\ImportController::class, 'store']);
+// Estas se quedan igual
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/logout', [LoginController::class, 'logout']);
+    Route::get('/user', [LoginController::class, 'user']);
+});
 
-//Obter orders
-Route::get('/orders', [OrderController::class, 'index']);
+Route::middleware(['web', 'auth:sanctum'])->group(function () {
 
-//Obter tipo pagamento
-Route::get('/payments',[PaymentTypeController::class,'index']);
+    //Obter todos os estados
+    Route::get('/status', [StatusController::class, 'index']);
 
-//Obter entrada
-Route::get('/entries',[EntryController::class,'index']);
+    //Importar CSV
+    Route::post('/import', [App\Http\Controllers\ImportController::class, 'store']);
 
-//Obter clientes
-Route::get('/customers/search', [CustomerController::class, 'search']);
+    //Obter orders
+    Route::get('/orders', [OrderController::class, 'index']);
 
-//Add order
-Route::post('/orders', [OrderController::class, 'store']);
+    //Obter tipo pagamento
+    Route::get('/payments', [PaymentTypeController::class, 'index']);
 
-//Del order
-Route::delete('/orders/{id}', [OrderController::class, 'destroy']);
+    //Obter entradas
+    Route::get('/entries', [EntryController::class, 'index']);
+
+    //Obter clientes
+    Route::get('/customers/search', [CustomerController::class, 'search']);
+
+    //Add order
+    Route::post('/orders', [OrderController::class, 'store']);
+
+    //Del order
+    Route::delete('/orders/{id}', [OrderController::class, 'destroy']);
+});

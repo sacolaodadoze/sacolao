@@ -88,7 +88,8 @@ class OrderController extends Controller
      */
     public function store(Request $request)
     {
-        //dd($request['id']!=null);
+        $user = $request->user();
+
         $rules = [
             'id' => 'nullable|numeric',
             'customer_id' => 'required|exists:customers,id',
@@ -128,8 +129,7 @@ class OrderController extends Controller
         }
         $data = $request->validate($rules);
 
-        // dd($data);
-        $order = DB::transaction(function () use ($data) {
+        $order = DB::transaction(function () use ($data, $user) {
 
             //Dados do cliente
             if (($data['customerChanged']) == true) {
@@ -164,6 +164,7 @@ class OrderController extends Controller
                 );
             }
 
+
             //Dados do pedido
             $orderData = [
                 'customer_id'      => $data['customer_id'],
@@ -175,6 +176,7 @@ class OrderController extends Controller
                 'taxa'         => $data['taxa'],
                 'delivery_date'         => $data['delivery_date'] ?? null,
                 'delivery_hour'         => $data['delivery_hour'] ?? null,
+                'created_by' => $user->name
             ];
 
             if (!empty($data['id'])) {

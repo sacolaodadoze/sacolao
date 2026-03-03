@@ -5,6 +5,7 @@ import { useNotification } from "../context/NotificationContext.jsx"; //msg de i
 import { LANG } from "../constants/languages.js";
 import { schema } from "../../forms/orderEditForm.js";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { apiFetch } from "../../api/apiFetch.js";
 import {
   Button,
   DialogActions,
@@ -100,12 +101,13 @@ export default function EditOrder({
     data.customerChanged = false; //obrigatorio, significa que não tem mudanças o cliente
 
     try {
-      const res = await fetch("http://localhost:8000/api/orders", {
+      const res = await apiFetch("/api/orders", {
         method: "POST",
+        /* credentials: 'include', //cookies
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
-        },
+        }, */
         body: JSON.stringify(data),
       });
 
@@ -116,15 +118,8 @@ export default function EditOrder({
         throw new Error(result.message || "Erro ao criar pedido");
       }
 
-      showNotification("Pedido mudado com sucesso", "success");
+      showNotification("Pedido alterado com sucesso", "success");
 
-      //TODO ver si imprimo aqui
-      // Activamos impresión
-      // setShouldPrint(true);
-
-      //GetOrder();
-
-      console.log("Guardado:", result);
       setOpen(false);
     } catch (error) {
       console.log("ERRORES:", error);

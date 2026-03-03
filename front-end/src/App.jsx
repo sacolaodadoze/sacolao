@@ -1,43 +1,70 @@
-import React from "react";
-import { Outlet ,Route,Routes,BrowserRouter} from "react-router-dom";
+import React, { useContext } from "react";
+import { Navigate } from "react-router-dom";
+import { Outlet, Route, Routes, BrowserRouter } from "react-router-dom";
 import "./App.css";
-
 
 import { Header } from "./assets/components/Header.jsx";
 import { OrderList } from "./assets/components/OrderList.jsx";
 import { OrderManage } from "./assets/components/OrderManage.jsx";
+import { LoginForm } from "./assets/components/LoginForm.jsx";
+import { AuthContext } from "./assets/context/AuthContext.jsx";
 
+console.log("app");
+
+//Componente para proteger rutas
+const PrivateRoute = ({ children }) => {
+  const { user, loading } = useContext(AuthContext); 
+  if (loading) {
+    return <div>Cargando sesión...</div>; // O un spinner/esqueleto
+  }
+
+  return user ? children : <Navigate to="/login" replace />;
+};
 
 // 1. Creamos un Layout para que el Header no se recargue nunca
 const Layout = () => {
   return (
     <>
-      <Header />
+      <Header/>
       <main style={{ padding: "20px" }}>
         <Outlet /> {/* Aquí es donde React Router "inyecta" la página actual */}
       </main>
     </>
   );
 };
-// 2. Componente de ejemplo para el Home
-const Home = () => <h1 style={{marginTop:"50px"}}>Bem-vindo ao Sistema de Gestão de Pedidos</h1>;
+
+//Componente de ejemplo para el Home
+const Home = () => {
+  const { user, loading } = useContext(AuthContext);
+  return (
+    <h1 className="page-title">
+      Bem-vindo ao Sistema de Gestão de Pedidos
+    </h1>
+  );
+};
 
 function App() {
-  return (
-    <BrowserRouter>
+  return (   
       <Routes>
         {/* Usamos el Layout como padre de todas las rutas internas */}
-        <Route path="/" element={<Layout />}>
-           <Route index element={<Home />} /> 
-          <Route path="orders" element={<OrderList />} />
+        <Route
+          path="/"
+          element={
+            <PrivateRoute>
+              <Layout />
+            </PrivateRoute>
+          }
+        >
+          <Route index element={<Home />} />
+          <Route path="orders" element={<OrderList/>} />
           <Route path="order/manage" element={<OrderManage />} />
           {/* Aquí puedes añadir más rutas: path="clientes", path="perfil", etc. */}
         </Route>
 
         {/* Ruta para el Login (sin Header) */}
-        <Route path="/login" element={<div>Página de Login</div>} />
-      </Routes>
-    </BrowserRouter>
+        <Route path="/login" element={<LoginForm />} />
+      </Routes>  
+ 
   );
 }
 

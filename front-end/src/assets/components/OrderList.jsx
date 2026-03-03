@@ -1,4 +1,4 @@
-import { useEffect, useState, useId, useRef } from "react";
+import { useEffect, useState, useId, useRef,useContext } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -10,6 +10,8 @@ import { Import } from "./Import.jsx";
 import { OrderTable } from "./OrderTable.jsx";
 import CreateOrder from "./CreateOrder.jsx";
 import { useNotification } from "../context/NotificationContext.jsx"; //msg de info
+import { apiFetch } from "../../api/apiFetch.js";
+import { AuthContext } from "../context/AuthContext";
 
 export function OrderList() {
   const [opciones, setOpciones] = useState([]); // Estado para los datos de la DB
@@ -21,6 +23,7 @@ export function OrderList() {
   const [open, setOpen] = useState(false); //modal de criar pedidos
   const [search, setSearch] = useState("");
   const { showNotification } = useNotification();
+   const { user } = useContext(AuthContext);
 
   //Paginado
   const [currentPage, setCurrentPage] = useState(1);
@@ -30,7 +33,7 @@ export function OrderList() {
 
   const statusId = useId();
   const fetchStatus = () => {
-    fetch("http://localhost:8000/api/status")
+    apiFetch("/api/status")
       .then((response) => response.json())
       .then((data) => {
         setOpciones(data); // Guardamos os dados dos estados
@@ -58,54 +61,56 @@ export function OrderList() {
   };
   */
 
-  const getOrders = async (search = "", perPage = 20, currentPage = 1) => {
+  const getOrders = async (search = "", perPage = 20, currentPage = 1) => {  
     setIsLoading(true);
     try {
-     const response= await fetch(
-        `http://localhost:8000/api/orders?search=${encodeURIComponent(search ?? "")}&perPage=${perPage}&page=${currentPage}`,
+      const response = await apiFetch(
+        `/api/orders?search=${encodeURIComponent(search ?? "")}&perPage=${perPage}&page=${currentPage}`,
       );
-     
+
       if (!response.ok) {
-        throw new Error("Error al traer las órdenes"); // lanza error si status no es 2xx
+        throw new Error(LANG.ORDERSLIST.ERROROREDR); // lanza error si status no es 200
       }
-     
+
       const data = await response.json();
       setOrders(data.data); // Guardamos os dados das ordenes
       setCurrentPage(data.current_page);
-      setTotal(data.total);     
+      setTotal(data.total);
 
       if (data.data.length === 0) {
         showNotification(LANG.ORDERSLIST.NOSHOW, "warning");
       }
-    } catch (error) {     
-      showNotification(error.message ||LANG.ORDERSLIST.ERROROREDR , "error");
-    
+    } catch (error) {
+      showNotification(error.message || LANG.ORDERSLIST.ERROROREDR, "error");
     } finally {
       setIsLoading(false);
     }
   };
 
   const getPaymets = () => {
-    fetch("http://localhost:8000/api/payments")
+    apiFetch("/api/payments")
       .then((response) => {
         if (!response.ok) {
-          throw new Error();
+          throw new Error(ANG.ORDERSLIST.ERRORPAYMENTS);
         }
         return response.json();
       })
       .then((data) => {
         setPaymentTypes(data);
       })
-      .catch((error) => {       
-         showNotification(error.message || LANG.ORDERSLIST.ERRORPAYMENTS, "error");
+      .catch((error) => {
+        showNotification(
+          error.message || LANG.ORDERSLIST.ERRORPAYMENTS,
+          "error",
+        );
       });
   };
 
   const getEntries = () => {
-    fetch("http://localhost:8000/api/entries")
+    apiFetch("/api/entries")
       .then((response) => {
         if (!response.ok) {
-          throw new Error();
+          throw new Error(LANG.ORDERSLIST.ERRORENTRIES);
         }
         return response.json();
       })
@@ -113,22 +118,26 @@ export function OrderList() {
         setEntries(data);
       })
       .catch((error) => {
-       showNotification(error.message || LANG.ORDERSLIST.ERRORENTRIES, "error");       
+        showNotification(
+          error.message || LANG.ORDERSLIST.ERRORENTRIES,
+          "error",
+        );
       });
   };
 
   useEffect(() => {
+      if (!user) return; // solo si hay usuario logueado
     const inicializarSistema = async () => {
       // Ejecuta ambas peticiones al mismo tiempo
       await Promise.all([
         getOrders(search, perPage, currentPage),
         getPaymets(),
         getEntries(),
-        fetchStatus(),
-      ]);      
+        // fetchStatus(),
+      ]);
     };
     inicializarSistema();
-  }, []);
+  }, [user]);
 
   //Busqueda
   useEffect(() => {
@@ -137,7 +146,6 @@ export function OrderList() {
         getOrders(search, perPage, currentPage);
       }
     }, 500);
-
     return () => clearTimeout(delayDebounce);
   }, [search, perPage, currentPage]);
 
@@ -158,7 +166,11 @@ export function OrderList() {
 
         <div
           className="search-wrapper"
-          style={{ position: "relative", width: "86%", paddingRight: "30px" }}
+          // style={{ position: "relative", width: "86%", paddingRight: "30px" }}
+          style={{
+            position: "relative",
+            width: "100%", // ocupa todo el ancho del contenedor
+          }}
         >
           <input
             type="text"
@@ -166,32 +178,31 @@ export function OrderList() {
             placeholder={LANG.ORDERSLIST.SEARCH}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            style={{ width: "100%" }}
+            style={{
+              width: "100%",
+              paddingRight: "30px", // espacio para la X
+            }}
           />
-          {/* TODO ver como coloco la x de cerrar  */}
-          {/*  {search && (
+          
+          {search && (
             <button
               onClick={() => setSearch("")}
               style={{
                 position: "absolute",
-               // right: "0px",
-                left:"0px",
-                top: "50%",
+                right: "8px", // pegado al borde derecho
+                top: "50%", // centrado vertical
                 transform: "translateY(-50%)",
                 border: "none",
                 background: "transparent",
                 cursor: "pointer",
                 fontSize: "16px",
-                width: "100%", // ocupa todo el ancho del div
-              //  paddingLeft: "900px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
+                lineHeight: "1",
+                padding: "0",
               }}
             >
               ✕
             </button>
-          )} */}
+          )}
         </div>
 
         {/*  <select
@@ -239,7 +250,7 @@ export function OrderList() {
               paddingTop: "24px", // espacio arriba del primer input
               paddingBottom: "24px",
               maxHeight: "400px",
-            }}          
+            }}
             sx={{
               width: "100%",
               boxSizing: "border-box",
@@ -272,13 +283,11 @@ export function OrderList() {
         count={total}
         page={currentPage - 1} // MUI base 0
         rowsPerPage={perPage}
-        onPageChange={
-          (event, currentPage) => setCurrentPage(currentPage + 1)         
-        }
+        onPageChange={(event, currentPage) => setCurrentPage(currentPage + 1)}
         onRowsPerPageChange={(event) => {
           const newPerPage = parseInt(event.target.value, 10);
           setPerPage(newPerPage);
-          setCurrentPage(1);          
+          setCurrentPage(1);
         }}
         rowsPerPageOptions={[5, 10, 20, 50]}
       />

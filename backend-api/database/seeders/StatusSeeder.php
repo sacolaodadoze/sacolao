@@ -21,6 +21,7 @@ class StatusSeeder extends Seeder
             ['id' => 5, 'name' => 'Em routa'],
             ['id' => 6, 'name' => 'Fechado'],
             ['id' => 7, 'name' => 'Pendente'],
+            ['id' => 8, 'name' => 'Cancelado'],
         ];
         foreach ($status as $st) {
             Status::create($st);

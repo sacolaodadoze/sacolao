@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { string, z } from "zod";
 import { LANG } from "../assets/constants/languages";
 export const schema = z
   .object({
@@ -27,6 +27,8 @@ export const schema = z
     pickup: z.boolean().optional(),
     paid: z.boolean().optional(),
     taxa:z.boolean().optional(),
+    //created_by:z.string(),
+    
   }) //Validar fecha y hr si esta agendado
   .superRefine((data, ctx) => {
     if (data.scheduled) {

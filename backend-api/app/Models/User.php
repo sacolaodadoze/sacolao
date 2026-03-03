@@ -33,6 +33,16 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+/**
+ * Loggin 
+ *
+ * @return void
+ */
+    public function username()
+    {
+        return 'name';
+    }
+
     /**
      * Get the attributes that should be cast.
      *
@@ -45,4 +55,19 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isUser()
+    {
+        return $this->role === 'user';
+    }
+
+    /* public function isRepartidor()
+    {
+        return $this->role === 'repartidor';
+    } */
 }

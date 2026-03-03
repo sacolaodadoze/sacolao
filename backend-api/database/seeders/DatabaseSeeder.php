@@ -18,17 +18,19 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        //  User::factory(2)->create();
 
-       /*  User::factory()->create([
+        /*  User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]); */
+        
+        $this->call(UserSeeder::class);
 
-         $this->call(StatusSeeder::class);
+        $this->call(StatusSeeder::class);
         $this->call(EntrySeeder::class);
-        $this->call(PaymentTypeSeeder::class);  
+        $this->call(PaymentTypeSeeder::class);
 
-       // OrderFactory::new()->count(50)->create();
+        // OrderFactory::new()->count(50)->create();
     }
 }

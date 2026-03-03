@@ -1,11 +1,12 @@
 import Swal from "sweetalert2";
 import { LANG } from "../constants/languages.js";
 import { useNotification } from "../context/NotificationContext.jsx"; //msg de info
+import { apiFetch } from "../../api/apiFetch.js";
 
 export function useDeleteOrder() {
   const { showNotification } = useNotification();
 
-  const deleteOrder = async (order_id, orders) => {    
+  const deleteOrder = async (order_id, orders) => {
     const result = await Swal.fire({
       title: LANG.DELETEORDER.TITLE,
       text: LANG.DELETEORDER.TEXT,
@@ -15,14 +16,11 @@ export function useDeleteOrder() {
       cancelButtonText: LANG.GLOBAL.CANCEL,
     });
 
-    if (result.isConfirmed) {  
+    if (result.isConfirmed) {
       try {
-        const res = await fetch(
-          `http://localhost:8000/api/orders/${order_id}`,
-          {
-            method: "DELETE",
-            headers: { "Content-Type": "application/json" },
-          },
+        const res = await apiFetch( `/api/orders/${order_id}`,{
+            method: "DELETE"         
+          }
         );
 
         if (res.ok) {

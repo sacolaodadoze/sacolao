@@ -48,7 +48,7 @@ export function OrderTable({
       <table>
         <thead>
           <tr>
-            <th style={{ width: "95px" }}></th>
+         {/*    <th style={{ width: "95px" }}></th> */}
             <th style={{ width: "127px" }}>No.</th>
             <th style={{ width: "130px" }}>Data</th>
             <th>Cliente</th>
@@ -64,10 +64,10 @@ export function OrderTable({
             orders.map((order, index) => (
               <tr key={order.id}>
                 {/* 1. Numeradas */}
-                <td className="col-number">
+               {/*  <td className="col-number">
                   {" "}
                   {(currentPage - 1) * perPage + index + 1}{" "}
-                </td>
+                </td> */}
 
                 {/* 2. Number */}
                 <td>{order.number}</td>

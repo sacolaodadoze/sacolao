@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef,useContext } from "react";
 import { LANG } from "../constants/languages.js";
 import { useForm, Controller } from "react-hook-form";
+import { apiFetch } from "../../api/apiFetch.js";
 import {
   Button,
   DialogActions,
@@ -17,12 +18,14 @@ import {
   Box,
   CircularProgress,
 } from "@mui/material";
+
 import { SectionCollapse } from "./SectionCollapse.jsx";
 import { useNotification } from "../context/NotificationContext.jsx"; //msg de info
 
 import { zodResolver } from "@hookform/resolvers/zod"; //validaciones
 import { schema } from "../../forms/orderForm.js";
 import PrintOrder from "./PrintOrder.jsx";
+import { AuthContext } from "../context/AuthContext.jsx";
 
 export default function CreateOrder({
   open,
@@ -30,7 +33,7 @@ export default function CreateOrder({
   getOrders,
   paymentTypes,
   entries,
-}) {   
+}) {
   const {
     control,
     handleSubmit,
@@ -49,7 +52,7 @@ export default function CreateOrder({
       items: "",
       pickup: false,
       paid: false,
-      taxa:false,
+      taxa: false,
       payment_types_id: "",
       entry_id: "",
       observations: "",
@@ -86,6 +89,8 @@ export default function CreateOrder({
   const [order, setOrder] = useState([]);
   const [shouldPrint, setShouldPrint] = useState(false); //print
 
+  const { user } = useContext(AuthContext);
+
   //Pesquisar cliente
   const searchCustomer = async (texto) => {
     if (!texto || texto.length < 2) {
@@ -94,9 +99,7 @@ export default function CreateOrder({
     }
     setLoading(true);
     try {
-      const res = await fetch(
-        `http://localhost:8000/api/customers/search?search=${texto}`,
-      );
+      const res = await apiFetch( `/api/customers/search?search=${texto}`);
 
       const data = await res.json();
       setCustomer(data);
@@ -137,15 +140,18 @@ export default function CreateOrder({
       normalize(current.state) !== normalize(original.addresses?.[0]?.state);
 
     data.customerChanged = customerChanged;
-    console.log(customerChanged);
+    data.created_by= user.name;
+    //console.log(customerChanged);
 
     try {
-      const res = await fetch("http://localhost:8000/api/orders", {
-        method: "POST",
-        headers: {
+      await apiFetch("/sanctum/csrf-cookie");
+      
+      const res = await apiFetch("/api/orders", {
+        method: "POST",       
+       /*  headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
-        },
+        }, */
         body: JSON.stringify(data),
       });
 
@@ -159,7 +165,7 @@ export default function CreateOrder({
       getOrders();
       setcustomerSelected(null);
       console.log("Guardado:", result);
-      setOpen(false);
+      setOpen(false);      
     } catch (error) {
       console.log("ERRORES:", errors);
       showNotification("Erro ao criar pedido", { error });
@@ -198,7 +204,7 @@ export default function CreateOrder({
               control={control}
               render={({ field }) => (
                 <Autocomplete
-                  options={customer}                 
+                  options={customer}
                   loading={loading}
                   value={customerSelected}
                   getOptionLabel={(option) => option?.name || ""}
@@ -266,7 +272,7 @@ export default function CreateOrder({
                         ...params.InputProps,
                         endAdornment: (
                           <>
-                            {loading && <CircularProgress size={30} />}                       
+                            {loading && <CircularProgress size={30} />}
                             {params.InputProps.endAdornment}
                           </>
                         ),
@@ -316,7 +322,7 @@ export default function CreateOrder({
                     ["cep", LANG.CREATEORDER.CEP],
                     ["street", LANG.CREATEORDER.STREET],
                     ["number", LANG.CREATEORDER.NUMBER],
-                    ["complement",LANG.CREATEORDER.COMPLEMENT],
+                    ["complement", LANG.CREATEORDER.COMPLEMENT],
                     ["neighborhood", LANG.CREATEORDER.NEIGHBORHOOD],
                     ["city", LANG.CREATEORDER.CITY],
                     ["state", LANG.CREATEORDER.STATE],
@@ -333,7 +339,7 @@ export default function CreateOrder({
                             {...field}
                             label={label}
                             fullWidth
-                            value={field.value || "-"}                           
+                            value={field.value || "-"}
                             onChange={(e) => {
                               const value =
                                 e.target.value === "-" ? "" : e.target.value;
@@ -586,7 +592,7 @@ export default function CreateOrder({
                     )}
                   />
                 </Box>
-                  {/* Taxa entrega */}
+                {/* Taxa entrega */}
                 <Box sx={{ width: { xs: "100%", md: "calc(33% - 8px)" } }}>
                   <Controller
                     name="taxa"

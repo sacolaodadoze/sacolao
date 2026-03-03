@@ -30,9 +30,9 @@ export const LANG = {
     SAVE_BUTTON: "Salvar Alterações",
     PERPAGE:"Quantidade por página: ",
     NOSHOW:"Sim dados a mostrar",
-    ERROROREDR:"Error al traer pedidos",
-    ERRORENTRIES:"Error al traer los tipos de entrada",
-    ERRORPAYMENTS:"Error al traer los tipos de pagamentos",
+    ERROROREDR:"Error ao  trazer os pedidos",
+    ERRORENTRIES:"Error ao trazer os tipos de entradas",
+    ERRORPAYMENTS:"Error ao trazer os tipos de pagamento",
   },
   CREATEORDER: {
     DOCUMENT:"CPF/CNPJ",
