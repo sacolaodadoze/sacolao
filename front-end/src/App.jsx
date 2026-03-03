@@ -1,4 +1,5 @@
-import React, { useContext } from "react";
+import React from "react";
+import { useContext } from "react";
 import { Navigate } from "react-router-dom";
 import { Outlet, Route, Routes, BrowserRouter } from "react-router-dom";
 import "./App.css";
@@ -9,7 +10,6 @@ import { OrderManage } from "./assets/components/OrderManage.jsx";
 import { LoginForm } from "./assets/components/LoginForm.jsx";
 import { AuthContext } from "./assets/context/AuthContext.jsx";
 
-console.log("app");
 
 //Componente para proteger rutas
 const PrivateRoute = ({ children }) => {

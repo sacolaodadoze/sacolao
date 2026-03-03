@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { showAlert } from "../helpers/alertHelper.js";
+import { apiFetch } from "../../api/apiFetch.js";
 
-export const useImport = () => { 
+export const useImport = () => {
   const [isProcessing, setIsProcessing] = useState(false);
 
   const importArchive = async (e, selectedImport, fileInputRef) => {
@@ -22,13 +23,17 @@ export const useImport = () => {
     const formData = new FormData();
     formData.append("archivo_csv", archivo);
     formData.append("id_import", selectedImport);
+    console.log(formData)
 
     try {
-      const response = await fetch("http://localhost:8000/api/import", {
+      const response = await apiFetch("/api/import", {
         method: "POST",
         body: formData,
-        headers: { Accept: "application/json" },
       });
+      if (!response.ok) {
+        console.info(response.message)
+        throw new Error("error"); // lanza error si status no es 200
+      }
 
       //Si todo sale bien, actualizamos la alerta a "Éxito"
       showAlert({
@@ -49,20 +54,19 @@ export const useImport = () => {
           "Ocorreu um erro ao processar o arquivo.",
         confirmButtonText: "OK",
         allowOutsideClick: true,
-        autoClose: true,
+        autoClose: false,
         confirmButtonColor: "#d33",
       });
     } finally {
       setIsProcessing(false); // Finalizamos estado de carga
       // Reset para permitir seleccionar el mismo archivo después
       e.target.value = "";
-      fileInputRef.current.value = ""; // Limpa a referencia física do input file         
+      fileInputRef.current.value = ""; // Limpa a referencia física do input file
     }
   };
   return {
-    importArchive
+    importArchive,
     /* isProcessing,
     setIsProcessing, */
-      
   };
 };

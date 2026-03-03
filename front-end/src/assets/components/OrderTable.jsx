@@ -38,7 +38,7 @@ export function OrderTable({
   };
 
   const handlePrint = async (order) => {
-    console.log(order);
+   // console.log(order);
     setOrderSelected(order);
     setShouldPrint(true);
   };

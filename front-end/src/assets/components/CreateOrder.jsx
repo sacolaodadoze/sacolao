@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef,useContext } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import { LANG } from "../constants/languages.js";
 import { useForm, Controller } from "react-hook-form";
 import { apiFetch } from "../../api/apiFetch.js";
@@ -99,7 +99,7 @@ export default function CreateOrder({
     }
     setLoading(true);
     try {
-      const res = await apiFetch( `/api/customers/search?search=${texto}`);
+      const res = await apiFetch(`/api/customers/search?search=${texto}`);
 
       const data = await res.json();
       setCustomer(data);
@@ -140,23 +140,19 @@ export default function CreateOrder({
       normalize(current.state) !== normalize(original.addresses?.[0]?.state);
 
     data.customerChanged = customerChanged;
-    data.created_by= user.name;
+    data.created_by = user.name;
     //console.log(customerChanged);
 
     try {
       await apiFetch("/sanctum/csrf-cookie");
-      
+
       const res = await apiFetch("/api/orders", {
-        method: "POST",       
-       /*  headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        }, */
+        method: "POST",
         body: JSON.stringify(data),
       });
 
       const result = await res.json();
-      console.log(result);
+      
       setOrder(result);
       showNotification(LANG.CREATEORDER.CREATEDSUCC, "success");
       // Activamos impresión
@@ -165,7 +161,7 @@ export default function CreateOrder({
       getOrders();
       setcustomerSelected(null);
       console.log("Guardado:", result);
-      setOpen(false);      
+      setOpen(false);
     } catch (error) {
       console.log("ERRORES:", errors);
       showNotification("Erro ao criar pedido", { error });

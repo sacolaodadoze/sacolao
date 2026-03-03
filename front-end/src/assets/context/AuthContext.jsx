@@ -1,43 +1,57 @@
-import { createContext, useState } from "react";
+import { createContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiFetch } from "../../api/apiFetch.js";
-
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-   const [loading, setLoading] = useState(false);
-   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  //validar si hay algun user logeado
+  useEffect(() => {
+    const checkAuth = async () => {
+      const res = await apiFetch("/api/user");
+
+      if (res.ok) {
+        const data = await res.json();
+        setUser(data);
+      }
+      setLoading(false);
+    };
+
+    checkAuth();
+  }, []);
 
   // login
   const loginUser = async (name, password) => {
     setLoading(true);
-  //  console.log("1. Pidiendo cookie...");
+    //  console.log("1. Pidiendo cookie...");
     await apiFetch("/sanctum/csrf-cookie"); // cookie CSRF
 
-//console.log("2. Enviando login...");
+    //console.log("2. Enviando login...");
     const loginRes = await apiFetch("/api/login", {
       method: "POST",
-      body: JSON.stringify({ name:name, password }),
+      body: JSON.stringify({ name: name, password }),
     });
-//console.log(loginRes);
+    //console.log(loginRes);
     if (!loginRes.ok) {
       const errorData = await loginRes.json();
       throw new Error(errorData.message || "Login falló");
     }
 
-//console.log("3. Login exitoso, pidiendo usuario...")
-    const userRes  = await apiFetch("/api/user");
-     if (!userRes.ok) {
+    //console.log("3. Login exitoso, pidiendo usuario...")
+    const userRes = await apiFetch("/api/user");
+    if (!userRes.ok) {
       throw new Error("No se pudo obtener el usuario");
     }
-     const loggedUser = await userRes.json();
+    const loggedUser = await userRes.json();
     setUser(loggedUser);
     setLoading(false);
 
-   // console.log("Redirigiendo a home...");
-      navigate("/", { replace: true });
+    // console.log("Redirigiendo a home...");
+    navigate("/", { replace: true });
   };
   //console.log("ok",user);
 
@@ -48,9 +62,13 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user,loading, loginUser, logoutUser }}>
-     {/*  {children} */}
-     {!loading ? children : <div className="spinner">Cargando aplicación...</div>}
+    <AuthContext.Provider value={{ user, loading, loginUser, logoutUser }}>
+      {/*  {children} */}
+      {!loading ? (
+        children
+      ) : (
+        <div className="spinner">Cargando aplicación...</div>
+      )}
     </AuthContext.Provider>
   );
 };
