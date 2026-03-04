@@ -16,7 +16,7 @@ class AdminMiddleware
     public function handle(Request $request, Closure $next): Response
     {       
         if (!$request->user() || !$request->user()->isAdmin()) {
-            return response()->json(['message' => 'No autorizado'], 403);
+            return response()->json(['message' => 'Não autorizado'], 403);
         }
         return $next($request);
     }
