@@ -164,7 +164,7 @@ export default function CreateOrder({
       setOpen(false);
     } catch (error) {
       console.log("ERRORES:", errors);
-      showNotification("Erro ao criar pedido", { error });
+      showNotification("Erro ao criar pedido", { error },"error");
       setcustomerSelected(null);
     }
   };

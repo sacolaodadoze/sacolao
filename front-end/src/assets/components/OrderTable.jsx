@@ -1,4 +1,4 @@
-import React, { use, useEffect, useId, useState } from "react";
+import React, { use, useEffect, useId, useState, useContext } from "react";
 import { TrashIcon, EditIcon, PrintIcon } from "./Icons";
 import { Tooltip } from "@mui/material";
 import { formatDate } from "../helpers/formatDate.js";
@@ -7,6 +7,9 @@ import { useDeleteOrder } from "../hooks/useDeleteOrder.jsx";
 import { useEditOrder } from "../hooks/useEditOrder.jsx";
 import EditOrder from "./EditOrder.jsx";
 import PrintOrder from "./PrintOrder.jsx";
+import {} from "../context/AuthContext.jsx";
+import { AuthContext } from "../context/AuthContext.jsx";
+import { useNotification } from "../context/NotificationContext.jsx";
 
 export function OrderTable({
   orders,
@@ -23,12 +26,17 @@ export function OrderTable({
   const [openEdit, setOpenEdit] = useState(false);
   const [orderSelected, setOrderSelected] = useState([]);
   const [shouldPrint, setShouldPrint] = useState(false);
-
-  
+  const { showNotification } = useNotification();
+  const { user, hasAnyRole } = useContext(AuthContext);
+  console.log(hasAnyRole(["admin"]));
   const handleDelete = async (order_id) => {
+    if (!hasAnyRole(["admin"])) {
+      showNotification("No tienes permiso para eliminar pedidos", "warning");
+      return;
+    }
     const success = await deleteOrder(order_id, orders);
     if (success) {
-      getOrders(); // recargar lista de pedidos
+      getOrders();
     }
   };
 
@@ -38,7 +46,7 @@ export function OrderTable({
   };
 
   const handlePrint = async (order) => {
-   // console.log(order);
+    // console.log(order);
     setOrderSelected(order);
     setShouldPrint(true);
   };
@@ -48,7 +56,7 @@ export function OrderTable({
       <table>
         <thead>
           <tr>
-         {/*    <th style={{ width: "95px" }}></th> */}
+            {/*    <th style={{ width: "95px" }}></th> */}
             <th style={{ width: "127px" }}>No.</th>
             <th style={{ width: "130px" }}>Data</th>
             <th>Cliente</th>
@@ -64,7 +72,7 @@ export function OrderTable({
             orders.map((order, index) => (
               <tr key={order.id}>
                 {/* 1. Numeradas */}
-               {/*  <td className="col-number">
+                {/*  <td className="col-number">
                   {" "}
                   {(currentPage - 1) * perPage + index + 1}{" "}
                 </td> */}
@@ -128,8 +136,9 @@ export function OrderTable({
                   </Tooltip>
                   <Tooltip title="Excluir  pedido">
                     <button
-                      className="btn-action btn-del"
                       onClick={() => handleDelete(order.id)}
+                      disabled={!hasAnyRole(["admin"])}
+                      className="btn-action btn-del"
                     >
                       <TrashIcon />
                     </button>

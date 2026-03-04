@@ -2,29 +2,19 @@ import "./Login.css";
 import { useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext.jsx";
 
+
 export function LoginForm() {
   const [user, setUser] = useState("");
   const [password, setPassword] = useState("");
-  const { loginUser } = useContext(AuthContext);
+  const { loadingLogin,loginUser } = useContext(AuthContext);
+
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
+    e.preventDefault();  
       await loginUser(user, password);
-      // alert("Login exitoso!")
-    } catch (err) {
-      //TODO manejar el error
-      console.error(err);
-      //alert("Login falló");
-    }
-  };
-
+  }
+       
   return (
-    /*  <form onSubmit={handleSubmit}>
-      <input type="text" placeholder="Usuario" value={user} onChange={e => setUser(e.target.value)} required />
-      <input type="password" placeholder="Contraseña" value={password} onChange={e => setPassword(e.target.value)} required />
-      <button type="submit">Login</button>
-    </form> */
     <div className="login-screen">
       <div className="login-card">
         <div className="login-header">
@@ -39,9 +29,9 @@ export function LoginForm() {
             <input
               type="text"
               id="login-user"
-             value={user}
+              value={user}
               placeholder="Ex: ana.silva"
-              onChange={e => setUser(e.target.value)}
+              onChange={(e) => setUser(e.target.value)}
               required
             />
           </div>
@@ -50,14 +40,15 @@ export function LoginForm() {
             <label htmlFor="login-password">Senha</label>
             <input
               type="password"
-              id="login-password"             
+              id="login-password"
               placeholder="Sua senha"
-              value={password} onChange={e => setPassword(e.target.value)}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               required
             />
           </div>
           {/* TODO Cuando haga el registrar user */}
-          {/*   <div className="forgot-password">
+           <div className="forgot-password">
             <button
               type="button"
               onClick={() =>
@@ -68,9 +59,9 @@ export function LoginForm() {
             >
               Esqueceu sua senha?
             </button>
-          </div> */}
+          </div>
 
-          <button type="submit" className="login-button">
+          <button type="submit" className="login-button" disabled={loadingLogin}>
             Entrar
           </button>
         </form>

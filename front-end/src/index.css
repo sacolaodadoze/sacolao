@@ -420,6 +420,16 @@ tr:hover td {
   color: white;
 }
 
+.btn-action:disabled {
+  color: #ccc;
+}
+
+.btn-action:disabled:hover {
+  cursor: not-allowed;
+  background-color: white;
+  color: grey;
+}
+
 /* .btn-edit {
   margin-bottom: 1.5px;
 } */

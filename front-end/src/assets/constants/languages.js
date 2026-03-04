@@ -1,7 +1,7 @@
 export const LANG = {
   GLOBAL: {
     CANCEL: "Cancelar",
-    CONNECTION:"Erro de conexão",
+    CONNECTION: "Erro de conexão",
   },
   HEADER: {
     SITE: "Sacolão da Doze",
@@ -19,7 +19,12 @@ export const LANG = {
     ACTIONS: "--Ações--",
     CLIENTES: "Impotar clientes",
     PRODUCTS: "Impotar produtos",
-    TOOLTSELECT:"Importar CLientes/Produtos",
+    TOOLTSELECT: "Importar CLientes/Produtos",
+  },
+  LOGGIN: {
+    ERROR: "Nome de usuário ou senha incorretos",
+    LOAD: "Carregando dados iniciais...",
+    PREPARE: "Preparando o ambiente de trabalho.", //Estamos cargando los datos necesarios. Por favor, aguarde.
   },
   ORDERSLIST: {
     TITLE: "Lista de Pedidos",
@@ -28,36 +33,36 @@ export const LANG = {
     CREATE: "Criar Pedido",
     WCREATE: " Adicionar pedido",
     SAVE_BUTTON: "Salvar Alterações",
-    PERPAGE:"Quantidade por página: ",
-    NOSHOW:"Sim dados a mostrar",
-    ERROROREDR:"Error ao  trazer os pedidos",
-    ERRORENTRIES:"Error ao trazer os tipos de entradas",
-    ERRORPAYMENTS:"Error ao trazer os tipos de pagamento",
+    PERPAGE: "Quantidade por página: ",
+    NOSHOW: "Sim dados a mostrar",
+    ERROROREDR: "Error ao  trazer os pedidos",
+    ERRORENTRIES: "Error ao trazer os tipos de entradas",
+    ERRORPAYMENTS: "Error ao trazer os tipos de pagamento",
   },
   CREATEORDER: {
-    DOCUMENT:"CPF/CNPJ",
-    NOME:"Nome",
-    TELEFONE:"Telefone",
-    CEP:"CEP",
+    DOCUMENT: "CPF/CNPJ",
+    NOME: "Nome",
+    TELEFONE: "Telefone",
+    CEP: "CEP",
     STREET: "Rua",
-    NUMBER:"Número",
-   COMPLEMENT: "Complemento",
-    REQUIRED: "Campo obrigatório",    
-    NEIGHBORHOOD:"Bairro",
-    CITY:"Cidade",
-    STATE:"Estado",
+    NUMBER: "Número",
+    COMPLEMENT: "Complemento",
+    REQUIRED: "Campo obrigatório",
+    NEIGHBORHOOD: "Bairro",
+    CITY: "Cidade",
+    STATE: "Estado",
     VALIDATION_DATE: "A data é obrigatória se estiver agendada",
     VALIDATION_HOUR: "O horário é obrigatório se estiver agendado",
-    CREATEDSUCC:"Pedido criado com sucesso",
+    CREATEDSUCC: "Pedido criado com sucesso",
   },
   DELETEORDER: {
     TITLE: "¿Deseja cancelar este pedido?",
-    TEXT:"Esta ação não pode ser desfeita",
+    TEXT: "Esta ação não pode ser desfeita",
     NOTIFICATIONS_ORDER_DELETED: "Pedido excluído com sucesso",
     ERROR: "Erro ao excluir",
-    CONFIRM:"Sím, excluir"
+    CONFIRM: "Sím, excluir",
   },
-  EDITORDER:{
-     WEDIT: "Alterar pedido",
-  }
+  EDITORDER: {
+    WEDIT: "Alterar pedido",
+  },
 };

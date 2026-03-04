@@ -62,7 +62,7 @@ function App() {
         </Route>
 
         {/* Ruta para el Login (sin Header) */}
-        <Route path="/login" element={<LoginForm />} />
+        <Route path="/login" element={<LoginForm/>} />
       </Routes>  
  
   );

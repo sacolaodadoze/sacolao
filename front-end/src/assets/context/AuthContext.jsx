@@ -1,19 +1,25 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect, use } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiFetch } from "../../api/apiFetch.js";
+import { LANG } from "../constants/languages.js";
+import { useNotification } from "../context/NotificationContext.jsx";
+import { showAlert } from "../helpers/alertHelper.js";
+import Swal from 'sweetalert2';
+import { set } from "zod";
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [processing, setProcessing] = useState(false); // para login / acciones
   const navigate = useNavigate();
+  const { showNotification } = useNotification();
 
   //validar si hay algun user logeado
   useEffect(() => {
     const checkAuth = async () => {
       const res = await apiFetch("/api/user");
-
       if (res.ok) {
         const data = await res.json();
         setUser(data);
@@ -26,32 +32,40 @@ export const AuthProvider = ({ children }) => {
 
   // login
   const loginUser = async (name, password) => {
-    setLoading(true);
-    //  console.log("1. Pidiendo cookie...");
-    await apiFetch("/sanctum/csrf-cookie"); // cookie CSRF
+    try {
+      setLoading(true);
+      setProcessing(true);
+      //  console.log("1. Pidiendo cookie...");
+      await apiFetch("/sanctum/csrf-cookie"); // cookie CSRF
 
-    //console.log("2. Enviando login...");
-    const loginRes = await apiFetch("/api/login", {
-      method: "POST",
-      body: JSON.stringify({ name: name, password }),
-    });
-    //console.log(loginRes);
-    if (!loginRes.ok) {
-      const errorData = await loginRes.json();
-      throw new Error(errorData.message || "Login falló");
+      //console.log("2. Enviando login...");
+      const loginRes = await apiFetch("/api/login", {
+        method: "POST",
+        body: JSON.stringify({ name: name, password }),
+      });
+      //console.log(loginRes);
+      if (!loginRes.ok) {
+        const errorData = await loginRes.json();
+        throw new Error(errorData.message || "Login falló");
+      }
+
+      //console.log("3. Login exitoso, pidiendo usuario...")
+      const userRes = await apiFetch("/api/user");
+      if (!userRes.ok) {
+        throw new Error(LANG.LOGGIN.ERROR);
+        setLoading(false);
+      }
+      const loggedUser = await userRes.json();
+      setUser(loggedUser);
+      setLoading(false);
+      // console.log("Redirigiendo a home...");
+      navigate("/", { replace: true });
+    } catch (error) {
+      showNotification(error.message || LANG.LOGGIN.ERROR, "error"); // tu sistema de notificaciones
+    } finally {
+      setLoading(false);
+      setProcessing(false);
     }
-
-    //console.log("3. Login exitoso, pidiendo usuario...")
-    const userRes = await apiFetch("/api/user");
-    if (!userRes.ok) {
-      throw new Error("No se pudo obtener el usuario");
-    }
-    const loggedUser = await userRes.json();
-    setUser(loggedUser);
-    setLoading(false);
-
-    // console.log("Redirigiendo a home...");
-    navigate("/", { replace: true });
   };
   //console.log("ok",user);
 
@@ -61,14 +75,36 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
+  //Saber si el usuario tiene alguno de los roles necesarios para acceder a cierta función o ruta
+  const hasAnyRole = (roles) => {
+    return roles.includes(user?.role);
+  };
+
+  useEffect(() => {
+    if (processing ) {
+      showAlert({
+        title:LANG.LOGGIN.LOAD,
+        text:LANG.LOGGIN.PREPARE,
+        allowOutsideClick: false,
+        showConfirmButton: false, // Ocultamos el botón
+        showLoading: true, // Activa el spinner
+       
+      });
+    }  else {
+      Swal.close()
+    } 
+  }, [processing]);
+
   return (
-    <AuthContext.Provider value={{ user, loading, loginUser, logoutUser }}>
-      {/*  {children} */}
-      {!loading ? (
-        children
-      ) : (
-        <div className="spinner">Cargando aplicación...</div>
-      )}
+    <AuthContext.Provider
+      value={{ user, loading, loginUser, logoutUser, hasAnyRole }}
+    >
+      {children}
+      {/* {
+        !loading ? children : handleCargando()
+        //<div className="spinner">Cargando aplicación...</div>
+        // Mostrar Alerta de Procesamiento
+      } */}
     </AuthContext.Provider>
   );
 };

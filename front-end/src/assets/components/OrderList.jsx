@@ -91,7 +91,7 @@ export function OrderList() {
     apiFetch("/api/payments")
       .then((response) => {
         if (!response.ok) {
-          throw new Error(ANG.ORDERSLIST.ERRORPAYMENTS);
+          throw new Error(LANG.ORDERSLIST.ERRORPAYMENTS);
         }
         return response.json();
       })
