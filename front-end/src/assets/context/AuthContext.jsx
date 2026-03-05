@@ -4,7 +4,7 @@ import { apiFetch } from "../../api/apiFetch.js";
 import { LANG } from "../constants/languages.js";
 import { useNotification } from "../context/NotificationContext.jsx";
 import { showAlert } from "../helpers/alertHelper.js";
-import Swal from 'sweetalert2';
+import Swal from "sweetalert2";
 import { set } from "zod";
 
 export const AuthContext = createContext();
@@ -67,7 +67,6 @@ export const AuthProvider = ({ children }) => {
       setProcessing(false);
     }
   };
-  //console.log("ok",user);
 
   // logout
   const logoutUser = async () => {
@@ -80,19 +79,19 @@ export const AuthProvider = ({ children }) => {
     return roles.includes(user?.role);
   };
 
+//Carga inicial
   useEffect(() => {
-    if (processing ) {
+    if (processing) {
       showAlert({
-        title:LANG.LOGGIN.LOAD,
-        text:LANG.LOGGIN.PREPARE,
+        title: LANG.LOGGIN.LOAD,
+        text: LANG.LOGGIN.PREPARE,
         allowOutsideClick: false,
-        showConfirmButton: false, // Ocultamos el botón
-        showLoading: true, // Activa el spinner
-       
+        showConfirmButton: false, 
+        showLoading: true, 
       });
-    }  else {
-      Swal.close()
-    } 
+    } else {
+      Swal.close();
+    }
   }, [processing]);
 
   return (
@@ -100,11 +99,6 @@ export const AuthProvider = ({ children }) => {
       value={{ user, loading, loginUser, logoutUser, hasAnyRole }}
     >
       {children}
-      {/* {
-        !loading ? children : handleCargando()
-        //<div className="spinner">Cargando aplicación...</div>
-        // Mostrar Alerta de Procesamiento
-      } */}
     </AuthContext.Provider>
   );
 };

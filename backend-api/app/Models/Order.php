@@ -83,4 +83,12 @@ class Order extends Model
     {
         return $this->hasOne(Delay::class);
     }
+
+      /**
+     * Obtener la taxa asociada al  pedido.
+     */
+    public function rate(): BelongsTo
+    {
+        return $this->belongsTo(Rate::class, 'rate_id');
+    }
 }

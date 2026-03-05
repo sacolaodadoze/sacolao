@@ -25,6 +25,13 @@ export const LANG = {
     ERROR: "Nome de usuário ou senha incorretos",
     LOAD: "Carregando dados iniciais...",
     PREPARE: "Preparando o ambiente de trabalho.", //Estamos cargando los datos necesarios. Por favor, aguarde.
+    ALERT: "Para redefinir sua senha, por favor, contate o administrador.",
+    FORGOT: "Esqueceu sua senha?",
+    USER: "Usuário",
+    PASSWORD: "Senha",
+    PLPASSWORD: "Sua senha",
+    WLOGGIN: "Gestão de Pedidos",
+    CREDENTIAL: "Por favor, entre com suas credenciais",
   },
   ORDERSLIST: {
     TITLE: "Lista de Pedidos",
@@ -38,6 +45,7 @@ export const LANG = {
     ERROROREDR: "Error ao  trazer os pedidos",
     ERRORENTRIES: "Error ao trazer os tipos de entradas",
     ERRORPAYMENTS: "Error ao trazer os tipos de pagamento",
+    ERRORRATES: "Error ao trazer os tipos de taxas",
   },
   CREATEORDER: {
     DOCUMENT: "CPF/CNPJ",

@@ -98,7 +98,7 @@ class OrderController extends Controller
             'entry_id' => 'required|exists:entries,id',
             'pickup' => 'nullable|boolean',
             'paid' => 'nullable|boolean',
-            'taxa' => 'nullable|boolean',
+            'rate_id' => 'nullable||exists:rates,id',
             'delivery_date' => 'nullable|date|required_if:scheduled,true',
             'delivery_hour' => 'nullable|date_format:H:i|required_if:scheduled,true',
             'order_id' => 'nullable|exists:orders,id',
@@ -173,10 +173,10 @@ class OrderController extends Controller
                 'items'            => $data['items'],
                 'paid'             => $data['paid'],
                 'pickup'         => $data['pickup'],
-                'taxa'         => $data['taxa'],
+                'rate_id'         => $data['rate_id'] ?? null,
                 'delivery_date'         => $data['delivery_date'] ?? null,
                 'delivery_hour'         => $data['delivery_hour'] ?? null,
-                'created_by' => $user->name
+                'created_by' => $user->id
             ];
 
             if (!empty($data['id'])) {
@@ -201,7 +201,7 @@ class OrderController extends Controller
             return $order;
         });
 
-        $order->load(['detail', 'entry', 'payment', 'customer', 'customer.observation', 'customer.addresses', 'customer.phones']);
+        $order->load(['detail', 'entry', 'payment','rates','users', 'customer', 'customer.observation', 'customer.addresses', 'customer.phones']);
 
         return response()->json($order, 201);
     }

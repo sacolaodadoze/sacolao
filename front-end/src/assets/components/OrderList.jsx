@@ -12,6 +12,7 @@ import CreateOrder from "./CreateOrder.jsx";
 import { useNotification } from "../context/NotificationContext.jsx"; //msg de info
 import { apiFetch } from "../../api/apiFetch.js";
 import { AuthContext } from "../context/AuthContext";
+import { set } from "zod";
 
 export function OrderList() {
   const [opciones, setOpciones] = useState([]); // Estado para los datos de la DB
@@ -19,6 +20,7 @@ export function OrderList() {
   const [orders, setOrders] = useState([]); // Estado para los pedidos
   const [paymentTypes, setPaymentTypes] = useState([]);
   const [entries, setEntries] = useState([]);
+   const [rates, setRates] = useState([]);
   const [isLoading, setIsLoading] = useState(false); //cargar order
   const [open, setOpen] = useState(false); //modal de criar pedidos
   const [search, setSearch] = useState("");
@@ -124,7 +126,25 @@ export function OrderList() {
         );
       });
   };
-
+  const getRates = () => {
+    apiFetch("/api/rates")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(LANG.ORDERSLIST.ERRORRATES);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setRates(data);
+      })
+      .catch((error) => {
+        showNotification(
+          error.message || LANG.ORDERSLIST.ERRORRATES,
+          "error",
+        );
+      });
+  };
+ 
   useEffect(() => {
       if (!user) return; // solo si hay usuario logueado
     const inicializarSistema = async () => {
@@ -133,6 +153,7 @@ export function OrderList() {
         getOrders(search, perPage, currentPage),
         getPaymets(),
         getEntries(),
+        getRates(),
         // fetchStatus(),
       ]);
     };
@@ -263,6 +284,7 @@ export function OrderList() {
               getOrders={getOrders}
               paymentTypes={paymentTypes}
               entries={entries}
+              rates={rates}
             />
           </DialogContent>
         </Dialog>
@@ -271,7 +293,7 @@ export function OrderList() {
         orders={orders}
         getOrders={getOrders}
         paymentTypes={paymentTypes}
-        entries={entries}
+        entries={entries}       
         isLoading={isLoading}
         currentPage={currentPage}
         perPage={perPage}

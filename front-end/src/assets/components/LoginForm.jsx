@@ -1,31 +1,30 @@
 import "./Login.css";
 import { useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext.jsx";
-
+import { LANG } from "../constants/languages.js";
 
 export function LoginForm() {
   const [user, setUser] = useState("");
   const [password, setPassword] = useState("");
-  const { loadingLogin,loginUser } = useContext(AuthContext);
-
+  const { loadingLogin, loginUser } = useContext(AuthContext);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();  
-      await loginUser(user, password);
-  }
-       
+    e.preventDefault();
+    await loginUser(user, password);
+  };
+
   return (
     <div className="login-screen">
       <div className="login-card">
         <div className="login-header">
           <i className="fas fa-seedling login-icon"></i>
-          <h2>Gestão de Pedidos</h2>
-          <p>Por favor, entre com suas credenciais</p>
+          <h2>{LANG.LOGGIN.WLOGGIN}</h2>
+          <p>{ LANG.LOGGIN.CREDENTIAL}</p>
         </div>
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="login-user">Usuário</label>
+            <label htmlFor="login-user">{LANG.LOGGIN.USER}</label>
             <input
               type="text"
               id="login-user"
@@ -37,31 +36,28 @@ export function LoginForm() {
           </div>
 
           <div className="form-group">
-            <label htmlFor="login-password">Senha</label>
+            <label htmlFor="login-password">{LANG.LOGGIN.PASSWORD}</label>
             <input
               type="password"
               id="login-password"
-              placeholder="Sua senha"
+              placeholder={LANG.LOGGIN.PLPASSWORD}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
           </div>
           {/* TODO Cuando haga el registrar user */}
-           <div className="forgot-password">
-            <button
-              type="button"
-              onClick={() =>
-                alert(
-                  "Para redefinir sua senha, por favor, contate o administrador.",
-                )
-              }
-            >
-              Esqueceu sua senha?
+          <div className="forgot-password">
+            <button type="button" onClick={() => alert(LANG.LOGGIN.ALERT)}>
+              {LANG.LOGGIN.FORGOT}
             </button>
           </div>
 
-          <button type="submit" className="login-button" disabled={loadingLogin}>
+          <button
+            type="submit"
+            className="login-button"
+            disabled={loadingLogin}
+          >
             Entrar
           </button>
         </form>

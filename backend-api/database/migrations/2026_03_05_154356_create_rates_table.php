@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -11,10 +12,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('orders', function (Blueprint $table) {
-            $table->boolean('taxa')->nullable()->after('paid');
-            $table->string('created_by')->nullable();
+        Schema::create('rates', function (Blueprint $table) {
+            $table->id();
+            $table->decimal('rate');
+            $table->timestamps();
         });
+         DB::statement("COMMENT ON TABLE rates IS 'Nomenclador de taxas,estático para os pedidos'");
     }
 
     /**
@@ -22,9 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('orders', function (Blueprint $table) {
-            $table->dropColumn('taxa');
-            $table->dropColumn('created_by');
-        });
+        Schema::dropIfExists('rates');
     }
 };

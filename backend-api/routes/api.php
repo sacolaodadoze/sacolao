@@ -10,6 +10,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentTypeController;
 use App\Http\Controllers\StatusController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\RateController;
 
 
 /* Route::get('/user', function (Request $request) {
@@ -48,6 +49,9 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
 
     //Obter entradas
     Route::get('/entries', [EntryController::class, 'index']);
+
+       //Obter taxas
+    Route::get('/rates', [RateController::class, 'index']);
 
     //Obter clientes
     Route::get('/customers/search', [CustomerController::class, 'search']);

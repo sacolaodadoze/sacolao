@@ -26,7 +26,7 @@ export const schema = z
     delivery_hour: z.string().optional(),
     pickup: z.boolean().optional(),
     paid: z.boolean().optional(),
-    taxa:z.boolean().optional(),
+    rate_id:z.coerce.number().optional(),
     //created_by:z.string(),
     
   }) //Validar fecha y hr si esta agendado

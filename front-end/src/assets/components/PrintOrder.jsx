@@ -106,7 +106,7 @@ const PrintOrder = ({ order, shouldPrint, onPrinted }) => {
 
               ${order.customer.observation ? `<div><strong>OBS:</strong>${order.customer.observation.content}</div>` : ""}  
             
-               ${order.taxa?  `<div><strong>Taxa de entrega</strong></div>` :""}             
+               ${order.rates?  `<div><strong>Taxa de entrega</strong>${order.rates.rate}%</div>` :""}             
               
 
              <div class="divider"></div>

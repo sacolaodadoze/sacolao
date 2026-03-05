@@ -33,7 +33,9 @@ export default function CreateOrder({
   getOrders,
   paymentTypes,
   entries,
+  rates,
 }) {
+  console.log;
   const {
     control,
     handleSubmit,
@@ -52,7 +54,7 @@ export default function CreateOrder({
       items: "",
       pickup: false,
       paid: false,
-      taxa: false,
+
       payment_types_id: "",
       entry_id: "",
       observations: "",
@@ -60,6 +62,7 @@ export default function CreateOrder({
       scheduled: false,
       delivery_date: "",
       delivery_hour: "",
+      rate_id: "",
       phone: "",
       //Endereço
       cep: "",
@@ -152,7 +155,7 @@ export default function CreateOrder({
       });
 
       const result = await res.json();
-      
+
       setOrder(result);
       showNotification(LANG.CREATEORDER.CREATEDSUCC, "success");
       // Activamos impresión
@@ -164,7 +167,7 @@ export default function CreateOrder({
       setOpen(false);
     } catch (error) {
       console.log("ERRORES:", errors);
-      showNotification("Erro ao criar pedido", { error },"error");
+      showNotification("Erro ao criar pedido", { error }, "error");
       setcustomerSelected(null);
     }
   };
@@ -591,16 +594,27 @@ export default function CreateOrder({
                 {/* Taxa entrega */}
                 <Box sx={{ width: { xs: "100%", md: "calc(33% - 8px)" } }}>
                   <Controller
-                    name="taxa"
+                    name="rate_id"
                     control={control}
+                    defaultValue=""
                     render={({ field }) => (
-                      <FormControlLabel
-                        control={
-                          <Checkbox {...field} checked={field.value || false} />
-                        }
-                        label="Taxa de entrega "
-                        sx={{ width: "100%" }}
-                      />
+                      <FormControl sx={{ width: "100%" }}>
+                        <InputLabel id="taxa-label">Taxa de entrega</InputLabel>
+
+                        <Select
+                          {...field}
+                          label="Taxa de entrega"
+                          labelId="taxa-label"
+                          value={field.value ?? ""}
+                          onChange={(e) => field.onChange(e.target.value)}
+                        >
+                          {rates.map((rate) => (
+                            <MenuItem key={rate.id} value={rate.id}>
+                              {rate.rate}%
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
                     )}
                   />
                 </Box>

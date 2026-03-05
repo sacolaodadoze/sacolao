@@ -5,14 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Entry extends Model
+class Rate extends Model
 {
-    protected $guarded = []; 
-   /**
-    * Entrada do pedido
-    *
-    * @return HasMany
-    */
+    protected $guarded = [];
+    /**
+     * Taxa do pedido
+     *
+     * @return HasMany
+     */
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class);

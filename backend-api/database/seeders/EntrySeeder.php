@@ -16,8 +16,7 @@ class EntrySeeder extends Seeder
          $entries = [
             ['id' => 1, 'name' => 'Whatsapp'],
             ['id' => 2, 'name' => 'Telefone'],
-            ['id' => 3, 'name' => 'Cardápio
-'],
+            ['id' => 3, 'name' => 'Cardápio'],
           
         ];
         foreach ($entries as $entry) {
