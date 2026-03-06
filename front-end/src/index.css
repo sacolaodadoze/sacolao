@@ -109,6 +109,7 @@ body {
   padding: 0.6rem 1.5rem;
   border-radius: var(--radius);
   text-decoration: none;
+  text-align: center;
   font-weight: 500;
   transition: var(--transition);
   border: none;

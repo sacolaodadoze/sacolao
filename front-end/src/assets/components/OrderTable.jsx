@@ -10,6 +10,7 @@ import PrintOrder from "./PrintOrder.jsx";
 import {} from "../context/AuthContext.jsx";
 import { AuthContext } from "../context/AuthContext.jsx";
 import { useNotification } from "../context/NotificationContext.jsx";
+import { LANG } from "../constants/languages.js";
 
 export function OrderTable({
   orders,
@@ -29,10 +30,10 @@ export function OrderTable({
   const [shouldPrint, setShouldPrint] = useState(false);
   const { showNotification } = useNotification();
   const { user, hasAnyRole } = useContext(AuthContext);
-  console.log(hasAnyRole(["admin"]));
+
   const handleDelete = async (order_id) => {
     if (!hasAnyRole(["admin"])) {
-      showNotification("No tienes permiso para eliminar pedidos", "warning");
+      showNotification(LANG.DELETEORDER.UNAUTHORIZED, "warning");
       return;
     }
     const success = await deleteOrder(order_id, orders);
@@ -47,7 +48,6 @@ export function OrderTable({
   };
 
   const handlePrint = async (order) => {
-    // console.log(order);
     setOrderSelected(order);
     setShouldPrint(true);
   };

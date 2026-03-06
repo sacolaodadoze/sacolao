@@ -106,8 +106,7 @@ export default function CreateOrder({
 
       const data = await res.json();
       setCustomer(data);
-    } catch (error) {
-      console.error(error);
+    } catch (error) {     
     } finally {
       setLoading(false);
     }

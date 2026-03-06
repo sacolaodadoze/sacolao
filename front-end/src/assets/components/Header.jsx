@@ -4,7 +4,7 @@ import { NavLink } from "react-router-dom";
 import { Import } from "./Import.jsx";
 import React, { useContext } from "react";
 import { AuthContext } from "../context/AuthContext.jsx";
-
+import UserMenu from "./UserMenu.jsx";
 
 export function Header() {
   const { user, logoutUser } = useContext(AuthContext);
@@ -18,6 +18,7 @@ export function Header() {
       console.error("Error al hacer logout:", error);
     }
   }; */
+
   return (
     <>
       <header className="main-header">
@@ -37,10 +38,12 @@ export function Header() {
             {LANG.HEADER.LOGGIN}
           </a> */}
 
-            <button className="btn-login" onClick={logoutUser}>
-              {user.name}
-              :Cerrar sesión
-            </button>
+            {/* <button className="btn-login" onClick={logoutUser}>
+              <UserIcon/> {user.name} <br />
+              Cerrar sesión
+            </button> */}
+
+            <UserMenu />
           </div>
         )}
       </header>
@@ -67,7 +70,12 @@ export function Header() {
           >
             {LANG.NAV.VUUPT}
           </NavLink>
-          <NavLink to="/cardapio" className="nav-link">
+          <NavLink
+            to="https://cardapio.wifire.me/sacolaodadoze?utm_source=INSTAGRAM#"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="nav-link"
+          >
             {LANG.NAV.CARDAPIO}
           </NavLink>
         </div>

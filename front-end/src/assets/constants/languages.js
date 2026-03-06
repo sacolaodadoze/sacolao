@@ -80,6 +80,7 @@ export const LANG = {
     TITLE: "¿Deseja cancelar este pedido?",
     TEXT: "Esta ação não pode ser desfeita",
     NOTIFICATIONS_ORDER_DELETED: "Pedido excluído com sucesso",
+    UNAUTHORIZED: "Você não tem permissão para excluir pedidos",
     ERROR: "Erro ao excluir",
     CONFIRM: "Sím, excluir",
   },

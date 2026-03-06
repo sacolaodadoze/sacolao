@@ -243,14 +243,13 @@ class OrderController extends Controller
         $order = Order::find($id);
 
         if (!$order) {
-            return response()->json(['message' => 'Pedido no encontrado'], 404);
+            return response()->json(['message' => 'Pedido não encontrado'], 404);
         }
-
         try {
             $order->delete();
-            return response()->json(['message' => 'Pedido eliminado correctamente'], 200);
+            return response()->json(['message' => 'OK'], 200);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Error al eliminar el pedido'], 500);
+            return response()->json(['message' => 'Erro ao excluir pedido'], 500);
         }
     }
 }

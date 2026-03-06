@@ -276,7 +276,7 @@ export default function EditOrder({
                   display: "grid",
                   gridTemplateColumns: {
                     xs: "1fr",
-                    md: "1fr 1fr 1fr",
+                    md: "0.5fr 1fr 1fr",
                   },
                   gap: 2,
                   alignItems: "center",
@@ -352,7 +352,7 @@ export default function EditOrder({
                 }}
               >
                 {/* Recogida */}
-                <Box sx={{ width: { xs: "100%", md: "calc(33% - 8px)" } }}>
+                <Box sx={{ width: { xs: "100%", md: "calc(24% - 8px)" } }}>
                   <Controller
                     name="pickup"
                     control={control}
@@ -368,26 +368,8 @@ export default function EditOrder({
                     )}
                   />
                 </Box>
-
-                {/* Pago */}
-                <Box sx={{ width: { xs: "100%", md: "calc(32% - 8px)" } }}>
-                  <Controller
-                    name="paid"
-                    control={control}
-                    defaultValue={order.paid}
-                    render={({ field }) => (
-                      <FormControlLabel
-                        control={
-                          <Checkbox {...field} checked={field.value || false} />
-                        }
-                        label={LANG.CREATEORDER.PAID}
-                        sx={{ width: "100%" }}
-                      />
-                    )}
-                  />
-                </Box>
                 {/* Taxa entrega */}
-                <Box sx={{ width: { xs: "100%", md: "calc(33% - 8px)" } }}>
+                <Box sx={{ width: { xs: "100%", md: "calc(37% - 8px)" } }}>
                   <Controller
                     name="rate_id"
                     control={control}
@@ -410,6 +392,24 @@ export default function EditOrder({
                           ))}
                         </Select>
                       </FormControl>
+                    )}
+                  />
+                </Box>
+
+                {/* Pago */}
+                <Box sx={{ width: { xs: "100%", md: "calc(32% - 8px)" } }}>
+                  <Controller
+                    name="paid"
+                    control={control}
+                    defaultValue={order.paid}
+                    render={({ field }) => (
+                      <FormControlLabel
+                        control={
+                          <Checkbox {...field} checked={field.value || false} />
+                        }
+                        label={LANG.CREATEORDER.PAID}
+                        sx={{ width: "100%" }}
+                      />
                     )}
                   />
                 </Box>
