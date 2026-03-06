@@ -33,6 +33,7 @@ export default function EditOrder({
   getOrders,
   paymentTypes,
   entries,
+  rates,
 }) {
   const { showNotification } = useNotification();
   const [orders, setOrders] = useState([]); //update la order actuaçizada si recargar toda la tabla
@@ -62,7 +63,7 @@ export default function EditOrder({
       delivery_hour: "",
       pickup: false,
       paid: false,
-      taxa: false,
+      rate_id: "",
     },
   });
   const horaFormateada = order.delivery_hour?.substring(0, 5);
@@ -82,7 +83,7 @@ export default function EditOrder({
         delivery_hour: horaFormateada || "",
         pickup: order.pickup,
         paid: order.paid,
-        taxa: order.taxa,
+        rate_id: order.rate_id || "",
       });
     }
   }, [order, reset]);
@@ -103,11 +104,6 @@ export default function EditOrder({
     try {
       const res = await apiFetch("/api/orders", {
         method: "POST",
-        /* credentials: 'include', //cookies
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        }, */
         body: JSON.stringify(data),
       });
 
@@ -115,15 +111,14 @@ export default function EditOrder({
       getOrders();
 
       if (!res.ok) {
-        throw new Error(result.message || "Erro ao criar pedido");
+        throw new Error(result.message || "Erro ao alterar o pedido");
       }
 
       showNotification("Pedido alterado com sucesso", "success");
 
       setOpen(false);
     } catch (error) {
-      console.log("ERRORES:", error);
-      showNotification(error.message || "Erro ao criar pedido", "error");
+      showNotification(error.message || "Erro ao alterar o pedido", "error");
     }
   };
 
@@ -163,7 +158,7 @@ export default function EditOrder({
                   render={({ field }) => (
                     <TextField
                       {...field}
-                      label="Itens do pedido"
+                      label={LANG.CREATEORDER.ITEMS}
                       multiline
                       rows={4}
                       fullWidth
@@ -189,13 +184,13 @@ export default function EditOrder({
                     render={({ field }) => (
                       <FormControl sx={{ width: "100%" }}>
                         <InputLabel id="payment-label">
-                          Forma de Pagamento
+                          {LANG.CREATEORDER.PAYMENT}
                         </InputLabel>
 
                         <Select
                           {...field}
                           labelId="payment-label"
-                          label="Forma de Pagamento"
+                          label={LANG.CREATEORDER.PAYMENT}
                           value={field.value ?? ""}
                           onChange={(e) => field.onChange(e.target.value)}
                           error={!!errors?.payment_types_id}
@@ -219,13 +214,13 @@ export default function EditOrder({
                     render={({ field }) => (
                       <FormControl sx={{ width: "100%" }}>
                         <InputLabel id="entry-label">
-                          Entrada do pedido
+                          {LANG.CREATEORDER.ENTRY}
                         </InputLabel>
 
                         <Select
                           {...field}
                           labelId="entry-label"
-                          label="Entrada del pedido"
+                          label={LANG.CREATEORDER.ENTRY}
                           fullWidth
                           error={!!errors?.entry_id}
                           helperText={errors?.entry_id?.message}
@@ -250,7 +245,7 @@ export default function EditOrder({
                   render={({ field }) => (
                     <TextField
                       {...field}
-                      label="Detalhes do pedido"
+                      label={LANG.CREATEORDER.DETAIL}
                       multiline
                       rows={2}
                       fullWidth
@@ -267,7 +262,7 @@ export default function EditOrder({
                   render={({ field }) => (
                     <TextField
                       {...field}
-                      label="Observaçoes do cliente"
+                      label={LANG.CREATEORDER.OBSERVATION}
                       multiline
                       rows={2}
                       fullWidth
@@ -300,52 +295,53 @@ export default function EditOrder({
                           onChange={(e) => field.onChange(e.target.checked)}
                         />
                       }
-                      label="Agendado"
+                      label={LANG.CREATEORDER.SCHEDULED}
                     />
                   )}
                 />
 
-                {agendado && (
-                  <>
-                    {/* FECHA */}
-                    <Controller
-                      name="delivery_date"
-                      //  defaultValue={order.delivery_date || ""}
-                      control={control}
-                      render={({ field }) => (
-                        <TextField
-                          {...field}
-                          value={field.value ?? ""}
-                          label="Data de retirada"
-                          type="date"
-                          fullWidth
-                          InputLabelProps={{ shrink: true }} // para que la etiqueta no se superponga
-                          error={!!errors?.delivery_date}
-                          helperText={errors?.delivery_date?.message}
-                        />
-                      )}
-                    />
+                {/*   {agendado && ( */}
+                <>
+                  {/* FECHA */}
+                  <Controller
+                    name="delivery_date"
+                    disabled={!agendado}
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        value={field.value ?? ""}
+                        label={LANG.CREATEORDER.DELIVERYDATE}
+                        type="date"
+                        fullWidth
+                        InputLabelProps={{ shrink: true }} // para que la etiqueta no se superponga
+                        error={!!errors?.delivery_date}
+                        helperText={errors?.delivery_date?.message}
+                      />
+                    )}
+                  />
 
-                    {/* HORA */}
-                    <Controller
-                      name="delivery_hour"
-                      control={control}
-                      // defaultValue={order.delivery_hour || ""}
-                      render={({ field }) => (
-                        <TextField
-                          {...field}
-                          value={field.value ?? ""}
-                          type="time"
-                          label="Hora"
-                          fullWidth
-                          InputLabelProps={{ shrink: true }}
-                          error={!!errors?.delivery_hour}
-                          helperText={errors?.delivery_hour?.message}
-                        />
-                      )}
-                    />
-                  </>
-                )}
+                  {/* HORA */}
+                  <Controller
+                    name="delivery_hour"
+                    disabled={!agendado}
+                    control={control}
+                    // defaultValue={order.delivery_hour || ""}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        value={field.value ?? ""}
+                        type="time"
+                        label={LANG.CREATEORDER.DELIVERYHOUR}
+                        fullWidth
+                        InputLabelProps={{ shrink: true }}
+                        error={!!errors?.delivery_hour}
+                        helperText={errors?.delivery_hour?.message}
+                      />
+                    )}
+                  />
+                </>
+                {/*  )} */}
               </Box>
               <Box
                 sx={{
@@ -366,7 +362,7 @@ export default function EditOrder({
                         control={
                           <Checkbox {...field} checked={field.value || false} />
                         }
-                        label="Retirada "
+                        label={LANG.CREATEORDER.PICKUP}
                         sx={{ width: "100%" }}
                       />
                     )}
@@ -384,7 +380,7 @@ export default function EditOrder({
                         control={
                           <Checkbox {...field} checked={field.value || false} />
                         }
-                        label="Pago "
+                        label={LANG.CREATEORDER.PAID}
                         sx={{ width: "100%" }}
                       />
                     )}
@@ -393,17 +389,27 @@ export default function EditOrder({
                 {/* Taxa entrega */}
                 <Box sx={{ width: { xs: "100%", md: "calc(33% - 8px)" } }}>
                   <Controller
-                    name="taxa"
+                    name="rate_id"
                     control={control}
-                    defaultValue={order.taxa}
                     render={({ field }) => (
-                      <FormControlLabel
-                        control={
-                          <Checkbox {...field} checked={field.value || false} />
-                        }
-                        label="Taxa de pago "
-                        sx={{ width: "100%" }}
-                      />
+                      <FormControl sx={{ width: "100%" }}>
+                        <InputLabel id="rate-label">
+                          {LANG.CREATEORDER.RATE}
+                        </InputLabel>
+
+                        <Select
+                          {...field}
+                          labelId="rate-label"
+                          label={LANG.CREATEORDER.RATE}
+                          fullWidth
+                        >
+                          {rates.map((rate) => (
+                            <MenuItem key={rate.id} value={rate.id}>
+                              {rate.rate}%
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
                     )}
                   />
                 </Box>

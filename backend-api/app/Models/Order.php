@@ -91,4 +91,12 @@ class Order extends Model
     {
         return $this->belongsTo(Rate::class, 'rate_id');
     }
+
+      /**
+     * Obtener el usuario asociado al  pedido.
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
 }

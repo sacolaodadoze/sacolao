@@ -28,11 +28,13 @@ class OrderController extends Controller
             'entry:id,name',
             'status:id,name',
             'payment:id,name',
+            'rate:id,rate',
             'detail:id,order_id,description',
             'delay:id,order_id,description',
             'customer.addresses',
             'customer.phones:id,customer_id,number,type',
-            'customer.observation:id,customer_id,content'
+            'customer.observation:id,customer_id,content',
+            'user:id,name,role'
         ]);
         //  dd($query->toSql(), $query->getBindings());
         /* dd([
@@ -175,7 +177,7 @@ class OrderController extends Controller
                 'pickup'         => $data['pickup'],
                 'rate_id'         => $data['rate_id'] ?? null,
                 'delivery_date'         => $data['delivery_date'] ?? null,
-                'delivery_hour'         => $data['delivery_hour'] ?? null,
+                'delivery_hour'         => $data['delivery_hour'] ?? null,                
                 'created_by' => $user->id
             ];
 
@@ -201,7 +203,7 @@ class OrderController extends Controller
             return $order;
         });
 
-        $order->load(['detail', 'entry', 'payment','rates','users', 'customer', 'customer.observation', 'customer.addresses', 'customer.phones']);
+        $order->load(['detail', 'entry', 'payment','rate','user', 'customer', 'customer.observation', 'customer.addresses', 'customer.phones']);
 
         return response()->json($order, 201);
     }

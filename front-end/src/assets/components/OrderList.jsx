@@ -293,7 +293,8 @@ export function OrderList() {
         orders={orders}
         getOrders={getOrders}
         paymentTypes={paymentTypes}
-        entries={entries}       
+        entries={entries}      
+        rates={rates} 
         isLoading={isLoading}
         currentPage={currentPage}
         perPage={perPage}

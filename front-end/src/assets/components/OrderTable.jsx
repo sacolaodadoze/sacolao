@@ -16,6 +16,7 @@ export function OrderTable({
   getOrders,
   paymentTypes,
   entries,
+  rates,
   isLoading,
   currentPage,
   perPage,
@@ -156,6 +157,7 @@ export function OrderTable({
         getOrders={getOrders}
         paymentTypes={paymentTypes}
         entries={entries}
+        rates={rates}
       />
       {orderSelected && (
         <PrintOrder

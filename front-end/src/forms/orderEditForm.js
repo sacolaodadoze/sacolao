@@ -28,14 +28,14 @@ export const schema = z
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ["delivery_date"],
-          message: "La fecha es obligatoria si está agendado",
+           message: LANG.CREATEORDER.VALIDATION_DATE,
         });
       }
       if (!data.delivery_hour) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ["delivery_hour"],
-          message: "La hora es obligatoria si está agendado",
+            message: LANG.CREATEORDER.VALIDATION_HOUR,
         });
       }
     }

@@ -114,6 +114,12 @@ export default function CreateOrder({
   };
 
   const agendado = watch("scheduled");
+  useEffect(() => {
+      if (!agendado) {
+        setValue("delivery_date", "");
+        setValue("delivery_hour", "");
+      }
+    }, [agendado]);
 
   const normalize = (v) => {
     if (v === null || v === undefined || v === "null" || v === "-") {
@@ -357,7 +363,7 @@ export default function CreateOrder({
 
           {/* SECCIÓN: DATOS DD PEDIDO */}
           <SectionCollapse
-            title="Dados do pedido"
+            title={LANG.CREATEORDER.TITLECOLLAPSE}
             defaultOpen={true}
             open={Boolean(customerSelected?.id)} //no funciona
           >
@@ -371,7 +377,7 @@ export default function CreateOrder({
                   render={({ field }) => (
                     <TextField
                       {...field}
-                      label="Itens do pedido"
+                      label={LANG.CREATEORDER.ITEMS}
                       multiline
                       rows={4}
                       fullWidth
@@ -399,12 +405,12 @@ export default function CreateOrder({
                     render={({ field }) => (
                       <FormControl sx={{ width: "100%" }}>
                         <InputLabel id="payment-label">
-                          Forma de Pagamento
+                          {LANG.CREATEORDER.PAYMENT}
                         </InputLabel>
 
                         <Select
                           {...field}
-                          label="Forma de Pagamento"
+                          label={LANG.CREATEORDER.PAYMENT}
                           labelId="payment-label"
                           value={field.value ?? ""}
                           onChange={(e) => field.onChange(e.target.value)}
@@ -431,12 +437,12 @@ export default function CreateOrder({
                     render={({ field }) => (
                       <FormControl sx={{ width: "100%" }}>
                         <InputLabel id="entry-label">
-                          Entrada do pedido
+                          {LANG.CREATEORDER.ENTRY}
                         </InputLabel>
                         <Select
                           {...field}
                           labelId="entry-label"
-                          label="Entrada del pedido"
+                          label={LANG.CREATEORDER.ENTRY}
                           fullWidth
                         >
                           {entries.map((entry) => (
@@ -461,7 +467,7 @@ export default function CreateOrder({
                   render={({ field }) => (
                     <TextField
                       {...field}
-                      label="Detalhes do pedido"
+                      label={LANG.CREATEORDER.DETAIL}
                       multiline
                       rows={2}
                       fullWidth
@@ -477,7 +483,7 @@ export default function CreateOrder({
                   render={({ field }) => (
                     <TextField
                       {...field}
-                      label="Observações do cliente"
+                      label={LANG.CREATEORDER.OBSERVATION}
                       multiline
                       rows={2}
                       fullWidth
@@ -491,7 +497,7 @@ export default function CreateOrder({
                   display: "grid",
                   gridTemplateColumns: {
                     xs: "1fr",
-                    md: "1fr 1fr 1fr",
+                    md: "0.5fr 1fr 1fr",
                   },
                   gap: 2,
                   alignItems: "center",
@@ -500,55 +506,56 @@ export default function CreateOrder({
                 {/* AGENDADO */}
                 <Controller
                   name="scheduled"
-                  //defaultValue=false,
                   control={control}
                   render={({ field }) => (
                     <FormControlLabel
                       control={
                         <Checkbox {...field} checked={field.value || false} />
                       }
-                      label="Agendado"
+                      label={LANG.CREATEORDER.SCHEDULED}
                     />
                   )}
                 />
 
-                {agendado && (
-                  <>
-                    {/* FECHA */}
-                    <Controller
-                      name="delivery_date"
-                      control={control}
-                      render={({ field }) => (
-                        <TextField
-                          {...field}
-                          label="Data de entrega"
-                          type="date"
-                          fullWidth
-                          InputLabelProps={{ shrink: true }} // para que la etiqueta no se superponga
-                          error={!!errors?.delivery_date}
-                          helperText={errors?.delivery_date?.message}
-                        />
-                      )}
-                    />
+                {/* {agendado && ( */}
+                <>
+                  {/* FECHA */}
+                  <Controller
+                    name="delivery_date"
+                    disabled={!agendado}
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label={LANG.CREATEORDER.DELIVERYDATE}
+                        type="date"
+                        fullWidth
+                        InputLabelProps={{ shrink: true }} // para que la etiqueta no se superponga
+                        error={!!errors?.delivery_date}
+                        helperText={errors?.delivery_date?.message}
+                      />
+                    )}
+                  />
 
-                    {/* HORA */}
-                    <Controller
-                      name="delivery_hour"
-                      control={control}
-                      render={({ field }) => (
-                        <TextField
-                          {...field}
-                          type="time"
-                          label="Hora"
-                          fullWidth
-                          InputLabelProps={{ shrink: true }}
-                          error={!!errors?.delivery_hour}
-                          helperText={errors?.delivery_hour?.message}
-                        />
-                      )}
-                    />
-                  </>
-                )}
+                  {/* HORA */}
+                  <Controller
+                    name="delivery_hour"
+                    disabled={!agendado}
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        type="time"
+                        label={LANG.CREATEORDER.DELIVERYHOUR}
+                        fullWidth
+                        InputLabelProps={{ shrink: true }}
+                        error={!!errors?.delivery_hour}
+                        helperText={errors?.delivery_hour?.message}
+                      />
+                    )}
+                  />
+                </>
+                {/*    )} */}
               </Box>
               <Box
                 sx={{
@@ -559,7 +566,7 @@ export default function CreateOrder({
                 }}
               >
                 {/* Recogida */}
-                <Box sx={{ width: { xs: "100%", md: "calc(32% - 8px)" } }}>
+                <Box sx={{ width: { xs: "100%", md: "calc(25% - 8px)" } }}>
                   <Controller
                     name="pickup"
                     control={control}
@@ -568,42 +575,27 @@ export default function CreateOrder({
                         control={
                           <Checkbox {...field} checked={field.value || false} />
                         }
-                        label="Retirada "
-                        sx={{ width: "100%" }}
-                      />
-                    )}
-                  />
-                </Box>
-
-                {/* Pago */}
-                <Box sx={{ width: { xs: "100%", md: "calc(33% - 8px)" } }}>
-                  <Controller
-                    name="paid"
-                    control={control}
-                    render={({ field }) => (
-                      <FormControlLabel
-                        control={
-                          <Checkbox {...field} checked={field.value || false} />
-                        }
-                        label="Pago "
+                        label={LANG.CREATEORDER.PICKUP}
                         sx={{ width: "100%" }}
                       />
                     )}
                   />
                 </Box>
                 {/* Taxa entrega */}
-                <Box sx={{ width: { xs: "100%", md: "calc(33% - 8px)" } }}>
+                <Box sx={{ width: { xs: "100%", md: "calc(37% - 8px)" } }}>
                   <Controller
                     name="rate_id"
                     control={control}
                     defaultValue=""
                     render={({ field }) => (
                       <FormControl sx={{ width: "100%" }}>
-                        <InputLabel id="taxa-label">Taxa de entrega</InputLabel>
+                        <InputLabel id="taxa-label">
+                          {LANG.CREATEORDER.RATE}
+                        </InputLabel>
 
                         <Select
                           {...field}
-                          label="Taxa de entrega"
+                          label={LANG.CREATEORDER.RATE}
                           labelId="taxa-label"
                           value={field.value ?? ""}
                           onChange={(e) => field.onChange(e.target.value)}
@@ -615,6 +607,22 @@ export default function CreateOrder({
                           ))}
                         </Select>
                       </FormControl>
+                    )}
+                  />
+                </Box>
+                {/* Pago */}
+                <Box sx={{ width: { xs: "100%", md: "calc(33% - 8px)" } }}>
+                  <Controller
+                    name="paid"
+                    control={control}
+                    render={({ field }) => (
+                      <FormControlLabel
+                        control={
+                          <Checkbox {...field} checked={field.value || false} />
+                        }
+                        label={LANG.CREATEORDER.PAID}
+                        sx={{ width: "100%" }}
+                      />
                     )}
                   />
                 </Box>
