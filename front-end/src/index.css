@@ -76,7 +76,7 @@ body {
 }
 
 .logo-img {
-  height: 40px;
+  height: 50px;
   width: auto;
 }
 
@@ -104,14 +104,14 @@ body {
 }
 
 .btn-login {
-  background-color: var(--primary);
-  color: white;
+  background-color: var(--primary)!important;
+  color: white!important;
   padding: 0.6rem 1.5rem;
   border-radius: var(--radius);
   text-decoration: none;
   text-align: center;
   font-weight: 500;
-  transition: var(--transition);
+  transition: var(--transition)!important;
   border: none;
   cursor: pointer;
   box-shadow: 0 2px 4px rgba(21, 128, 61, 0.3);
@@ -120,7 +120,7 @@ body {
 .btn-login:hover {
   background-color: var(--primary-hover);
   transform: translateY(-1px);
-  box-shadow: 0 4px 6px rgba(21, 128, 61, 0.4);
+  box-shadow: 0 4px 6px rgba(21, 128, 61, 0.4)!important;
 }
 
 /* Sub-menu */

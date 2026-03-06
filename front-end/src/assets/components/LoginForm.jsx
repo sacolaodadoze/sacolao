@@ -2,6 +2,8 @@ import "./Login.css";
 import { useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext.jsx";
 import { LANG } from "../constants/languages.js";
+import React from "react";
+import logo from "../img/logo_loggin.png";
 
 export function LoginForm() {
   const [user, setUser] = useState("");
@@ -17,7 +19,7 @@ export function LoginForm() {
     <div className="login-screen">
       <div className="login-card">
         <div className="login-header">
-          <i className="fas fa-seedling login-icon"></i>
+           <img src={logo} alt="Logo" className="logo-img" />
           <h2>{LANG.LOGGIN.WLOGGIN}</h2>
           <p>{ LANG.LOGGIN.CREDENTIAL}</p>
         </div>
