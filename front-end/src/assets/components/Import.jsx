@@ -39,7 +39,7 @@ export function Import() {
       >
         <option value="">{LANG.IMPORT.ACTIONS}</option>
         <option value="customer">{LANG.IMPORT.CLIENTES}</option>
-        <option value="products">{LANG.IMPORT.PRODUCTS}</option>
+      {/*   <option value="products">{LANG.IMPORT.PRODUCTS}</option> */}
       </select>
       </Tooltip>
 
