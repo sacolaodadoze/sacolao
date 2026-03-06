@@ -9,16 +9,6 @@ import UserMenu from "./UserMenu.jsx";
 export function Header() {
   const { user, logoutUser } = useContext(AuthContext);
 
-  /*  const logout = async () => {
-    try {
-      await apiFetch("/logout", { method: "POST" });
-      onLogout(); // limpiar estado de usuario global
-      console.log("Logout exitoso");
-    } catch (error) {
-      console.error("Error al hacer logout:", error);
-    }
-  }; */
-
   return (
     <>
       <header className="main-header">
