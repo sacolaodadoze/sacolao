@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from "react";
 import "./PrintOrder.css";
 
 const PrintOrder = ({ order, shouldPrint,printWindowRef /* , onPrinted */ }) => {
+  console.log("order",order,"shouldPrint:", shouldPrint,printWindowRef)
  
  // const printWindowRef = useRef(null);
   const itemsFormatted =

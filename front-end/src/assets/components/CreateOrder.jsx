@@ -92,7 +92,7 @@ export default function CreateOrder({
   const [formData, setFormData] = useState({}); //saber si cambio los datos del cliente
 
   const [order, setOrder] = useState([]);
-  const [shouldPrint, setShouldPrint] = useState(false); //print
+  const [shouldPrint, setShouldPrint] = useState(0); //print
 
   const { user } = useContext(AuthContext);
   const printWindowRef = useRef(null);
@@ -164,12 +164,6 @@ export default function CreateOrder({
       });
       const result = await res.json();
 
-      printWindowRef.current = window.open(
-        "",
-        "PRINT",
-        "width=1000,height=600,top=100,left=100,toolbar=no,menubar=no",
-      );
-
       //Print
       const orderPrint = await apiFetch(`/api/orders/${result.id}`);
 
@@ -178,19 +172,37 @@ export default function CreateOrder({
         return;
       }
       const resultToPrint = await orderPrint.json();
-      console.log("To print:", resultToPrint);
+      // console.log("To print:", resultToPrint);
 
       setOrder(resultToPrint);
-      console.log("O print:", resultToPrint);
-      setShouldPrint(true); // Activamos impresión
-      showNotification(LANG.CREATEORDER.CREATEDSUCC, "success");
+      //  console.log("O print:", resultToPrint);
+      //setShouldPrint(null); // Activamos impresión
+
       setLoadingSave(false);
-      getOrders();
+      showNotification(LANG.CREATEORDER.CREATEDSUCC, "success");
+      await getOrders();
+      setOpen(false);
+      /*  printWindowRef.current = window.open(
+        "",
+        "PRINT",
+        "width=1000,height=600,top=100,left=100,toolbar=no,menubar=no",
+      );
+      setShouldPrint((prev) => prev + 1); */
+
+      setTimeout(() => {
+        printWindowRef.current = window.open(
+          "",
+          "PRINT",
+          "width=1000,height=600,top=100,left=100",
+        );
+
+        setShouldPrint((prev) => prev + 1);
+      }, 100);
+
       setcustomerSelected(null);
       console.log("Guardado:", result);
-      setOpen(false);
     } catch (error) {
-      console.log("ERRORES:", error);
+      setLoadingSave(false);
       showNotification(error.message || "Erro ao criar pedido", "error");
       setcustomerSelected(null);
     }
@@ -669,7 +681,7 @@ export default function CreateOrder({
         order={order}
         shouldPrint={shouldPrint}
         printWindowRef={printWindowRef}
-       // onPrinted={() => setShouldPrint(false)}
+        // onPrinted={() => setShouldPrint(false)}
       />
     </>
   );
