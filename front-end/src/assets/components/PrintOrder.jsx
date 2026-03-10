@@ -1,8 +1,9 @@
 import React, { useEffect, useRef } from "react";
 import "./PrintOrder.css";
 
-const PrintOrder = ({ order, shouldPrint, onPrinted }) => {
-  const printRef = useRef();
+const PrintOrder = ({ order, shouldPrint,printWindowRef /* , onPrinted */ }) => {
+ 
+ // const printWindowRef = useRef(null);
   const itemsFormatted =
     (order.items || "")
       .match(/\d+\s[^\d]+/g) // busca: número + espacio + cualquier cosa hasta el siguiente número
@@ -17,15 +18,33 @@ const PrintOrder = ({ order, shouldPrint, onPrinted }) => {
     : formatDate(order.created_at);
 
   useEffect(() => {
-    if (order && shouldPrint) {
-      // Esperamos que React haya renderizado el ticket
-      setTimeout(() => {
-        // Abrimos una nueva ventana para imprimir
-        const printWindow = window.open("", "PRINT", "height=600,width=400");
+    if (!order || shouldPrint === 0 || !printWindowRef.current) return;
+   
 
-        if (!printWindow) return; // si el navegador bloquea popup
+    // Esperamos que React haya renderizado el ticket
+    // const timer = setTimeout(() => {
+    // Abrimos una nueva ventana para imprimir
 
-        printWindow.document.write(`
+    // abrir ventana solo si no existe
+   /*  if (!printWindowRef.current || printWindowRef.current.closed) {
+      printWindowRef.current = window.open(
+        "",
+        "PRINT",
+        "width=400,height=600,top=100,left=100,toolbar=no,menubar=no",
+      );
+    } */
+    const printWindow = printWindowRef.current;
+    // const printWindow = window.open("", "PRINT", "height=600,width=400");
+
+    //const printWindow = window.open("", "_blank");
+
+    if (!printWindow){
+        console.error("No se pudo abrir la ventana de impresión. Verifica que los pop-ups no estén bloqueados.");
+         return; // si el navegador bloquea popup
+    }
+
+    printWindow.document.open();
+    printWindow.document.write(`
           <html>
             <head>
             <style>
@@ -106,7 +125,7 @@ const PrintOrder = ({ order, shouldPrint, onPrinted }) => {
 
               ${order.customer.observation ? `<div><strong>OBS:</strong>${order.customer.observation.content}</div>` : ""}  
             
-               ${order.rate?  `<div><strong>Taxa de entrega: </strong>${order.rate.rate}%</div>` :""}             
+               ${order.rate ? `<div><strong>Taxa de entrega:</strong>${order.rate.rate}%</div>` : ""}             
               
 
              <div class="divider"></div>
@@ -119,15 +138,19 @@ const PrintOrder = ({ order, shouldPrint, onPrinted }) => {
             </body>
           </html>
         `);
-        //detail.description
-        printWindow.document.close();
-        printWindow.focus();
-        printWindow.print();
-        printWindow.close();
+    //detail.description
+    printWindow.document.close();
 
-        onPrinted(); // reset estado
-      }, 200);
-    }
+  //  printWindow.onload = function () {
+      printWindow.focus();
+      printWindow.print();
+      printWindow.close();
+   // };
+
+    //onPrinted(); // reset estado
+    // }, 200);
+    // return () => clearTimeout(timer);
+    // }
   }, [order, shouldPrint]);
 
   return null; // no necesita renderizar nada en el DOM principal/*  */

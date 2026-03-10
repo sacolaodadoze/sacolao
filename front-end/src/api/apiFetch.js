@@ -15,8 +15,8 @@ export const apiFetch = async (endpoint, options = {}) => {
   let headers = {
     Accept: "application/json",
     "X-Requested-With": "XMLHttpRequest",
-   // ...options.headers,
-    ...(options.headers || {})
+    // ...options.headers,
+    ...(options.headers || {}),
   };
 
   //Print
@@ -31,11 +31,13 @@ export const apiFetch = async (endpoint, options = {}) => {
   };
 
   //return fetch(`${baseUrl}${endpoint}`, fetchOptions);
-    const response = await fetch(`${baseUrl}${endpoint}`, fetchOptions);
-    
+  const response = await fetch(`${baseUrl}${endpoint}`, fetchOptions);
+
   // sesión expirada
   if (response.status === 401) {
-    window.location.href = "/login";
+    if (window.location.pathname !== "/login") {
+      window.location.href = "/login";
+    }
     return;
   }
   return response;

@@ -95,6 +95,7 @@ export default function CreateOrder({
   const [shouldPrint, setShouldPrint] = useState(false); //print
 
   const { user } = useContext(AuthContext);
+  const printWindowRef = useRef(null);
 
   //Pesquisar cliente
   const searchCustomer = async (texto) => {
@@ -163,19 +164,27 @@ export default function CreateOrder({
       });
       const result = await res.json();
 
+      printWindowRef.current = window.open(
+        "",
+        "PRINT",
+        "width=1000,height=600,top=100,left=100,toolbar=no,menubar=no",
+      );
+
       //Print
       const orderPrint = await apiFetch(`/api/orders/${result.id}`);
+
       if (!orderPrint.ok) {
         showNotification(LANG.ORDERSLIST.ERROROREDR, "error");
         return;
       }
       const resultToPrint = await orderPrint.json();
+      console.log("To print:", resultToPrint);
 
       setOrder(resultToPrint);
+      console.log("O print:", resultToPrint);
+      setShouldPrint(true); // Activamos impresión
       showNotification(LANG.CREATEORDER.CREATEDSUCC, "success");
-      setLoadingSave(false);      
-      setShouldPrint(true);// Activamos impresión
-
+      setLoadingSave(false);
       getOrders();
       setcustomerSelected(null);
       console.log("Guardado:", result);
@@ -353,7 +362,7 @@ export default function CreateOrder({
                             {...field}
                             label={label}
                             fullWidth
-                            value={field.value || "-"}
+                            value={field.value || " "}
                             onChange={(e) => {
                               const value =
                                 e.target.value === "-" ? "" : e.target.value;
@@ -645,17 +654,22 @@ export default function CreateOrder({
           <Button
             variant="contained"
             onClick={handleSubmit(onSubmit)}
-            disabled={!isValid}
+            disabled={!isValid || loadingSave}
           >
             {/* </Button><Button type="submit" variant="contained" disabled={!isValid}> */}
-            {loadingSave ? <CircularProgress size={20} /> : "Salvar pedido"}
+            {loadingSave ? (
+              <CircularProgress size={20} color="inherit" />
+            ) : (
+              "Salvar pedido"
+            )}
           </Button>
         </DialogActions>
       </form>
       <PrintOrder
         order={order}
         shouldPrint={shouldPrint}
-        onPrinted={() => setShouldPrint(false)}
+        printWindowRef={printWindowRef}
+       // onPrinted={() => setShouldPrint(false)}
       />
     </>
   );

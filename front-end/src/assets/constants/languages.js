@@ -16,10 +16,10 @@ export const LANG = {
     CARDAPIO: "Cardapio",
   },
   IMPORT: {
-    ACTIONS: "--Importar-",
+    ACTIONS: "--Importar--",
     CLIENTES: "Clientes",
     PRODUCTS: "Produtos",
-    TOOLTSELECT: "Importar CLientes/Produtos",
+    TOOLTSELECT: "Importar Clientes/Produtos",
   },
   LOGGIN: {
     ERROR: "Nome de usuário ou senha incorretos",
