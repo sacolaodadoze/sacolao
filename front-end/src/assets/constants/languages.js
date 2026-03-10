@@ -16,7 +16,7 @@ export const LANG = {
     CARDAPIO: "Cardapio",
   },
   IMPORT: {
-    ACTIONS: "Importar",
+    ACTIONS: "--Importar-",
     CLIENTES: "Clientes",
     PRODUCTS: "Produtos",
     TOOLTSELECT: "Importar CLientes/Produtos",

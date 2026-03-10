@@ -15,7 +15,8 @@ export const apiFetch = async (endpoint, options = {}) => {
   let headers = {
     Accept: "application/json",
     "X-Requested-With": "XMLHttpRequest",
-    ...options.headers,
+   // ...options.headers,
+    ...(options.headers || {})
   };
 
   //Print
@@ -29,14 +30,16 @@ export const apiFetch = async (endpoint, options = {}) => {
     headers,
   };
 
-  // Solo añadimos el token si lo tenemos (para evitar enviar "null")
-  /*   if (token) {
-    fetchOptions.headers["X-XSRF-TOKEN"] = token;
-  } */
-
-  return fetch(`${baseUrl}${endpoint}`, fetchOptions);
+  //return fetch(`${baseUrl}${endpoint}`, fetchOptions);
+    const response = await fetch(`${baseUrl}${endpoint}`, fetchOptions);
+    
+  // sesión expirada
+  if (response.status === 401) {
+    window.location.href = "/login";
+    return;
+  }
+  return response;
 };
-
 /*  export const apiFetch = (url, options = {}) => {
   return fetch(`http://localhost:8000${url}`, {
     credentials: "include",

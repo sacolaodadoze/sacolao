@@ -100,7 +100,10 @@ export default function EditOrder({
   const onSubmit = async (data) => {
     //const payload = order?.id ? { ...data, id: order.id } : data;
     data.customerChanged = false; //obrigatorio, significa que não tem mudanças o cliente
-
+    if (data.rate_id === 0) {
+      data.rate_id = null;
+    }
+    //console.log("DADOS ENVIADOS PARA API:", data);
     try {
       const res = await apiFetch("/api/orders", {
         method: "POST",

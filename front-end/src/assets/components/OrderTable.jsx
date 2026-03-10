@@ -11,6 +11,7 @@ import {} from "../context/AuthContext.jsx";
 import { AuthContext } from "../context/AuthContext.jsx";
 import { useNotification } from "../context/NotificationContext.jsx";
 import { LANG } from "../constants/languages.js";
+import { apiFetch } from "../../api/apiFetch.js";
 
 export function OrderTable({
   orders,
@@ -42,8 +43,14 @@ export function OrderTable({
     }
   };
 
-  const handleEdit = async (order) => {
-    setOrderSelected(order);
+  const handleEdit = async (id) => {
+    const res = await apiFetch(`/api/orders/${id}`);
+    if (!res.ok) {    
+      showNotification(LANG.ORDERSLIST.ERROROREDR, "error");
+      return;
+    }
+    const data = await res.json();
+    setOrderSelected(data);  
     setOpenEdit(true);
   };
 
@@ -59,7 +66,7 @@ export function OrderTable({
           <tr>
             {/*    <th style={{ width: "95px" }}></th> */}
             <th style={{ width: "127px" }}>No.</th>
-            <th style={{ width: "130px" }}>Data</th>
+            <th style={{ width: "135px" }}>Data</th>
             <th>Cliente</th>
             <th>Endereço</th>
             {/*   <th style={{ width: "165px" }}>Estado</th> */}
@@ -121,7 +128,7 @@ export function OrderTable({
                   <Tooltip title="Alterar pedido">
                     <button
                       className="btn-action btn-edit"
-                      onClick={() => handleEdit(order)}
+                      onClick={() => handleEdit(order.id)}
                     >
                       <EditIcon />
                     </button>

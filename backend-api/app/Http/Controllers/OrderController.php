@@ -100,7 +100,7 @@ class OrderController extends Controller
             'entry_id' => 'required|exists:entries,id',
             'pickup' => 'nullable|boolean',
             'paid' => 'nullable|boolean',
-            'rate_id' => 'nullable||exists:rates,id',
+            'rate_id' => 'nullable|exists:rates,id',
             'delivery_date' => 'nullable|date|required_if:scheduled,true',
             'delivery_hour' => 'nullable|date_format:H:i|required_if:scheduled,true',
             'order_id' => 'nullable|exists:orders,id',
@@ -177,7 +177,7 @@ class OrderController extends Controller
                 'pickup'         => $data['pickup'],
                 'rate_id'         => $data['rate_id'] ?? null,
                 'delivery_date'         => $data['delivery_date'] ?? null,
-                'delivery_hour'         => $data['delivery_hour'] ?? null,                
+                'delivery_hour'         => $data['delivery_hour'] ?? null,
                 'created_by' => $user->id
             ];
 
@@ -199,11 +199,10 @@ class OrderController extends Controller
                 );
             }
 
-
             return $order;
         });
 
-        $order->load(['detail', 'entry', 'payment','rate','user', 'customer', 'customer.observation', 'customer.addresses', 'customer.phones']);
+        $order->load(['customer','customer.addresses']);
 
         return response()->json($order, 201);
     }
@@ -213,7 +212,8 @@ class OrderController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $order = Order::with(['detail', 'entry', 'payment', 'rate', 'user', 'customer', 'customer.observation', 'customer.addresses', 'customer.phones'])->find($id);
+        return response()->json($order, 201);
     }
 
     /**

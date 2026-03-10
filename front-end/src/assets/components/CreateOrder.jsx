@@ -26,6 +26,7 @@ import { zodResolver } from "@hookform/resolvers/zod"; //validaciones
 import { schema } from "../../forms/orderForm.js";
 import PrintOrder from "./PrintOrder.jsx";
 import { AuthContext } from "../context/AuthContext.jsx";
+import { set } from "zod";
 
 export default function CreateOrder({
   open,
@@ -62,7 +63,7 @@ export default function CreateOrder({
       scheduled: false,
       delivery_date: "",
       delivery_hour: "",
-      rate_id: "",
+      rate_id: null,
       phone: "",
       //Endereço
       cep: "",
@@ -83,7 +84,7 @@ export default function CreateOrder({
   const debounceRef = useRef();
   const firstInputRef = useRef(null);
   const [customerSelected, setcustomerSelected] = useState(null); //al seleccionar el cliente
-  const [loadingCustomers, setLoadingCustomers] = useState(false);
+  const [loadingSave, setLoadingSave] = useState(false);
   //Saber si cambio los datos de cliente
 
   const [initialData, setInitialData] = useState(null);
@@ -106,7 +107,7 @@ export default function CreateOrder({
 
       const data = await res.json();
       setCustomer(data);
-    } catch (error) {     
+    } catch (error) {
     } finally {
       setLoading(false);
     }
@@ -114,11 +115,11 @@ export default function CreateOrder({
 
   const agendado = watch("scheduled");
   useEffect(() => {
-      if (!agendado) {
-        setValue("delivery_date", "");
-        setValue("delivery_hour", "");
-      }
-    }, [agendado]);
+    if (!agendado) {
+      setValue("delivery_date", "");
+      setValue("delivery_hour", "");
+    }
+  }, [agendado]);
 
   const normalize = (v) => {
     if (v === null || v === undefined || v === "null" || v === "-") {
@@ -128,8 +129,8 @@ export default function CreateOrder({
   };
 
   const onSubmit = async (data) => {
-    // console.log(data);
-
+    //console.log(data);
+    setLoadingSave(true);
     const original = formData; // objeto traído del backend
     const current = data; // datos del formulario
 
@@ -148,6 +149,9 @@ export default function CreateOrder({
       normalize(current.state) !== normalize(original.addresses?.[0]?.state);
 
     data.customerChanged = customerChanged;
+    if (data.rate_id === 0) {
+      data.rate_id = null;
+    }
     data.created_by = user.name;
     //console.log(customerChanged);
 
@@ -163,6 +167,7 @@ export default function CreateOrder({
 
       setOrder(result);
       showNotification(LANG.CREATEORDER.CREATEDSUCC, "success");
+      setLoadingSave(false);
       // Activamos impresión
       setShouldPrint(true);
 
@@ -585,7 +590,6 @@ export default function CreateOrder({
                   <Controller
                     name="rate_id"
                     control={control}
-                    defaultValue=""
                     render={({ field }) => (
                       <FormControl sx={{ width: "100%" }}>
                         <InputLabel id="taxa-label">
@@ -596,8 +600,10 @@ export default function CreateOrder({
                           {...field}
                           label={LANG.CREATEORDER.RATE}
                           labelId="taxa-label"
-                          value={field.value ?? ""}
-                          onChange={(e) => field.onChange(e.target.value)}
+                          value={field.value ?? null}
+                          onChange={(e) =>
+                            field.onChange(e.target.value || null)
+                          }
                         >
                           {rates.map((rate) => (
                             <MenuItem key={rate.id} value={rate.id}>
