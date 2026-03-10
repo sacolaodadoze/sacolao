@@ -20,8 +20,7 @@ import {
   FormControl,
   InputLabel,
   Checkbox,
-  FormControlLabel,
-  Autocomplete,
+  FormControlLabel, 
   Box,
   CircularProgress,
 } from "@mui/material";
@@ -66,6 +65,7 @@ export default function EditOrder({
       rate_id: "",
     },
   });
+  const [saving, setSaving] = useState(false);
   const horaFormateada = order.delivery_hour?.substring(0, 5);
   useEffect(() => {
     if (order) {
@@ -98,13 +98,12 @@ export default function EditOrder({
   }, [agendado]);
 
   const onSubmit = async (data) => {
-    //const payload = order?.id ? { ...data, id: order.id } : data;
     data.customerChanged = false; //obrigatorio, significa que não tem mudanças o cliente
     if (data.rate_id === 0) {
       data.rate_id = null;
     }
-    //console.log("DADOS ENVIADOS PARA API:", data);
     try {
+      setSaving(true);
       const res = await apiFetch("/api/orders", {
         method: "POST",
         body: JSON.stringify(data),
@@ -116,15 +115,14 @@ export default function EditOrder({
       if (!res.ok) {
         throw new Error(result.message || "Erro ao alterar o pedido");
       }
-
+      setSaving(false);
       showNotification("Pedido alterado com sucesso", "success");
 
       setOpen(false);
     } catch (error) {
       showNotification(error.message || "Erro ao alterar o pedido", "error");
     }
-  };
-
+  }; 
   return (
     <Dialog
       open={open}
@@ -422,11 +420,18 @@ export default function EditOrder({
           </form>
         )}
       </DialogContent>
-
       <DialogActions>
         <Button onClick={() => setOpen(false)}>Cancelar</Button>
-        <Button variant="contained" onClick={handleSubmit(onSubmit)}>
-          Salvar mudanças
+        <Button
+          variant="contained"
+          onClick={handleSubmit(onSubmit)}
+          disabled={!isValid || saving}
+        >
+          {saving ? (
+            <CircularProgress size={20}/>
+          ) : (
+            "Salvar mudanças"
+          )}
         </Button>
       </DialogActions>
     </Dialog>

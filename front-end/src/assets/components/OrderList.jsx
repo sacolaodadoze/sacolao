@@ -1,4 +1,4 @@
-import { useEffect, useState, useId, useRef,useContext } from "react";
+import { useEffect, useState, useId, useRef, useContext } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -13,6 +13,7 @@ import { useNotification } from "../context/NotificationContext.jsx"; //msg de i
 import { apiFetch } from "../../api/apiFetch.js";
 import { AuthContext } from "../context/AuthContext";
 import { set } from "zod";
+import { CircularProgress } from "@mui/material";
 
 export function OrderList() {
   const [opciones, setOpciones] = useState([]); // Estado para los datos de la DB
@@ -20,12 +21,13 @@ export function OrderList() {
   const [orders, setOrders] = useState([]); // Estado para los pedidos
   const [paymentTypes, setPaymentTypes] = useState([]);
   const [entries, setEntries] = useState([]);
-   const [rates, setRates] = useState([]);
+  const [rates, setRates] = useState([]);
   const [isLoading, setIsLoading] = useState(false); //cargar order
   const [open, setOpen] = useState(false); //modal de criar pedidos
   const [search, setSearch] = useState("");
   const { showNotification } = useNotification();
-   const { user } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
+  const [creating, setCreating] = useState(false);
 
   //Paginado
   const [currentPage, setCurrentPage] = useState(1);
@@ -63,7 +65,7 @@ export function OrderList() {
   };
   */
 
-  const getOrders = async (search = "", perPage = 20, currentPage = 1) => {  
+  const getOrders = async (search = "", perPage = 20, currentPage = 1) => {
     setIsLoading(true);
     try {
       const response = await apiFetch(
@@ -138,15 +140,12 @@ export function OrderList() {
         setRates(data);
       })
       .catch((error) => {
-        showNotification(
-          error.message || LANG.ORDERSLIST.ERRORRATES,
-          "error",
-        );
+        showNotification(error.message || LANG.ORDERSLIST.ERRORRATES, "error");
       });
   };
- 
+
   useEffect(() => {
-      if (!user) return; // solo si hay usuario logueado
+    if (!user) return; // solo si hay usuario logueado
     const inicializarSistema = async () => {
       // Ejecuta ambas peticiones al mismo tiempo
       await Promise.all([
@@ -169,6 +168,14 @@ export function OrderList() {
     }, 500);
     return () => clearTimeout(delayDebounce);
   }, [search, perPage, currentPage]);
+
+  const handleAdd = () => {
+    setCreating(true);
+    setTimeout(() => {
+      setOpen(true);
+      setCreating(false);
+    }, 100);
+  };
 
   return (
     <main class="main-container">
@@ -204,7 +211,7 @@ export function OrderList() {
               paddingRight: "30px", // espacio para la X
             }}
           />
-          
+
           {search && (
             <button
               onClick={() => setSearch("")}
@@ -242,9 +249,14 @@ export function OrderList() {
         <button
           id="btn-add-listato"
           className="btn-add"
-          onClick={() => setOpen(true)}
+          onClick={handleAdd}
+          disabled={creating}
         >
-          <span>+ {LANG.ORDERSLIST.CREATE}</span>
+          {creating ? (
+            <CircularProgress size={20} />
+          ) : (
+            <span>+ {LANG.ORDERSLIST.CREATE}</span>
+          )}
         </button>
 
         <Dialog
@@ -293,8 +305,8 @@ export function OrderList() {
         orders={orders}
         getOrders={getOrders}
         paymentTypes={paymentTypes}
-        entries={entries}      
-        rates={rates} 
+        entries={entries}
+        rates={rates}
         isLoading={isLoading}
         currentPage={currentPage}
         perPage={perPage}

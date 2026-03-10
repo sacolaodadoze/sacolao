@@ -27,6 +27,7 @@ import { schema } from "../../forms/orderForm.js";
 import PrintOrder from "./PrintOrder.jsx";
 import { AuthContext } from "../context/AuthContext.jsx";
 import { set } from "zod";
+import React from "react";
 
 export default function CreateOrder({
   open,
@@ -36,7 +37,6 @@ export default function CreateOrder({
   entries,
   rates,
 }) {
-  console.log;
   const {
     control,
     handleSubmit,
@@ -84,7 +84,8 @@ export default function CreateOrder({
   const debounceRef = useRef();
   const firstInputRef = useRef(null);
   const [customerSelected, setcustomerSelected] = useState(null); //al seleccionar el cliente
-  const [loadingSave, setLoadingSave] = useState(false);
+
+  const [loadingSave, setLoadingSave] = useState(false); //estado para mostrar el spinner al guardar el pedido
   //Saber si cambio los datos de cliente
 
   const [initialData, setInitialData] = useState(null);
@@ -129,7 +130,6 @@ export default function CreateOrder({
   };
 
   const onSubmit = async (data) => {
-    //console.log(data);
     setLoadingSave(true);
     const original = formData; // objeto traído del backend
     const current = data; // datos del formulario
@@ -153,7 +153,6 @@ export default function CreateOrder({
       data.rate_id = null;
     }
     data.created_by = user.name;
-    //console.log(customerChanged);
 
     try {
       await apiFetch("/sanctum/csrf-cookie");
@@ -162,22 +161,28 @@ export default function CreateOrder({
         method: "POST",
         body: JSON.stringify(data),
       });
-
       const result = await res.json();
 
-      setOrder(result);
+      //Print
+      const orderPrint = await apiFetch(`/api/orders/${result.id}`);
+      if (!orderPrint.ok) {
+        showNotification(LANG.ORDERSLIST.ERROROREDR, "error");
+        return;
+      }
+      const resultToPrint = await orderPrint.json();
+
+      setOrder(resultToPrint);
       showNotification(LANG.CREATEORDER.CREATEDSUCC, "success");
-      setLoadingSave(false);
-      // Activamos impresión
-      setShouldPrint(true);
+      setLoadingSave(false);      
+      setShouldPrint(true);// Activamos impresión
 
       getOrders();
       setcustomerSelected(null);
       console.log("Guardado:", result);
       setOpen(false);
     } catch (error) {
-      console.log("ERRORES:", errors);
-      showNotification("Erro ao criar pedido", { error }, "error");
+      console.log("ERRORES:", error);
+      showNotification(error.message || "Erro ao criar pedido", "error");
       setcustomerSelected(null);
     }
   };
@@ -643,7 +648,7 @@ export default function CreateOrder({
             disabled={!isValid}
           >
             {/* </Button><Button type="submit" variant="contained" disabled={!isValid}> */}
-            Salvar pedido
+            {loadingSave ? <CircularProgress size={20} /> : "Salvar pedido"}
           </Button>
         </DialogActions>
       </form>

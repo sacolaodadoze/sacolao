@@ -1,6 +1,6 @@
 import React, { use, useEffect, useId, useState, useContext } from "react";
 import { TrashIcon, EditIcon, PrintIcon } from "./Icons";
-import { Tooltip } from "@mui/material";
+import { Tooltip, CircularProgress } from "@mui/material";
 import { formatDate } from "../helpers/formatDate.js";
 import { OrdersTableSkeleton } from "./OrdersTableSkeleton.jsx";
 import { useDeleteOrder } from "../hooks/useDeleteOrder.jsx";
@@ -12,6 +12,7 @@ import { AuthContext } from "../context/AuthContext.jsx";
 import { useNotification } from "../context/NotificationContext.jsx";
 import { LANG } from "../constants/languages.js";
 import { apiFetch } from "../../api/apiFetch.js";
+import { set } from "zod";
 
 export function OrderTable({
   orders,
@@ -29,6 +30,8 @@ export function OrderTable({
   const [openEdit, setOpenEdit] = useState(false);
   const [orderSelected, setOrderSelected] = useState([]);
   const [shouldPrint, setShouldPrint] = useState(false);
+  const [editing, setEditing] = useState(null);
+  const [printing, setPrinting] = useState(null);
   const { showNotification } = useNotification();
   const { user, hasAnyRole } = useContext(AuthContext);
 
@@ -44,18 +47,28 @@ export function OrderTable({
   };
 
   const handleEdit = async (id) => {
+    setEditing(id);
     const res = await apiFetch(`/api/orders/${id}`);
-    if (!res.ok) {    
+    if (!res.ok) {
       showNotification(LANG.ORDERSLIST.ERROROREDR, "error");
       return;
     }
+    setEditing(null);
     const data = await res.json();
-    setOrderSelected(data);  
+    setOrderSelected(data);
     setOpenEdit(true);
   };
 
-  const handlePrint = async (order) => {
-    setOrderSelected(order);
+  const handlePrint = async (id) => {
+    setPrinting(id);
+    const res = await apiFetch(`/api/orders/${id}`);
+    if (!res.ok) {
+      showNotification(LANG.ORDERSLIST.ERROROREDR, "error");
+      return;
+    }
+    setPrinting(null);
+    const data = await res.json();
+    setOrderSelected(data);
     setShouldPrint(true);
   };
 
@@ -130,16 +143,24 @@ export function OrderTable({
                       className="btn-action btn-edit"
                       onClick={() => handleEdit(order.id)}
                     >
-                      <EditIcon />
+                      {editing === order.id ? (
+                        <CircularProgress size={20} />
+                      ) : (
+                        <EditIcon />
+                      )}
                     </button>
                   </Tooltip>
 
                   <Tooltip title="Imprimir pedido">
                     <button
                       className="btn-action"
-                      onClick={() => handlePrint(order)}
+                      onClick={() => handlePrint(order.id)}
                     >
-                      <PrintIcon />
+                      {printing === order.id ? (
+                        <CircularProgress size={20} />
+                      ) : (
+                        <PrintIcon />
+                      )}
                     </button>
                   </Tooltip>
                   <Tooltip title="Excluir  pedido">
