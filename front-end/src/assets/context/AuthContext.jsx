@@ -20,6 +20,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const checkAuth = async () => {
       const res = await apiFetch("/api/user");
+      console.log("Respuesta de /api/user:", res);
       if (res.ok) {
         const data = await res.json();
         setUser(data);

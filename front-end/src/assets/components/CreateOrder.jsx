@@ -26,6 +26,8 @@ import { zodResolver } from "@hookform/resolvers/zod"; //validaciones
 import { schema } from "../../forms/orderForm.js";
 import PrintOrder from "./PrintOrder.jsx";
 import { AuthContext } from "../context/AuthContext.jsx";
+import { set } from "zod";
+import React from "react";
 
 export default function CreateOrder({
   open,
@@ -35,7 +37,6 @@ export default function CreateOrder({
   entries,
   rates,
 }) {
-  console.log;
   const {
     control,
     handleSubmit,
@@ -62,7 +63,7 @@ export default function CreateOrder({
       scheduled: false,
       delivery_date: "",
       delivery_hour: "",
-      rate_id: "",
+      rate_id: null,
       phone: "",
       //Endereço
       cep: "",
@@ -83,16 +84,18 @@ export default function CreateOrder({
   const debounceRef = useRef();
   const firstInputRef = useRef(null);
   const [customerSelected, setcustomerSelected] = useState(null); //al seleccionar el cliente
-  const [loadingCustomers, setLoadingCustomers] = useState(false);
+
+  const [loadingSave, setLoadingSave] = useState(false); //estado para mostrar el spinner al guardar el pedido
   //Saber si cambio los datos de cliente
 
   const [initialData, setInitialData] = useState(null);
   const [formData, setFormData] = useState({}); //saber si cambio los datos del cliente
 
   const [order, setOrder] = useState([]);
-  const [shouldPrint, setShouldPrint] = useState(false); //print
+  const [shouldPrint, setShouldPrint] = useState(0); //print
 
   const { user } = useContext(AuthContext);
+  const printWindowRef = useRef(null);
 
   //Pesquisar cliente
   const searchCustomer = async (texto) => {
@@ -106,7 +109,7 @@ export default function CreateOrder({
 
       const data = await res.json();
       setCustomer(data);
-    } catch (error) {     
+    } catch (error) {
     } finally {
       setLoading(false);
     }
@@ -114,11 +117,11 @@ export default function CreateOrder({
 
   const agendado = watch("scheduled");
   useEffect(() => {
-      if (!agendado) {
-        setValue("delivery_date", "");
-        setValue("delivery_hour", "");
-      }
-    }, [agendado]);
+    if (!agendado) {
+      setValue("delivery_date", "");
+      setValue("delivery_hour", "");
+    }
+  }, [agendado]);
 
   const normalize = (v) => {
     if (v === null || v === undefined || v === "null" || v === "-") {
@@ -128,8 +131,7 @@ export default function CreateOrder({
   };
 
   const onSubmit = async (data) => {
-    // console.log(data);
-
+    setLoadingSave(true);
     const original = formData; // objeto traído del backend
     const current = data; // datos del formulario
 
@@ -148,8 +150,10 @@ export default function CreateOrder({
       normalize(current.state) !== normalize(original.addresses?.[0]?.state);
 
     data.customerChanged = customerChanged;
+    if (data.rate_id === 0) {
+      data.rate_id = null;
+    }
     data.created_by = user.name;
-    //console.log(customerChanged);
 
     try {
       await apiFetch("/sanctum/csrf-cookie");
@@ -158,21 +162,48 @@ export default function CreateOrder({
         method: "POST",
         body: JSON.stringify(data),
       });
-
       const result = await res.json();
 
-      setOrder(result);
-      showNotification(LANG.CREATEORDER.CREATEDSUCC, "success");
-      // Activamos impresión
-      setShouldPrint(true);
+      //Print
+      const orderPrint = await apiFetch(`/api/orders/${result.id}`);
 
-      getOrders();
+      if (!orderPrint.ok) {
+        showNotification(LANG.ORDERSLIST.ERROROREDR, "error");
+        return;
+      }
+      const resultToPrint = await orderPrint.json();
+      // console.log("To print:", resultToPrint);
+
+      setOrder(resultToPrint);
+      //  console.log("O print:", resultToPrint);
+      //setShouldPrint(null); // Activamos impresión
+
+      setLoadingSave(false);
+      showNotification(LANG.CREATEORDER.CREATEDSUCC, "success");
+      await getOrders();
+      setOpen(false);
+      /*  printWindowRef.current = window.open(
+        "",
+        "PRINT",
+        "width=1000,height=600,top=100,left=100,toolbar=no,menubar=no",
+      );
+      setShouldPrint((prev) => prev + 1); */
+
+      setTimeout(() => {
+        printWindowRef.current = window.open(
+          "",
+          "PRINT",
+          "width=1000,height=600,top=100,left=100",
+        );
+
+        setShouldPrint((prev) => prev + 1);
+      }, 100);
+
       setcustomerSelected(null);
       console.log("Guardado:", result);
-      setOpen(false);
     } catch (error) {
-      console.log("ERRORES:", errors);
-      showNotification("Erro ao criar pedido", { error }, "error");
+      setLoadingSave(false);
+      showNotification(error.message || "Erro ao criar pedido", "error");
       setcustomerSelected(null);
     }
   };
@@ -343,7 +374,7 @@ export default function CreateOrder({
                             {...field}
                             label={label}
                             fullWidth
-                            value={field.value || "-"}
+                            value={field.value || " "}
                             onChange={(e) => {
                               const value =
                                 e.target.value === "-" ? "" : e.target.value;
@@ -585,7 +616,6 @@ export default function CreateOrder({
                   <Controller
                     name="rate_id"
                     control={control}
-                    defaultValue=""
                     render={({ field }) => (
                       <FormControl sx={{ width: "100%" }}>
                         <InputLabel id="taxa-label">
@@ -596,8 +626,10 @@ export default function CreateOrder({
                           {...field}
                           label={LANG.CREATEORDER.RATE}
                           labelId="taxa-label"
-                          value={field.value ?? ""}
-                          onChange={(e) => field.onChange(e.target.value)}
+                          value={field.value ?? null}
+                          onChange={(e) =>
+                            field.onChange(e.target.value || null)
+                          }
                         >
                           {rates.map((rate) => (
                             <MenuItem key={rate.id} value={rate.id}>
@@ -634,17 +666,22 @@ export default function CreateOrder({
           <Button
             variant="contained"
             onClick={handleSubmit(onSubmit)}
-            disabled={!isValid}
+            disabled={!isValid || loadingSave}
           >
             {/* </Button><Button type="submit" variant="contained" disabled={!isValid}> */}
-            Salvar pedido
+            {loadingSave ? (
+              <CircularProgress size={20} color="inherit" />
+            ) : (
+              "Salvar pedido"
+            )}
           </Button>
         </DialogActions>
       </form>
       <PrintOrder
         order={order}
         shouldPrint={shouldPrint}
-        onPrinted={() => setShouldPrint(false)}
+        printWindowRef={printWindowRef}
+        // onPrinted={() => setShouldPrint(false)}
       />
     </>
   );

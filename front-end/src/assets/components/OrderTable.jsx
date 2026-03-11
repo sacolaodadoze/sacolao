@@ -1,6 +1,13 @@
-import React, { use, useEffect, useId, useState, useContext } from "react";
+import React, {
+  use,
+  useEffect,
+  useId,
+  useState,
+  useContext,
+  useRef,
+} from "react";
 import { TrashIcon, EditIcon, PrintIcon } from "./Icons";
-import { Tooltip } from "@mui/material";
+import { Tooltip, CircularProgress } from "@mui/material";
 import { formatDate } from "../helpers/formatDate.js";
 import { OrdersTableSkeleton } from "./OrdersTableSkeleton.jsx";
 import { useDeleteOrder } from "../hooks/useDeleteOrder.jsx";
@@ -11,6 +18,8 @@ import {} from "../context/AuthContext.jsx";
 import { AuthContext } from "../context/AuthContext.jsx";
 import { useNotification } from "../context/NotificationContext.jsx";
 import { LANG } from "../constants/languages.js";
+import { apiFetch } from "../../api/apiFetch.js";
+import { set } from "zod";
 
 export function OrderTable({
   orders,
@@ -27,9 +36,12 @@ export function OrderTable({
   const { deleteOrder } = useDeleteOrder();
   const [openEdit, setOpenEdit] = useState(false);
   const [orderSelected, setOrderSelected] = useState([]);
-  const [shouldPrint, setShouldPrint] = useState(false);
+  const [shouldPrint, setShouldPrint] = useState(0);
+  const [editing, setEditing] = useState(null);
+  const [printing, setPrinting] = useState(null);
   const { showNotification } = useNotification();
   const { user, hasAnyRole } = useContext(AuthContext);
+  const printWindowRef = useRef(null);
 
   const handleDelete = async (order_id) => {
     if (!hasAnyRole(["admin"])) {
@@ -42,15 +54,37 @@ export function OrderTable({
     }
   };
 
-  const handleEdit = async (order) => {
-    setOrderSelected(order);
-    setOpenEdit(true);
+  const handlePrint = async (id) => {
+    setPrinting(id);
+    try {
+      // abrir ventana DESDE EL CLICK
+      printWindowRef.current = window.open(
+        "",
+        "PRINT",
+        "width=1000,height=600,top=100,left=100,toolbar=no,menubar=no",
+      );
+
+      const res = await apiFetch(`/api/orders/${id}`);
+
+      if (!res.ok) {
+        showNotification(LANG.ORDERSLIST.ERROROREDR, "error");
+        return;
+      }
+
+      const data = await res.json();
+
+      setOrderSelected(data);
+      setShouldPrint((prev) => prev + 1);
+    } catch (error) {
+      showNotification("Error al imprimir", "error");
+    } finally {
+      setPrinting(null);
+    }
   };
 
-  const handlePrint = async (order) => {
-    setOrderSelected(order);
-    setShouldPrint(true);
-  };
+  useEffect(() => {
+    console.log("shouldPrint padre:", shouldPrint);
+  }, [shouldPrint]);
 
   return (
     <div className="table-container">
@@ -59,7 +93,7 @@ export function OrderTable({
           <tr>
             {/*    <th style={{ width: "95px" }}></th> */}
             <th style={{ width: "127px" }}>No.</th>
-            <th style={{ width: "130px" }}>Data</th>
+            <th style={{ width: "135px" }}>Data</th>
             <th>Cliente</th>
             <th>Endereço</th>
             {/*   <th style={{ width: "165px" }}>Estado</th> */}
@@ -121,18 +155,26 @@ export function OrderTable({
                   <Tooltip title="Alterar pedido">
                     <button
                       className="btn-action btn-edit"
-                      onClick={() => handleEdit(order)}
+                      onClick={() => handleEdit(order.id)}
                     >
-                      <EditIcon />
+                      {editing === order.id ? (
+                        <CircularProgress size={20} />
+                      ) : (
+                        <EditIcon />
+                      )}
                     </button>
                   </Tooltip>
 
                   <Tooltip title="Imprimir pedido">
                     <button
                       className="btn-action"
-                      onClick={() => handlePrint(order)}
+                      onClick={() => handlePrint(order.id)}
                     >
-                      <PrintIcon />
+                      {printing === order.id ? (
+                        <CircularProgress size={20} />
+                      ) : (
+                        <PrintIcon />
+                      )}
                     </button>
                   </Tooltip>
                   <Tooltip title="Excluir  pedido">
@@ -159,13 +201,14 @@ export function OrderTable({
         entries={entries}
         rates={rates}
       />
-      {orderSelected && (
-        <PrintOrder
-          order={orderSelected}
-          shouldPrint={shouldPrint}
-          onPrinted={() => setShouldPrint(false)}
-        />
-      )}
+      {/*   {orderSelected && ( */}
+      <PrintOrder
+        order={orderSelected}
+        shouldPrint={shouldPrint}
+        printWindowRef={printWindowRef}
+        //  onPrinted={() => setShouldPrint(0)}
+      />
+      {/*  )} */}
     </div>
   );
 }
