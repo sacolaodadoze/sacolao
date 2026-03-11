@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import "./PrintOrder.css";
 
 const PrintOrder = ({ order, shouldPrint,printWindowRef /* , onPrinted */ }) => {
-  console.log("order",order,"shouldPrint:", shouldPrint,printWindowRef)
+  //console.log("order",order,"shouldPrint:", shouldPrint,printWindowRef)
  
  // const printWindowRef = useRef(null);
   const itemsFormatted =
@@ -105,7 +105,7 @@ const PrintOrder = ({ order, shouldPrint,printWindowRef /* , onPrinted */ }) => 
               </style>
             </head>
             <body>
-              <div class="left bold">PEDIDO</div>
+              <div class="left bold">PEDIDO:  ${order.number}</div>
               <div class="divider"></div>             
 
               <div><strong>ENTREGAR EM:</strong> ${dateToUse}</div>
@@ -126,7 +126,7 @@ const PrintOrder = ({ order, shouldPrint,printWindowRef /* , onPrinted */ }) => 
 
               ${order.customer.observation ? `<div><strong>OBS:</strong>${order.customer.observation.content}</div>` : ""}  
             
-               ${order.rate ? `<div><strong>Taxa de entrega:</strong>${order.rate.rate}%</div>` : ""}             
+               ${order.rate ? `<div><strong>Taxa de entrega:</strong>${order.rate.rate}</div>` : ""}             
               
 
              <div class="divider"></div>

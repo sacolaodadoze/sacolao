@@ -633,7 +633,7 @@ export default function CreateOrder({
                         >
                           {rates.map((rate) => (
                             <MenuItem key={rate.id} value={rate.id}>
-                              {rate.rate}%
+                              {rate.rate}
                             </MenuItem>
                           ))}
                         </Select>
