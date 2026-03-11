@@ -34,6 +34,7 @@ export default function EditOrder({
   entries,
   rates,
 }) {
+  console.log("EditOrder  order:", order,"setOpen:", setOpen);
   const { showNotification } = useNotification();
   const [orders, setOrders] = useState([]); //update la order actuaçizada si recargar toda la tabla
 
@@ -388,7 +389,7 @@ export default function EditOrder({
                         >
                           {rates.map((rate) => (
                             <MenuItem key={rate.id} value={rate.id}>
-                              {rate.rate}%
+                              {rate.rate}
                             </MenuItem>
                           ))}
                         </Select>

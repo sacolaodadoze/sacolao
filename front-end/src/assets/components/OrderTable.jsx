@@ -43,6 +43,27 @@ export function OrderTable({
   const { user, hasAnyRole } = useContext(AuthContext);
   const printWindowRef = useRef(null);
 
+  const handleEdit = async (id) => {
+     setEditing(id);
+     setOpenEdit(true);
+    try { 
+      const res = await apiFetch(`/api/orders/${id}`);
+
+      if (!res.ok) {
+        showNotification(LANG.ORDERSLIST.ERROROREDR, "error");
+        return;
+      }
+      const data = await res.json();      
+      setOrderSelected(data);
+      
+    } catch (error) {
+      showNotification("Error ao encontrar o pedido", "error");
+    } finally {
+      setEditing(null);
+      //setOpenEdit(false);
+    }
+  };
+
   const handleDelete = async (order_id) => {
     if (!hasAnyRole(["admin"])) {
       showNotification(LANG.DELETEORDER.UNAUTHORIZED, "warning");
