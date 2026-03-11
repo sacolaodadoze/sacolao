@@ -10,7 +10,8 @@ export const apiFetch = async (endpoint, options = {}) => {
   /* const token = getCookie('XSRF-TOKEN');
   console.log("TOKEN EXTRAÍDO DE COOKIE:", token);
    */
-  const baseUrl = "http://localhost:8000";
+  const baseUrl = "http://192.168.1.116/server"; // Cambia esto por la URL de tu backend
+ //const baseUrl=import.meta.env.VITE_API_URL; // toma la IP de .env del frontend
 
   let headers = {
     Accept: "application/json",
@@ -27,6 +28,7 @@ export const apiFetch = async (endpoint, options = {}) => {
     ...options,
     credentials: "include",
     headers,
+    cache: 'no-store'
   };
 
   // Solo añadimos el token si lo tenemos (para evitar enviar "null")
