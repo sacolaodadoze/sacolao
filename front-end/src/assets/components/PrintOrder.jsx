@@ -5,11 +5,11 @@ const PrintOrder = ({ order, shouldPrint,printWindowRef /* , onPrinted */ }) => 
   //console.log("order",order,"shouldPrint:", shouldPrint,printWindowRef)
  
  // const printWindowRef = useRef(null);
-  const itemsFormatted =
-    (order.items || "")
-      .match(/\d+\s[^\d]+/g) // busca: número + espacio + cualquier cosa hasta el siguiente número
-      ?.map((item) => `<div class="row"><span>${item.trim()}</span></div>`)
-      .join("") || "";
+ const itemsFormatted =
+  (order.items || "")
+    .match(/(?:\d+(?:[.,]\d+)?|\d+\/\d+)[a-zA-Z]*\s[a-zA-Z].*?(?=\s(?:\d+(?:[.,]\d+)?|\d+\/\d+)[a-zA-Z]*\s[a-zA-Z]|$)/g)
+    ?.map((item) => `<div class="row"><span>${item.trim()}</span></div>`)
+    .join("") || "";
 
   const hourToUse = order.delivery_hour
     ? `<strong>HR:</strong>${order.delivery_hour}`
@@ -40,7 +40,7 @@ const PrintOrder = ({ order, shouldPrint,printWindowRef /* , onPrinted */ }) => 
     //const printWindow = window.open("", "_blank");
 
     if (!printWindow){
-        console.error("No se pudo abrir la ventana de impresión. Verifica que los pop-ups no estén bloqueados.");
+      //  console.error("No se pudo abrir la ventana de impresión. Verifica que los pop-ups no estén bloqueados.");
          return; // si el navegador bloquea popup
     }
 

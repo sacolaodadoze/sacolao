@@ -20,14 +20,20 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const checkAuth = async () => {
       const res = await apiFetch("/api/user");
+      //if (res?.status === 401) return setUser(null);
+      if (!res) {
+         setUser(null);
+        setLoading(false);
+        return;
+      }
      
-      if(res.status === 401){
+     /*  if(res.status === 401){
         setUser(null);
         setLoading(false);
         return;
-      } 
-      if (res.ok) {
-         console.log("Respuesta de /api/user:", res);
+      }  */
+     else if (res.ok) {
+         //console.log("Respuesta de /api/user:", res);
         const data = await res.json();
         setUser(data);
       }
