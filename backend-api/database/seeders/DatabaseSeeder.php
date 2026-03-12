@@ -19,19 +19,19 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        //  User::factory(2)->create();
+         // User::factory(2)->create();
 
         /*  User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]); */
 
-      /*  $this->call(UserSeeder::class);
- 
+      // $this->call(UserSeeder::class);
+  /*
         $this->call(StatusSeeder::class);
         $this->call(EntrySeeder::class);
         $this->call(PaymentTypeSeeder::class);*/
-        $this->call(RateSeeder::class); 
+      //  $this->call(RateSeeder::class); 
 
          //OrderFactory::new()->count(50)->create();
     }
