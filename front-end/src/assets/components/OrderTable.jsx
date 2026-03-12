@@ -44,7 +44,7 @@ export function OrderTable({
   const printWindowRef = useRef(null);
 
   const handleEdit = async (id) => {
-     setEditing(id);
+    // setEditing(id);
      setOpenEdit(true);
     try { 
       const res = await apiFetch(`/api/orders/${id}`);
@@ -59,7 +59,7 @@ export function OrderTable({
     } catch (error) {
       showNotification("Error ao encontrar o pedido", "error");
     } finally {
-      setEditing(null);
+     // setEditing(null);
       //setOpenEdit(false);
     }
   };
@@ -178,11 +178,12 @@ export function OrderTable({
                       className="btn-action btn-edit"
                       onClick={() => handleEdit(order.id)}
                     >
-                      {editing === order.id ? (
+                     {/*  {editing === order.id ? (
                         <CircularProgress size={20} />
                       ) : (
                         <EditIcon />
-                      )}
+                      )} */}
+                       <EditIcon />
                     </button>
                   </Tooltip>
 
