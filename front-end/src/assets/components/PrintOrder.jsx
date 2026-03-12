@@ -122,9 +122,9 @@ const PrintOrder = ({
 
               <div><strong >Forma Pagmto :</strong> ${order.payment?.name}</div> 
 
-             ${order.detail ? `<div><strong>PREF:</strong>${order.detail.description}</div>` : ""}         
+             ${order.detail ? `<div><strong>OBS:</strong>${order.detail.description}</div>` : ""}         
 
-              ${order.customer.observation ? `<div><strong>OBS:</strong>${order.customer.observation.content}</div>` : ""}  
+              ${order.customer.observation ? `<div><strong>PREF:</strong>${order.customer.observation.content}</div>` : ""}  
             
                ${order.rate ? `<div><strong>Taxa de entrega:</strong>${order.rate.rate}</div>` : ""}             
               
