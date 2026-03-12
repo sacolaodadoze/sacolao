@@ -155,6 +155,10 @@ export default function CreateOrder({
     }
     data.created_by = user.name;
 
+    //Formato de los items del pedido
+    const itemstWithSeparator = data.items.split("\n").join("||");
+    data.items = itemstWithSeparator;
+
     try {
       await apiFetch("/sanctum/csrf-cookie");
 
@@ -408,6 +412,12 @@ export default function CreateOrder({
                     <TextField
                       {...field}
                       label={LANG.CREATEORDER.ITEMS}
+                      required
+                      sx={{
+                        "& .MuiFormLabel-asterisk": {
+                          color: "red",
+                        },
+                      }}
                       multiline
                       rows={4}
                       fullWidth
@@ -434,7 +444,11 @@ export default function CreateOrder({
                     defaultValue=""
                     render={({ field }) => (
                       <FormControl sx={{ width: "100%" }}>
-                        <InputLabel id="payment-label">
+                        <InputLabel
+                          id="payment-label"
+                          required
+                          sx={{ "& .MuiFormLabel-asterisk": { color: "red" } }}
+                        >
                           {LANG.CREATEORDER.PAYMENT}
                         </InputLabel>
 
@@ -463,10 +477,19 @@ export default function CreateOrder({
                   <Controller
                     name="entry_id"
                     control={control}
+                    rules={{ required: "Campo obligatorio" }}
                     defaultValue=""
                     render={({ field }) => (
-                      <FormControl sx={{ width: "100%" }}>
-                        <InputLabel id="entry-label">
+                      <FormControl
+                        sx={{ width: "100%" }}
+                        required
+                        error={!!errors?.entry_id}
+                      >
+                        <InputLabel
+                          id="entry-label"
+                          required
+                          sx={{ "& .MuiFormLabel-asterisk": { color: "red" } }}
+                        >
                           {LANG.CREATEORDER.ENTRY}
                         </InputLabel>
                         <Select
@@ -480,9 +503,12 @@ export default function CreateOrder({
                               {entry.name}
                             </MenuItem>
                           ))}
-                          error={!!errors?.entry_id}
-                          helperText={errors?.entry_id?.message}
                         </Select>
+                        {errors?.entry_id && (
+                          <FormHelperText>
+                            {errors.entry_id?.message}
+                          </FormHelperText>
+                        )}
                       </FormControl>
                     )}
                   />

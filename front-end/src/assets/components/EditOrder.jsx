@@ -20,9 +20,10 @@ import {
   FormControl,
   InputLabel,
   Checkbox,
-  FormControlLabel, 
+  FormControlLabel,
   Box,
   CircularProgress,
+  FormHelperText,
 } from "@mui/material";
 
 export default function EditOrder({
@@ -34,7 +35,7 @@ export default function EditOrder({
   entries,
   rates,
 }) {
-  console.log("EditOrder  order:", order,"setOpen:", setOpen);
+  // console.log("EditOrder  order:", order, "setOpen:", setOpen);
   const { showNotification } = useNotification();
   const [orders, setOrders] = useState([]); //update la order actuaçizada si recargar toda la tabla
 
@@ -74,7 +75,7 @@ export default function EditOrder({
         id: order.id,
         customer_id: order.customer_id,
         name: order.customer?.name,
-        items: order.items,
+        items: order.items?.split("||").join("\n") || "", // convertir de nuevo a formato multilinea para el textarea
         payment_types_id: order.payment_types_id,
         entry_id: order.entry_id,
         details: order.detail?.description || "",
@@ -103,6 +104,9 @@ export default function EditOrder({
     if (data.rate_id === 0) {
       data.rate_id = null;
     }
+    //Formato de los items del pedido
+    const itemstWithSeparator = data.items.split("\n").join("||");
+    data.items = itemstWithSeparator;
     try {
       setSaving(true);
       const res = await apiFetch("/api/orders", {
@@ -123,7 +127,7 @@ export default function EditOrder({
     } catch (error) {
       showNotification(error.message || "Erro ao alterar o pedido", "error");
     }
-  }; 
+  };
   return (
     <Dialog
       open={open}
@@ -161,6 +165,7 @@ export default function EditOrder({
                     <TextField
                       {...field}
                       label={LANG.CREATEORDER.ITEMS}
+                      required
                       multiline
                       rows={4}
                       fullWidth
@@ -185,7 +190,7 @@ export default function EditOrder({
                     control={control}
                     render={({ field }) => (
                       <FormControl sx={{ width: "100%" }}>
-                        <InputLabel id="payment-label">
+                        <InputLabel id="payment-label" required>
                           {LANG.CREATEORDER.PAYMENT}
                         </InputLabel>
 
@@ -196,7 +201,7 @@ export default function EditOrder({
                           value={field.value ?? ""}
                           onChange={(e) => field.onChange(e.target.value)}
                           error={!!errors?.payment_types_id}
-                          helperText={errors?.payment_types_id?.message}
+                          // helperText={errors?.payment_types_id?.message}
                         >
                           {paymentTypes.map((payment) => (
                             <MenuItem key={payment.id} value={payment.id}>
@@ -213,9 +218,14 @@ export default function EditOrder({
                   <Controller
                     name="entry_id"
                     control={control}
+                   // rules={{ required: "Campo obligatorio" }}
                     render={({ field }) => (
-                      <FormControl sx={{ width: "100%" }}>
-                        <InputLabel id="entry-label">
+                      <FormControl
+                        sx={{ width: "100%" }}
+                        required
+                        error={!!errors?.entry_id}
+                      >
+                        <InputLabel id="entry-label" required>
                           {LANG.CREATEORDER.ENTRY}
                         </InputLabel>
 
@@ -224,8 +234,8 @@ export default function EditOrder({
                           labelId="entry-label"
                           label={LANG.CREATEORDER.ENTRY}
                           fullWidth
-                          error={!!errors?.entry_id}
-                          helperText={errors?.entry_id?.message}
+                          // error={!!errors?.entry_id}
+                          //  helperText={errors?.entry_id?.message}
                         >
                           {entries.map((entry) => (
                             <MenuItem key={entry.id} value={entry.id}>
@@ -233,6 +243,11 @@ export default function EditOrder({
                             </MenuItem>
                           ))}
                         </Select>
+                        {errors?.entry_id && (
+                          <FormHelperText>
+                            {errors.entry_id?.message}
+                          </FormHelperText>
+                        )}
                       </FormControl>
                     )}
                   />
@@ -428,11 +443,7 @@ export default function EditOrder({
           onClick={handleSubmit(onSubmit)}
           disabled={!isValid || saving}
         >
-          {saving ? (
-            <CircularProgress size={20}/>
-          ) : (
-            "Salvar mudanças"
-          )}
+          {saving ? <CircularProgress size={20} /> : "Salvar mudanças"}
         </Button>
       </DialogActions>
     </Dialog>

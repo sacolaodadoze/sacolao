@@ -48,21 +48,19 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
       setProcessing(true);
-      //  console.log("1. Pidiendo cookie...");
+     
       await apiFetch("/sanctum/csrf-cookie"); // cookie CSRF
 
-      //console.log("2. Enviando login...");
       const loginRes = await apiFetch("/api/login", {
         method: "POST",
         body: JSON.stringify({ name: name, password }),
       });
-      //console.log(loginRes);
-      if (!loginRes.ok) {
-        const errorData = await loginRes.json();
-        throw new Error(errorData.message || "Login falló");
-      }
 
-      //console.log("3. Login exitoso, pidiendo usuario...")
+      if (!loginRes || !loginRes.ok) {
+        const errorData = loginRes ? await loginRes.json() : {};
+        throw new Error(errorData.message || LANG.LOGGIN.ERROR);
+      }
+     
       const userRes = await apiFetch("/api/user");
       if (!userRes.ok) {
         throw new Error(LANG.LOGGIN.ERROR);
@@ -70,10 +68,11 @@ export const AuthProvider = ({ children }) => {
       }
       const loggedUser = await userRes.json();
       setUser(loggedUser);
-      setLoading(false);
-      // console.log("Redirigiendo a home...");
+      setLoading(false)
+    
       navigate("/", { replace: true });
     } catch (error) {
+      console.info("Error en loginUser:", error.message);
       showNotification(error.message || LANG.LOGGIN.ERROR, "error"); // tu sistema de notificaciones
     } finally {
       setLoading(false);

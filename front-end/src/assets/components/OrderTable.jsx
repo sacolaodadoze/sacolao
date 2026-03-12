@@ -44,22 +44,23 @@ export function OrderTable({
   const printWindowRef = useRef(null);
 
   const handleEdit = async (id) => {
-    // setEditing(id);
-     setOpenEdit(true);
-    try { 
+    setEditing(id);
+
+    try {
       const res = await apiFetch(`/api/orders/${id}`);
 
       if (!res.ok) {
         showNotification(LANG.ORDERSLIST.ERROROREDR, "error");
         return;
       }
-      const data = await res.json();      
+      const data = await res.json();
       setOrderSelected(data);
-      
+      setOpenEdit(true);
     } catch (error) {
-      showNotification("Error ao encontrar o pedido", "error");
+      //showNotification("Error ao encontrar o pedido", "error");
+      console.error("Error ao encontrar o pedido", error.message);
     } finally {
-     // setEditing(null);
+      setEditing(null);
       //setOpenEdit(false);
     }
   };
@@ -102,11 +103,6 @@ export function OrderTable({
       setPrinting(null);
     }
   };
-
-  useEffect(() => {
-    console.log("shouldPrint padre:", shouldPrint);
-  }, [shouldPrint]);
-
   return (
     <div className="table-container">
       <table>
@@ -178,12 +174,11 @@ export function OrderTable({
                       className="btn-action btn-edit"
                       onClick={() => handleEdit(order.id)}
                     >
-                     {/*  {editing === order.id ? (
+                      {editing === order.id ? (
                         <CircularProgress size={20} />
                       ) : (
                         <EditIcon />
-                      )} */}
-                       <EditIcon />
+                      )}
                     </button>
                   </Tooltip>
 

@@ -1,15 +1,16 @@
 import React, { useEffect, useRef } from "react";
 import "./PrintOrder.css";
 
-const PrintOrder = ({ order, shouldPrint,printWindowRef /* , onPrinted */ }) => {
+const PrintOrder = ({
+  order,
+  shouldPrint,
+  printWindowRef /* , onPrinted */,
+}) => {
   //console.log("order",order,"shouldPrint:", shouldPrint,printWindowRef)
- 
- // const printWindowRef = useRef(null);
- const itemsFormatted =
-  (order.items || "")
-    .match(/(?:\d+(?:[.,]\d+)?|\d+\/\d+)[a-zA-Z]*\s[a-zA-Z].*?(?=\s(?:\d+(?:[.,]\d+)?|\d+\/\d+)[a-zA-Z]*\s[a-zA-Z]|$)/g)
-    ?.map((item) => `<div class="row"><span>${item.trim()}</span></div>`)
-    .join("") || "";
+  const itemsFormatted = (order.items?.split("||").join("\n") || "").replace(
+    /\n/g,
+    "<br>",
+  );
 
   const hourToUse = order.delivery_hour
     ? `<strong>HR:</strong>${order.delivery_hour}`
@@ -20,14 +21,13 @@ const PrintOrder = ({ order, shouldPrint,printWindowRef /* , onPrinted */ }) => 
 
   useEffect(() => {
     if (!order || shouldPrint === 0 || !printWindowRef.current) return;
-   
 
     // Esperamos que React haya renderizado el ticket
     // const timer = setTimeout(() => {
     // Abrimos una nueva ventana para imprimir
 
     // abrir ventana solo si no existe
-   /*  if (!printWindowRef.current || printWindowRef.current.closed) {
+    /*  if (!printWindowRef.current || printWindowRef.current.closed) {
       printWindowRef.current = window.open(
         "",
         "PRINT",
@@ -39,9 +39,9 @@ const PrintOrder = ({ order, shouldPrint,printWindowRef /* , onPrinted */ }) => 
 
     //const printWindow = window.open("", "_blank");
 
-    if (!printWindow){
+    if (!printWindow) {
       //  console.error("No se pudo abrir la ventana de impresión. Verifica que los pop-ups no estén bloqueados.");
-         return; // si el navegador bloquea popup
+      return; // si el navegador bloquea popup
     }
 
     printWindow.document.open();
@@ -142,11 +142,11 @@ const PrintOrder = ({ order, shouldPrint,printWindowRef /* , onPrinted */ }) => 
     //detail.description
     printWindow.document.close();
 
-  //  printWindow.onload = function () {
-      printWindow.focus();
-      printWindow.print();
-      printWindow.close();
-   // };
+    //  printWindow.onload = function () {
+    printWindow.focus();
+    printWindow.print();
+    printWindow.close();
+    // };
 
     //onPrinted(); // reset estado
     // }, 200);
