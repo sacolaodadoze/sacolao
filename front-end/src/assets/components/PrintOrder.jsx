@@ -122,7 +122,7 @@ const PrintOrder = ({
 
               <div><strong >Forma Pagmto :</strong> ${order.payment?.name}</div> 
 
-             ${order.detail ? `<div><strong>DET:</strong>${order.detail.description}</div>` : ""}         
+             ${order.detail ? `<div><strong>PREF:</strong>${order.detail.description}</div>` : ""}         
 
               ${order.customer.observation ? `<div><strong>OBS:</strong>${order.customer.observation.content}</div>` : ""}  
             
