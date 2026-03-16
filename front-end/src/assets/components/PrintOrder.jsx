@@ -6,7 +6,6 @@ const PrintOrder = ({
   shouldPrint,
   printWindowRef /* , onPrinted */,
 }) => {
-  console.log("order",order,"shouldPrint:", shouldPrint,printWindowRef)
   const itemsFormatted = (order.items?.split("||").join("\n") || "").replace(
     /\n/g,
     "<br>",
@@ -42,8 +41,7 @@ const PrintOrder = ({
     //const printWindow = window.open("", "_blank");
 
     if (!printWindow) {
-      //  console.error("No se pudo abrir la ventana de impresión. Verifica que los pop-ups no estén bloqueados.");
-      return; // si el navegador bloquea popup
+            return; // si el navegador bloquea popup
     }
 
     printWindow.document.open();
@@ -158,8 +156,6 @@ const PrintOrder = ({
 
   return null; // no necesita renderizar nada en el DOM principal/*  */
 };
-
-//const formatDate = (date) => new Date(date).toLocaleDateString("pt-BR");
  const formatDate = (date) => {
    if (!date) return "";
    const datePart = date.split("T")[0]; 
