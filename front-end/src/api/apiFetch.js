@@ -10,8 +10,9 @@ export const apiFetch = async (endpoint, options = {}) => {
   /* const token = getCookie('XSRF-TOKEN');
   console.log("TOKEN EXTRAÍDO DE COOKIE:", token);
    */
-  const baseUrl = "http://192.168.1.116/server"; // Cambia esto por la URL de tu backend
- //const baseUrl=import.meta.env.VITE_API_URL; // toma la IP de .env del frontend
+  //const baseUrl = "http://192.168.1.116/server"; // Cambia esto por la URL de tu backend
+ const baseUrl=import.meta.env.VITE_API_URL; // toma la IP de .env del frontend
+ //console.log("BASE URL:", baseUrl);
  // const baseUrl = "http://localhost:8000"; // Cambia esto por la URL de tu backend
 
   let headers = {
