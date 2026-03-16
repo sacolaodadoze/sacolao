@@ -15,11 +15,10 @@ const PrintOrder = ({
     ? `<strong>HR:</strong> ${formatHour(order.delivery_hour)}`
     : "";
 
-   const dateToUse =
-    order.delivery_date
-      ? `${formatDate(order.delivery_date)} ${hourToUse}`
-      : formatDate(order.created_at);
-  
+  const dateToUse = order.delivery_date
+    ? `${formatDate(order.delivery_date)} ${hourToUse}`
+    : formatDate(order.created_at);
+
   useEffect(() => {
     if (!order || shouldPrint === 0 || !printWindowRef.current) return;
 
@@ -41,7 +40,7 @@ const PrintOrder = ({
     //const printWindow = window.open("", "_blank");
 
     if (!printWindow) {
-            return; // si el navegador bloquea popup
+      return; // si el navegador bloquea popup
     }
 
     printWindow.document.open();
@@ -62,6 +61,8 @@ const PrintOrder = ({
                 .center { text-align: center; }
                 .bold { font-weight: bold; }
                 .divider { border-top: 1px dashed black; margin: 5px 0; }
+                .espace { font-size:1px; line-height:20px;}
+                .footer-space { height: 50px;}
 
                 /* filas para etiquetas y valores */
                 .row { display: flex; align-items: flex-start; margin-bottom: 2px; }
@@ -132,11 +133,11 @@ const PrintOrder = ({
              <div class="divider"></div>
               <div class="div-pedido">
                  <div><strong>Pedido:</strong></div> 
-                 <div>${itemsFormatted}</div>
+                 <div>${itemsFormatted} </div>               
+                
              </div>
-            
-             
-            </body>
+  
+        </body>
           </html>
         `);
     //detail.description
@@ -156,13 +157,13 @@ const PrintOrder = ({
 
   return null; // no necesita renderizar nada en el DOM principal/*  */
 };
- const formatDate = (date) => {
-   if (!date) return "";
-   const datePart = date.split("T")[0]; 
+const formatDate = (date) => {
+  if (!date) return "";
+  const datePart = date.split("T")[0];
   const [year, month, day] = datePart.split("-");
   //return new Date(year, month - 1, day).toLocaleDateString("pt-BR");
   return `${day}/${month}/${year}`;
-}; 
+};
 
 const formatHour = (time) => time.slice(0, 5);
 
@@ -180,5 +181,6 @@ const formatDateTime = (date) => {
     minute: "2-digit",
   });
 };
+
 
 export default PrintOrder;
