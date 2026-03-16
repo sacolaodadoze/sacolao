@@ -83,7 +83,7 @@ const PrintOrder = ({
                 .div-pedido {
                   display: flex;
                   align-items: flex-start;
-                  margin-bottom: 1px;
+                  margin-bottom: 10px;
                 }
                 .div-pedido > div:first-child {
                   display: inline-block;               
@@ -133,9 +133,11 @@ const PrintOrder = ({
              <div class="divider"></div>
               <div class="div-pedido">
                  <div><strong>Pedido:</strong></div> 
-                 <div>${itemsFormatted} </div>               
+                 <div style="margin-bottom : 40px;">${itemsFormatted} </div>               
                 
              </div>
+             
+              <div class="divider"></div>
   
         </body>
           </html>
