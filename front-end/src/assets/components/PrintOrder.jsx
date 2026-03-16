@@ -162,8 +162,10 @@ const PrintOrder = ({
 //const formatDate = (date) => new Date(date).toLocaleDateString("pt-BR");
  const formatDate = (date) => {
    if (!date) return "";
-  const [year, month, day] = date.split("-");
-  return new Date(year, month - 1, day).toLocaleDateString("pt-BR");
+   const datePart = date.split("T")[0]; 
+  const [year, month, day] = datePart.split("-");
+  //return new Date(year, month - 1, day).toLocaleDateString("pt-BR");
+  return `${day}/${month}/${year}`;
 }; 
 
 const formatHour = (time) => time.slice(0, 5);
