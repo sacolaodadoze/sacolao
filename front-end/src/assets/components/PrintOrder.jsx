@@ -6,19 +6,21 @@ const PrintOrder = ({
   shouldPrint,
   printWindowRef /* , onPrinted */,
 }) => {
-  //console.log("order",order,"shouldPrint:", shouldPrint,printWindowRef)
+  console.log("order",order,"shouldPrint:", shouldPrint,printWindowRef)
   const itemsFormatted = (order.items?.split("||").join("\n") || "").replace(
     /\n/g,
     "<br>",
   );
 
   const hourToUse = order.delivery_hour
-    ? `<strong>HR:</strong>${order.delivery_hour}`
+    ? `<strong>HR:</strong> ${formatHour(order.delivery_hour)}`
     : "";
-  const dateToUse = order.delivery_date
-    ? `${formatDate(order.delivery_date)} ${hourToUse}`
-    : formatDate(order.created_at);
 
+   const dateToUse =
+    order.delivery_date
+      ? `${formatDate(order.delivery_date)} ${hourToUse}`
+      : formatDate(order.created_at);
+  
   useEffect(() => {
     if (!order || shouldPrint === 0 || !printWindowRef.current) return;
 
@@ -157,7 +159,14 @@ const PrintOrder = ({
   return null; // no necesita renderizar nada en el DOM principal/*  */
 };
 
-const formatDate = (date) => new Date(date).toLocaleDateString("pt-BR");
+//const formatDate = (date) => new Date(date).toLocaleDateString("pt-BR");
+ const formatDate = (date) => {
+   if (!date) return "";
+  const [year, month, day] = date.split("-");
+  return new Date(year, month - 1, day).toLocaleDateString("pt-BR");
+}; 
+
+const formatHour = (time) => time.slice(0, 5);
 
 const formatDateTime = (date) => {
   if (!date) return "";
