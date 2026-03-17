@@ -13,5 +13,8 @@ export const API_ENDPOINTS = {
     PRODUCTS: {
         LIST: '/products',
         STOCK: '/products/check-stock',
+    },
+    VUUPT: {
+        GETCUSTOMER: '/vuupt/insert'
     }
 };
