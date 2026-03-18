@@ -127,7 +127,8 @@ const PrintOrder = ({
 
               ${order.customer.observation ? `<div><strong>PREF:</strong>${order.customer.observation.content}</div>` : ""}  
             
-               ${order.rate ? `<div><strong>Taxa de entrega:</strong>${order.rate.rate}</div>` : ""}             
+               ${order.rate ? `<div><strong>Taxa de entrega:</strong>${order.rate.rate}</div>` : ""}    
+              ${order.pickup ? `<div><strong>Retirar no local</strong></div>` : ""}         
               
 
              <div class="divider"></div>
