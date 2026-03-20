@@ -201,8 +201,12 @@ export default function CreateOrder({
           if (windVuupt.isConfirmed) {
             let params = {
               customer_code: result.customer.customer_code,
+              name: result.customer.name,
               title: result.number,
               paid: data.paid,
+              address: `${result.customer.addresses[0]?.street}, ${result.customer.addresses[0]?.number} - ${result.customer.addresses[0]?.neighborhood}, ${result.customer.addresses[0]?.city}- ${result.customer.addresses[0]?.state}, ${result.customer.addresses[0]?.cep},Brasil`,
+              complement: result.customer.addresses[0]?.complement,
+              phone_number: result.customer.phones[0]?.number,
               delivery_date: result.delivery_date,
               delivery_hour: result.delivery_hour,
             };

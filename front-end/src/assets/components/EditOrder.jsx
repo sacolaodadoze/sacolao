@@ -115,11 +115,11 @@ export default function EditOrder({
       });
 
       const result = await res.json();
-      getOrders();
-
-      if (!res.ok) {
+       if (!result.ok) {
         throw new Error(result.message || "Erro ao alterar o pedido");
       }
+      
+      getOrders();     
       setSaving(false);
       showNotification("Pedido alterado com sucesso", "success");
 

@@ -14,26 +14,31 @@ export const insertVuupt = async (params, showNotification) => {
     const response = await apiFetch(
       `/api/data?customer_code=${params.customer_code}`,
     );
-
-  console.log("Cliente por codigo:", response);
-    if (!response.ok) {     
-      throw new Error(response.message || LANG.VUUPT.ERROR);
-      console.log("Error al obtener datos del Vuupt:", response.message);
-    }
-
     const data = await response.json();
-       if (data.data.length === 0) {
-      console.warn("Cliente não encontrado no Vuupt");
+
+    //console.log("Cliente por codigo:", data, "Status", data.status);
+    if (!data.ok || data.status === 404) {
+      //si no esta el cliente
+     // console.log("Error al obtener datos del Vuupt:", data.message);
+      // if (data.data.length === 0) {
       const res = await apiFetch("/api/vuupt/customers", {
         method: "POST",
-        body: JSON.stringify(customer_vuupt),
+        body: JSON.stringify(params),
       });
-      const result = await res.json();
+      const resultAddCustomer = await res.json();
+
+      //console.log("Cliente criado no Vuupt:", resultAddCustomer);
+      if (!resultAddCustomer.ok) {
+        throw new Error(LANG.VUUPT.CUSTOMERCREATEDFAIL);
+      }
+      data = resultAddCustomer;
+      console.log("Data al insertar el cleinte",data) //ver como sale data para asignarlo debajo "data.data[0]"
     }
-    //Insertar pedido no Vuupt 
+
+    //Insertar pedido no Vuupt
     const bodyData = { ...data.data[0], ...params };
 
-   // console.log("Datos a insertar en Vuupt:", bodyData);
+    // console.log("Datos a insertar en Vuupt:", bodyData);
     const insert = await apiFetch("/api/insert", {
       method: "POST",
       body: JSON.stringify(bodyData),

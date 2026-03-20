@@ -87,6 +87,7 @@ export const LANG = {
     CONFIRMNOTFOUND: "Ok",
     CREATEDFAIL: "Erro ao inserir o pedido no Vuupt",
     CREATEDSUCCESS: "Pedido inserido com sucesso no Vuupt",
+    CUSTOMERCREATEDFAIL:"Erro ao inserir o  cliente no Vuupt "
   },
   DELETEORDER: {
     TITLE: "¿Deseja cancelar este pedido?",

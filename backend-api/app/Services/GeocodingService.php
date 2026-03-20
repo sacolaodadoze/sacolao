@@ -6,10 +6,12 @@ class GeocodingService
 {
     function getGeocodeData($address)
     {
+
         $address = urlencode($address);
-        $googleMapUrl = "https://maps.googleapis.com/maps/api/geocode/json?address={$address}&key=env('GOOGLE_MAPS_API_KEY')";
+        $googleMapUrl = "https://maps.googleapis.com/maps/api/geocode/json?address={$address}&key=" . env('GOOGLE_MAPS_API_KEY');
         $geocodeResponseData = file_get_contents($googleMapUrl);
         $responseData = json_decode($geocodeResponseData, true);
+
         if ($responseData['status'] == 'OK') {
             $latitude = isset($responseData['results'][0]['geometry']['location']['lat']) ? $responseData['results'][0]['geometry']['location']['lat'] : "";
             $longitude = isset($responseData['results'][0]['geometry']['location']['lng']) ? $responseData['results'][0]['geometry']['location']['lng'] : "";
