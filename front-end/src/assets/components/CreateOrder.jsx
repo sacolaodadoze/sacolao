@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useContext } from "react";
 import { LANG } from "../constants/languages.js";
 import { useForm, Controller } from "react-hook-form";
 import { apiFetch } from "../../api/apiFetch.js";
+import { insertVuupt } from "../../services/vuuptService.js";
 import {
   Button,
   DialogActions,
@@ -26,8 +27,9 @@ import { zodResolver } from "@hookform/resolvers/zod"; //validaciones
 import { schema } from "../../forms/orderForm.js";
 import PrintOrder from "./PrintOrder.jsx";
 import { AuthContext } from "../context/AuthContext.jsx";
-import { set } from "zod";
+import { number, set } from "zod";
 import React from "react";
+import Swal from "sweetalert2";
 
 export default function CreateOrder({
   open,
@@ -167,32 +169,15 @@ export default function CreateOrder({
         body: JSON.stringify(data),
       });
       const result = await res.json();
+      console.log("Respuesta al crear pedido:", result);
 
-      //Print
-      const orderPrint = await apiFetch(`/api/orders/${result.id}`);
-
-      if (!orderPrint.ok) {
-        showNotification(LANG.ORDERSLIST.ERROROREDR, "error");
-        return;
-      }
-      const resultToPrint = await orderPrint.json();
-      // console.log("To print:", resultToPrint);
-
-      setOrder(resultToPrint);
-      //  console.log("O print:", resultToPrint);
-      //setShouldPrint(null); // Activamos impresión
+      setOrder(result);
 
       setLoadingSave(false);
       showNotification(LANG.CREATEORDER.CREATEDSUCC, "success");
-      await getOrders();
       setOpen(false);
-      /*  printWindowRef.current = window.open(
-        "",
-        "PRINT",
-        "width=1000,height=600,top=100,left=100,toolbar=no,menubar=no",
-      );
-      setShouldPrint((prev) => prev + 1); */
-
+      getOrders();
+     // setShouldPrint((prev) => prev + 1);
       setTimeout(() => {
         printWindowRef.current = window.open(
           "",
@@ -203,6 +188,28 @@ export default function CreateOrder({
         setShouldPrint((prev) => prev + 1);
       }, 100);
 
+      if (res.ok) {
+        setTimeout(async () => {
+          const windVuupt = await Swal.fire({
+            title: LANG.VUUPT.VUUPT,
+            text: LANG.VUUPT.TEXT,
+            icon: "info",
+            showCancelButton: true,
+            confirmButtonText: LANG.VUUPT.CONFIRM,
+            cancelButtonText: LANG.GLOBAL.CANCEL,
+          });
+          if (windVuupt.isConfirmed) {
+            let params = {
+              customer_code: result.customer.customer_code,
+              title: result.number,
+              paid: data.paid,
+              delivery_date: result.delivery_date,
+              delivery_hour: result.delivery_hour,
+            };
+            insertVuupt(params, showNotification);
+          }
+        }, 3000);
+      }
       setcustomerSelected(null);
       console.log("Guardado:", result);
     } catch (error) {

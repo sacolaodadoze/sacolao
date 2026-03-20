@@ -11,7 +11,8 @@ use App\Http\Controllers\PaymentTypeController;
 use App\Http\Controllers\StatusController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\RateController;
-
+use App\Http\Controllers\External\GeocodingController;
+use App\Http\Controllers\External\VuuptController;
 
 /* Route::get('/user', function (Request $request) {
     return $request->user();
@@ -63,5 +64,13 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
     Route::get('/orders/{id}', [OrderController::class, 'show']);  
   
     //Del order
-    Route::delete('/orders/{id}', [OrderController::class, 'destroy'])->middleware('admin');;
+    Route::delete('/orders/{id}', [OrderController::class, 'destroy'])->middleware('admin');
+
+    //VUUPT
+     Route::get('/data', [VuuptController::class, 'getData']);
+     Route::post('/insert', [VuuptController::class, 'store']);
+     Route::post('/vuupt/customers', [VuuptController::class, 'storeCustomer']);
+
+    //Maps
+   
 });
