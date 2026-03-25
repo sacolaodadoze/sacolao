@@ -110,7 +110,7 @@ class OrderController extends Controller
             'phone' => 'nullable|string',
             'cep' => 'required|string',
             'street' => 'required|string',
-            'number' => 'required|string',
+            'number' => 'nullable|string',
             'neighborhood' => 'nullable|string',
             'complement' => 'nullable|string',
             'city' => 'required|string',
@@ -202,7 +202,7 @@ class OrderController extends Controller
             return $order;
         });
 
-        $order->load(['customer','customer.addresses','customer.phones','customer.observation','entry','payment','rate','user']);
+        $order->load(['detail','customer','customer.addresses','customer.phones','customer.observation','entry','payment','rate','user']);
 
         return response()->json($order, 201);
     }
