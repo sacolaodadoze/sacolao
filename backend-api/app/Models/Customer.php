@@ -34,7 +34,7 @@ class Customer extends Model
      */
     public function addresses(): HasMany
     {
-        return $this->hasMany(Address::class) ->orderBy('is_primary', 'desc');
+        return $this->hasMany(Address::class) ->orderBy('is_primary', 'asc');
     }
 
       /**
