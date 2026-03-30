@@ -26,7 +26,7 @@ class Customer extends Model
      */
     public function phones(): HasMany
     {
-        return $this->hasMany(Phone::class);
+        return $this->hasMany(Phone::class) ->orderBy('type', 'asc');
     }
 
     /**
@@ -34,7 +34,7 @@ class Customer extends Model
      */
     public function addresses(): HasMany
     {
-        return $this->hasMany(Address::class);
+        return $this->hasMany(Address::class) ->orderBy('is_primary', 'desc');
     }
 
       /**
