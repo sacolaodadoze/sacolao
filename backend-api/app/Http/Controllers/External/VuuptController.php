@@ -50,7 +50,7 @@ class VuuptController extends Controller
             ->format('Y-m-d\TH:i:sP') : $start->copy()->addMinutes(30)->format('Y-m-d\TH:i:sP');
 
         $orderData = [
-            'title' => $request->delivery_date ? $request->title . " " . "AG" . $request->delivery_hour . " HRS" : $request->title,
+            'title' => $request->delivery_date ? $request->title . " " . "AG" ." ". $request->delivery_hour . " HRS" : $request->title,
             'type' => "delivery",
             'email' => "",
             'phone_number' => $request->phone_number,
