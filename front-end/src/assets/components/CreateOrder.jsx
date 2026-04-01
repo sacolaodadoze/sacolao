@@ -166,33 +166,15 @@ export default function CreateOrder({
         method: "POST",
         body: JSON.stringify(data),
       });
-      const result = await res.json();
+      const result = await res.json();    
 
-      //Print
-      const orderPrint = await apiFetch(`/api/orders/${result.id}`);
-
-      if (!orderPrint.ok) {
-        showNotification(LANG.ORDERSLIST.ERROROREDR, "error");
-        return;
-      }
-      const resultToPrint = await orderPrint.json();
-      // console.log("To print:", resultToPrint);
-
-      setOrder(resultToPrint);
-      //  console.log("O print:", resultToPrint);
-      //setShouldPrint(null); // Activamos impresión
-
+      setOrder(result);
+     
       setLoadingSave(false);
       showNotification(LANG.CREATEORDER.CREATEDSUCC, "success");
       await getOrders();
       setOpen(false);
-      /*  printWindowRef.current = window.open(
-        "",
-        "PRINT",
-        "width=1000,height=600,top=100,left=100,toolbar=no,menubar=no",
-      );
-      setShouldPrint((prev) => prev + 1); */
-
+            
       setTimeout(() => {
         printWindowRef.current = window.open(
           "",
@@ -203,8 +185,7 @@ export default function CreateOrder({
         setShouldPrint((prev) => prev + 1);
       }, 100);
 
-      setcustomerSelected(null);
-      console.log("Guardado:", result);
+      setcustomerSelected(null);     
     } catch (error) {
       setLoadingSave(false);
       showNotification(error.message || "Erro ao criar pedido", "error");
