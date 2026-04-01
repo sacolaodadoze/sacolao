@@ -2,6 +2,7 @@ export const LANG = {
   GLOBAL: {
     CANCEL: "Cancelar",
     CONNECTION: "Erro de conexão",
+    REQUIRED: "Campo obrigatório",
   },
   HEADER: {
     SITE: "Sacolão da Doze",
@@ -16,10 +17,11 @@ export const LANG = {
     CARDAPIO: "Cardapio",
   },
   IMPORT: {
-    ACTIONS: "--Importar--",
+    ACTIONS: "--Ações--",
     CLIENTES: "Clientes",
     PRODUCTS: "Produtos",
     TOOLTSELECT: "Importar Clientes/Produtos",
+    PDF: "Ver PDFs",
   },
   LOGGIN: {
     ERROR: "Nome de usuário ou senha incorretos",
@@ -67,14 +69,26 @@ export const LANG = {
     PAID: "Pago",
     PAYMENT: "Forma de pagamento",
     ENTRY: "Entrada",
-    RATE: "Taxa de entrega",  
+    RATE: "Taxa de entrega",
     ITEMS: "Itens do pedido",
-    OBSERVATION: "Observações do cliente",   
+    OBSERVATION: "Observações do cliente",
     DETAIL: "Detalhes do pedido",
     DELIVERYHOUR: "Hora de entrega",
     DELIVERYDATE: "Data de entrega",
     SCHEDULED: "Agendado",
-    
+  },
+  VUUPT: {
+    TITLE: "Dados do Vuupt",
+    ERROR: "Erro ao obter os dados do cliente no Vuupt",
+    NOTFOUND: "Cliente não encontrado",
+    TEXT: "Deseja que este pedido seja inserido no VUUPT?",
+    VUUPT: "Inserir pedido para Vuupt",
+    CONFIRM: "Sim, inserir",
+    TEXTNOTFOUND: "O cliente não foi encontrado no Vuupt",
+    CONFIRMNOTFOUND: "Ok",
+    CREATEDFAIL: "Erro ao inserir o pedido no Vuupt",
+    CREATEDSUCCESS: "Pedido inserido com sucesso no Vuupt",
+    CUSTOMERCREATEDFAIL: "Erro ao inserir o  cliente no Vuupt ",
   },
   DELETEORDER: {
     TITLE: "¿Deseja cancelar este pedido?",
@@ -86,5 +100,25 @@ export const LANG = {
   },
   EDITORDER: {
     WEDIT: "Alterar pedido",
+  },
+  CREATECUSTOMER: {
+    WIND: "Inserir cliente",
+    TYPE: "Tipo do cliente",
+    FIS: "Física",
+    JUR: "Jurídica",
+    PHONE_P: "Telefone principal",
+    PHONE_S: "Telefone secundário",
+    OBSERVATION: "Observações",
+    ADDRESS: "Endereço",
+    NAMEREQ: "O nome é requerdio",
+    CUSTOMERSUCCESS: "Cliente inserido com sucesso",
+    FAILCUSTOMER: "Erro ao inserir cliente",
+  },
+  DELETEPDF: {
+    TITLE: "¿Deseja excluir este PDF?",
+    TEXT: "Esta ação não pode ser desfeita",
+    NOTIFICATIONS_PDF_DELETED: "Pdf excluído com sucesso",   
+    ERROR: "Erro ao excluir",
+    CONFIRM: "Sím, excluir",
   },
 };

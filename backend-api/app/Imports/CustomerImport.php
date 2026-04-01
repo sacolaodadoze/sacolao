@@ -24,8 +24,40 @@ class CustomerImport implements ToCollection, WithHeadingRow, WithChunkReading
      */
     public function collection(Collection $rows)
     {
+
         DB::transaction(function () use ($rows) {
-            $customers = [];
+            /*//////Trae solo los clientes que cumplen las dos condiciones:
+                document está en la lista del CSV ,customer_code es NULL*/
+                dd($rows);
+            $documents = [];
+          //  $customers = [];
+
+            foreach ($rows as $row) {
+               $document = (new ImportHelper())->validatedValue($row, 'cnpjcpf');
+              //$document = $row['cnpjcpf'] ?? null;
+                //$codigo = $row['ca3digo'];
+                // dd($document);
+                /*  if ($document) {
+                    $documents[$document] = $row['codigo'];
+                } */
+                if ($document && !isset($documents[$document])) {
+                    $documents[$document] =  $row['Código'];;
+                }
+            }
+             dd($documents);
+
+            // Buscar clientes existentes sin código pero con mismo document
+            $existingCustomers = Customer::whereIn('document', array_keys($documents))
+                ->whereNull('customer_code')
+                ->get();
+dd($existingCustomers);
+            foreach ($existingCustomers as $customer) {
+                $customer->update([
+                    'customer_code' => $documents[$customer->document]
+                ]);
+            }
+            ///////////////////////////////////////
+
             $codes = [];
 
             foreach ($rows as $row) {
@@ -42,10 +74,10 @@ class CustomerImport implements ToCollection, WithHeadingRow, WithChunkReading
                     'name'          => $row['nome'],
                     'customer_code' => $row['codigo'], //  único
                     'document'      => $document,
-                    'customer_type' => $customer_type                  
+                    'customer_type' => $customer_type
                 ];
 
-                $codes[] = $row['codigo'];
+                $codes[] =  $codigo; //$row['codigo'];
             }
 
             //  UPSERT masivo
@@ -76,7 +108,6 @@ class CustomerImport implements ToCollection, WithHeadingRow, WithChunkReading
                     (new AddressImport($customer->id))->model($row);
                 }
             }
-
         });
     }
 
