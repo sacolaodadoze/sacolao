@@ -82,7 +82,7 @@ export const LANG = {
     ERROR: "Erro ao obter os dados do cliente no Vuupt",
     NOTFOUND: "Cliente não encontrado",
     TEXT: "Deseja que este pedido seja inserido no VUUPT?",
-    VUUPT: "Inserir pedido para Vuupt",
+    VUUPT: "Inserir pedido no Vuupt",
     CONFIRM: "Sim, inserir",
     TEXTNOTFOUND: "O cliente não foi encontrado no Vuupt",
     CONFIRMNOTFOUND: "Ok",

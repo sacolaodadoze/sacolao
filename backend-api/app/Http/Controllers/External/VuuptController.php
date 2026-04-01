@@ -100,4 +100,25 @@ class VuuptController extends Controller
             ->post('https://api.vuupt.com/api/v1/customers', $customerData);
         return $response->json();
     }
+
+    public function updateService($id, $paid)
+    {
+         $serviceData = Http::withToken(env('VUUPT_TOKEN'))
+            ->get('https://api.vuupt.com/api/v1/services/' . $id);
+            dd($serviceData->json());
+/* 
+       $serviceData = [
+            'name' => $request->name,
+            'code' =>  $request->customer_code,
+            'address' => $request->address,
+            'address_complement' =>  $request->address_complement ?? "",
+            'phone_number' => $request->phone_number,
+            'latitude' => $coords['latitude'] ?? null,
+            'longitude' => $coords['longitude'] ?? null
+        ]; */
+        //dd($customerData);
+        $response = Http::withToken(env('VUUPT_TOKEN'))
+            ->put('https://api.vuupt.com/api/v1/services/' . $serviceData->id, $serviceData);
+        return $response->json();
+    }
 }

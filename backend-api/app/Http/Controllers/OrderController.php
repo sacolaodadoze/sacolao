@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\External\VuuptController;
 use App\Models\Address;
 use App\Models\Customer;
 use App\Models\Observation;
@@ -65,11 +66,11 @@ class OrderController extends Controller
         //}
         //dd($request->perPage);
         $orders = $query->orderBy('id', 'desc')->paginate(
-                $request->perPage,
-                ['*'],
-                'page',
-                $request->page
-            ); //->get();
+            $request->perPage,
+            ['*'],
+            'page',
+            $request->page
+        ); //->get();
 
         return response()->json($orders);
     }
@@ -88,7 +89,7 @@ class OrderController extends Controller
      * @param Request $request
      * @return void
      */
-    public function store(Request $request)
+    public function store(Request $request, VuuptController $vuuptController)
     {
         $user = $request->user();
 
@@ -130,6 +131,22 @@ class OrderController extends Controller
             );
         }
         $data = $request->validate($rules);
+        // dd($data);
+        //Update pedidio no VUUPT
+    /*     if ($data['id']) {
+            $order_v = Order::with('customer')->find($data['id']);
+            //  dd($order_v->customer["customer_code"]);
+            if ($data["paid"] !== $order_v->paid) {
+                $request = new \Illuminate\Http\Request(); //para poder pasarle el parametro, porque recibe un request
+                $request->merge(['customer_code' => $order_v->customer["customer_code"]]);
+                $vuupt = $vuuptController->getData($request);
+               // dd($id_vuupt['data'][0]['id']);
+               dd($vuupt['data'][0]);
+               $vuuptController->updateService($vuupt['data'][0]['id'],$data["paid"]);
+            }
+
+          
+        } */
 
         $order = DB::transaction(function () use ($data, $user) {
 
