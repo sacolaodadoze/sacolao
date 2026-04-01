@@ -64,12 +64,12 @@ class OrderController extends Controller
         });  */
         //}
         //dd($request->perPage);
-        $orders = $query->orderBy('created_at', 'desc')->paginate(
-            $request->perPage,
-            ['*'],
-            'page',
-            $request->page
-        ); //->get();
+        $orders = $query->orderBy('id', 'desc')->paginate(
+                $request->perPage,
+                ['*'],
+                'page',
+                $request->page
+            ); //->get();
 
         return response()->json($orders);
     }
@@ -202,7 +202,7 @@ class OrderController extends Controller
             return $order;
         });
 
-        $order->load(['detail','customer','customer.addresses','customer.phones','customer.observation','entry','payment','rate','user']);
+        $order->load(['detail', 'customer', 'customer.addresses', 'customer.phones', 'customer.observation', 'entry', 'payment', 'rate', 'user']);
 
         return response()->json($order, 201);
     }
