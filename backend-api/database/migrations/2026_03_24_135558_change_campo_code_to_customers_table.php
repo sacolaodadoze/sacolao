@@ -9,12 +9,10 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-      
     public function up(): void
     {
-        Schema::table('orders', function (Blueprint $table) {
-            $table->foreignId('rate_id')->nullable()->constrained('rates')->nullOnDelete();
-            
+        Schema::table('customers', function (Blueprint $table) {
+             $table->bigInteger('customer_code')->nullable()->change();
         });
     }
 
@@ -23,9 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('orders', function (Blueprint $table) {
-         $table->dropForeign(['rate_id']);
-       
+        Schema::table('customers', function (Blueprint $table) {
+             $table->bigInteger('customer_code')->nullable()->change();
         });
     }
 };

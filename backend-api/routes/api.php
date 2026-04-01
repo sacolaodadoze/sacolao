@@ -10,9 +10,11 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentTypeController;
 use App\Http\Controllers\StatusController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\External\ExtCustomerController;
 use App\Http\Controllers\RateController;
 use App\Http\Controllers\External\GeocodingController;
 use App\Http\Controllers\External\VuuptController;
+use App\Http\Controllers\PdfController;
 
 /* Route::get('/user', function (Request $request) {
     return $request->user();
@@ -51,7 +53,7 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
     //Obter entradas
     Route::get('/entries', [EntryController::class, 'index']);
 
-       //Obter taxas
+    //Obter taxas
     Route::get('/rates', [RateController::class, 'index']);
 
     //Obter clientes
@@ -61,16 +63,26 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
     Route::post('/orders', [OrderController::class, 'store']);
 
     //Obter order por id
-    Route::get('/orders/{id}', [OrderController::class, 'show']);  
-  
+    Route::get('/orders/{id}', [OrderController::class, 'show']);
+
     //Del order
     Route::delete('/orders/{id}', [OrderController::class, 'destroy'])->middleware('admin');
 
     //VUUPT
-     Route::get('/data', [VuuptController::class, 'getData']);
-     Route::post('/insert', [VuuptController::class, 'store']);
-     Route::post('/vuupt/customers', [VuuptController::class, 'storeCustomer']);
+    Route::get('/data', [VuuptController::class, 'getData']);
+    Route::post('/insert', [VuuptController::class, 'store']);
+    Route::post('/vuupt/customers', [VuuptController::class, 'storeCustomer']);
 
-    //Maps
-   
+    //Services addCustomer
+    Route::get('/address/{cep}', [ExtCustomerController::class, 'address']);
+    Route::get('/states', [ExtCustomerController::class, 'states']);
+    Route::get('/cities/{uf}', [ExtCustomerController::class, 'cities']);
+
+    //Add customer
+    Route::post('/customers/', [CustomerController::class, 'store']);
+
+    //PDF   
+    Route::get('/customer/pdfs', [PdfController::class, 'list']);
+   // Route::get('/customer/pdf', [PdfController::class, 'show']); //esta en web
+    Route::delete('/customer/pdf', [PdfController::class, 'delete']);
 });

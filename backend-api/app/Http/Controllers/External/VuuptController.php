@@ -21,7 +21,7 @@ class VuuptController extends Controller
                 'fields' => 'id,name,code,address,address_complement,phone_number,latitude,longitude',
                 'filter[0][field]' => 'code',
                 'filter[0][operator]' => 'eq',
-                'filter[0][value]' => 0, //$request->input('customer_code')
+                'filter[0][value]' => $request->input('customer_code')
             ]);
         if ($response->failed()) {
             return response()->json([
@@ -50,7 +50,7 @@ class VuuptController extends Controller
             ->format('Y-m-d\TH:i:sP') : $start->copy()->addMinutes(30)->format('Y-m-d\TH:i:sP');
 
         $orderData = [
-            'title' => $request->delivery_date ? $request->title . " " . "AG" . $request->delivery_hour . "HRS" : $request->title,
+            'title' => $request->delivery_date ? $request->title . " " . "AG" . $request->delivery_hour . " HRS" : $request->title,
             'type' => "delivery",
             'email' => "",
             'phone_number' => $request->phone_number,
@@ -76,7 +76,7 @@ class VuuptController extends Controller
                 'field_boolean_1' => $request->paid ? 1 : 0
             ]
         ];
-
+      
         $response = Http::withToken(env('VUUPT_TOKEN'))
             ->post('https://api.vuupt.com/api/v1/services', $orderData);
         // dd($response->json());
@@ -85,19 +85,17 @@ class VuuptController extends Controller
 
     public function storeCustomer(Request $request, GeocodingService $geoService)
     {
-        $coords = $geoService->getGeocodeData($request->address);          
-         //TODO getCode   
-        $code = "";
+        $coords = $geoService->getGeocodeData($request->address);       
         $customerData = [
             'name' => $request->name,
-            'code' => $code,
+            'code' =>  $request->customer_code,
             'address' => $request->address,
             'address_complement' =>  $request->address_complement ?? "",
             'phone_number' => $request->phone_number,
             'latitude' => $coords['latitude'] ?? null,
             'longitude' => $coords['longitude'] ?? null
         ];
-//dd($customerData);
+        //dd($customerData);
         $response = Http::withToken(env('VUUPT_TOKEN'))
             ->post('https://api.vuupt.com/api/v1/customers', $customerData);
         return $response->json();

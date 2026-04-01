@@ -6,6 +6,7 @@ const PrintOrder = ({
   shouldPrint,
   printWindowRef /* , onPrinted */,
 }) => {
+ 
   const itemsFormatted = (order.items?.split("||").join("\n") || "").replace(
     /\n/g,
     "<br>",

@@ -110,7 +110,7 @@ class OrderController extends Controller
             'phone' => 'nullable|string',
             'cep' => 'required|string',
             'street' => 'required|string',
-            'number' => 'required|string',
+            'number' => 'nullable|string',
             'neighborhood' => 'nullable|string',
             'complement' => 'nullable|string',
             'city' => 'required|string',
