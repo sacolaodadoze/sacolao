@@ -6,6 +6,7 @@ const PrintOrder = ({
   shouldPrint,
   printWindowRef /* , onPrinted */,
 }) => {
+ 
   const itemsFormatted = (order.items?.split("||").join("\n") || "").replace(
     /\n/g,
     "<br>",
@@ -22,23 +23,7 @@ const PrintOrder = ({
   useEffect(() => {
     if (!order || shouldPrint === 0 || !printWindowRef.current) return;
 
-    // Esperamos que React haya renderizado el ticket
-    // const timer = setTimeout(() => {
-    // Abrimos una nueva ventana para imprimir
-
-    // abrir ventana solo si no existe
-    /*  if (!printWindowRef.current || printWindowRef.current.closed) {
-      printWindowRef.current = window.open(
-        "",
-        "PRINT",
-        "width=400,height=600,top=100,left=100,toolbar=no,menubar=no",
-      );
-    } */
-    const printWindow = printWindowRef.current;
-    // const printWindow = window.open("", "PRINT", "height=600,width=400");
-
-    //const printWindow = window.open("", "_blank");
-
+     const printWindow = printWindowRef.current;  
     if (!printWindow) {
       return; // si el navegador bloquea popup
     }

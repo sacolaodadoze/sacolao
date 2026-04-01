@@ -27,4 +27,5 @@ class ImportHelper implements WithCustomCsvSettings
         $value = $row[$key] ?? null;
         return $this->isValid($value) ? $value : null;
     }
+  
 }

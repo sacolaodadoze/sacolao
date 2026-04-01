@@ -114,18 +114,22 @@ export default function EditOrder({
         body: JSON.stringify(data),
       });
 
-      const result = await res.json();
-      getOrders();
-
       if (!res.ok) {
         throw new Error(result.message || "Erro ao alterar o pedido");
       }
+
+      const result = await res.json();
+      console.log("Pedido alterado:", result);
       setSaving(false);
+      getOrders();
+     
       showNotification("Pedido alterado com sucesso", "success");
 
       setOpen(false);
     } catch (error) {
       showNotification(error.message || "Erro ao alterar o pedido", "error");
+    } finally {
+      setSaving(false);
     }
   };
   return (
@@ -218,7 +222,7 @@ export default function EditOrder({
                   <Controller
                     name="entry_id"
                     control={control}
-                   // rules={{ required: "Campo obligatorio" }}
+                    // rules={{ required: "Campo obligatorio" }}
                     render={({ field }) => (
                       <FormControl
                         sx={{ width: "100%" }}

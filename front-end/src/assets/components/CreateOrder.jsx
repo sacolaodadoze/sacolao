@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef, useContext } from "react";
+import { createPortal } from "react-dom";
 import { LANG } from "../constants/languages.js";
 import { useForm, Controller } from "react-hook-form";
 import { apiFetch } from "../../api/apiFetch.js";
+import { insertVuupt } from "../../services/vuuptService.js";
 import {
   Button,
   DialogActions,
@@ -26,8 +28,10 @@ import { zodResolver } from "@hookform/resolvers/zod"; //validaciones
 import { schema } from "../../forms/orderForm.js";
 import PrintOrder from "./PrintOrder.jsx";
 import { AuthContext } from "../context/AuthContext.jsx";
-import { set } from "zod";
+import { number, set } from "zod";
 import React from "react";
+import Swal from "sweetalert2";
+import CreateCustomer from "./CreateCustomer.jsx";
 
 export default function CreateOrder({
   open,
@@ -96,6 +100,8 @@ export default function CreateOrder({
 
   const { user } = useContext(AuthContext);
   const printWindowRef = useRef(null);
+  const [openAddCustomer, setOpenAddCustomer] = useState(false); //modal de criar cliente
+  const [isInsertingVuuupt, setIsInsertingVuupt] = useState(false);
 
   //Pesquisar cliente
   const searchCustomer = async (texto) => {
@@ -122,6 +128,31 @@ export default function CreateOrder({
       setValue("delivery_hour", "");
     }
   }, [agendado]);
+
+  //Set values al selecionar el cliente
+
+  useEffect(() => {
+    //console.info("Set values", customerSelected);
+    if (customerSelected === null) return;
+    // setcustomerSelected(customer);
+    setValue("customer_id", customerSelected.id);
+    setLoading(false);
+
+    setValue("document", customerSelected.document ?? "");
+    setValue("name", customerSelected.name ?? "");
+    setValue("phone", customerSelected.phones[0]?.number ?? "");
+    setValue("cep", customerSelected.addresses[0]?.cep ?? "");
+    setValue("street", customerSelected.addresses[0]?.street ?? "");
+    setValue("number", customerSelected.addresses[0]?.number ?? "");
+    setValue("complement", customerSelected.addresses[0]?.complement ?? "");
+    setValue("neighborhood", customerSelected.addresses[0]?.neighborhood ?? "");
+    setValue("city", customerSelected.addresses[0]?.city ?? "");
+    setValue("state", customerSelected.addresses[0]?.state ?? "");
+
+    setValue("observations", customerSelected.observation?.content ?? "");
+
+    setFormData(customerSelected);
+  }, [customerSelected]);
 
   const normalize = (v) => {
     if (v === null || v === undefined || v === "null" || v === "-") {
@@ -166,15 +197,16 @@ export default function CreateOrder({
         method: "POST",
         body: JSON.stringify(data),
       });
-      const result = await res.json();    
+      const result = await res.json();
+      console.log("Respuesta al crear pedido:", result);
 
       setOrder(result);
-     
+
       setLoadingSave(false);
       showNotification(LANG.CREATEORDER.CREATEDSUCC, "success");
-      await getOrders();
       setOpen(false);
-            
+      getOrders();
+      // setShouldPrint((prev) => prev + 1);
       setTimeout(() => {
         printWindowRef.current = window.open(
           "",
@@ -185,11 +217,43 @@ export default function CreateOrder({
         setShouldPrint((prev) => prev + 1);
       }, 100);
 
-      setcustomerSelected(null);     
+      if (res.ok) {
+        setTimeout(async () => {
+          const windVuupt = await Swal.fire({
+            title: LANG.VUUPT.VUUPT,
+            text: LANG.VUUPT.TEXT,
+            icon: "info",
+            showCancelButton: true,
+            confirmButtonText: LANG.VUUPT.CONFIRM,
+            cancelButtonText: LANG.GLOBAL.CANCEL,
+            allowOutsideClick: false,
+          });
+          if (windVuupt.isConfirmed) {
+            setIsInsertingVuupt(true);
+            let params = {
+              customer_code: result.customer.customer_code,
+              name: result.customer.name,
+              title: result.number,
+              paid: data.paid,
+              address: `${result.customer.addresses[0]?.street}, ${result.customer.addresses[0]?.number} - ${result.customer.addresses[0]?.neighborhood}, ${result.customer.addresses[0]?.city}- ${result.customer.addresses[0]?.state}, ${result.customer.addresses[0]?.cep},Brasil`,
+              complement: result.customer.addresses[0]?.complement,
+              phone_number: result.customer.phones[0]?.number,
+              delivery_date: result.delivery_date,
+              delivery_hour: result.delivery_hour,
+            };
+
+            await insertVuupt(params, showNotification);
+          }
+        }, 3000);
+      }
+      setcustomerSelected(null);
+      console.log("Guardado:", result);
     } catch (error) {
       setLoadingSave(false);
       showNotification(error.message || "Erro ao criar pedido", "error");
       setcustomerSelected(null);
+    } finally {
+      setIsInsertingVuupt(false);
     }
   };
 
@@ -198,13 +262,23 @@ export default function CreateOrder({
     setcustomerSelected(null);
   };
 
-  const handleCustomer = (customer) => {
+  /*  const handleCustomer = (customer) => {
     setCustomer(customer);
     if (customer) {
       Object.keys(customer).forEach((key) => {
         setValue(key, customer[key]);
       });
     }
+  }; */
+
+  const handleAddCustomer = () => {
+    setOpenAddCustomer(true);
+  };
+
+  const handleCustomerCreated = (newCustomer) => {
+    console.log("Cliente creado:", newCustomer);
+    setcustomerSelected(newCustomer);
+    setOpenAddCustomer(false);
   };
 
   // Espera un tick para que el DOM exista, para poner el focus
@@ -219,87 +293,104 @@ export default function CreateOrder({
       <form style={{ width: "100%", gap: 2 }}>
         <Stack spacing={3}>
           <Stack spacing={2}>
-            <Controller
-              name="customer_id"
-              control={control}
-              render={({ field }) => (
-                <Autocomplete
-                  options={customer}
-                  loading={loading}
-                  value={customerSelected}
-                  getOptionLabel={(option) => option?.name || ""}
-                  isOptionEqualToValue={(option, value) =>
-                    option.id === value?.id
-                  }
-                  onInputChange={(event, value, reason) => {
-                    if (reason !== "input") return; //El usuario está escribiendo en el teclado
-                    if (value.length < 3) {
-                      setCustomer([]);
-                      return;
-                    }
-                    clearTimeout(debounceRef.current); //cada vez que el user escribe cancelamos el timeout anterior
+            <Box
+              sx={{
+                width: "100%",
+                display: "flex",
+                flexWrap: "wrap",
+                gap: 2,
+              }}
+            >
+              <Box
+                sx={{ width: { xs: "100%", md: "calc(77% - 8px)", gap: 2 } }}
+              >
+                <Controller
+                  name="customer_id"
+                  control={control}
+                  render={({ field }) => (
+                    <Autocomplete
+                      options={customer}
+                      loading={loading}
+                      value={customerSelected}
+                      getOptionLabel={(option) => option?.name || ""}
+                      isOptionEqualToValue={(option, value) =>
+                        option.id === value?.id
+                      }
+                      onInputChange={(event, value, reason) => {
+                        if (reason !== "input") return; //El usuario está escribiendo en el teclado
+                        if (value.length < 3) {
+                          setCustomer([]);
+                          return;
+                        }
+                        clearTimeout(debounceRef.current); //cada vez que el user escribe cancelamos el timeout anterior
 
-                    debounceRef.current = setTimeout(() => {
-                      //con debounce se hace 1 sola peticion, cuando el usuario deja de escribir
-                      setLoading(true);
-                      searchCustomer(value).finally(() => setLoading(false));
-                    }, 300); //Espera 300 ms y luego ejecuta searchCustomer
-                  }}
-                  //TODO carga dos veces la peticion de buscar cliente
-                  onChange={(event, customer) => {
-                    if (!customer) {
-                      setcustomerSelected(null);
-                      reset();
-                      setValue("observations", "");
-                      return;
-                    }
-                    setcustomerSelected(customer);
-                    setValue("customer_id", customer.id);
-                    setLoading(false);
-
-                    setValue("document", customer.document ?? "");
-                    setValue("name", customer.name ?? "");
-                    setValue("phone", customer.phones[0]?.number ?? "");
-                    setValue("cep", customer.addresses[0]?.cep ?? "");
-                    setValue("street", customer.addresses[0]?.street ?? "");
-                    setValue("number", customer.addresses[0]?.number ?? "");
-                    setValue(
-                      "complement",
-                      customer.addresses[0]?.complement ?? "",
-                    );
-                    setValue(
-                      "neighborhood",
-                      customer.addresses[0]?.neighborhood ?? "",
-                    );
-                    setValue("city", customer.addresses[0]?.city ?? "");
-                    setValue("state", customer.addresses[0]?.state ?? "");
-
-                    setValue(
-                      "observations",
-                      customer.observation?.content ?? "",
-                    );
-
-                    setFormData(customer);
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="Pesquisar cliente"
-                      inputRef={firstInputRef}
-                      fullWidth
-                      disabled={loading}
-                      InputProps={{
-                        ...params.InputProps,
-                        endAdornment: (
-                          <>
-                            {loading && <CircularProgress size={30} />}
-                            {params.InputProps.endAdornment}
-                          </>
-                        ),
+                        debounceRef.current = setTimeout(() => {
+                          //con debounce se hace 1 sola peticion, cuando el usuario deja de escribir
+                          setLoading(true);
+                          searchCustomer(value).finally(() =>
+                            setLoading(false),
+                          );
+                        }, 300); //Espera 300 ms y luego ejecuta searchCustomer
                       }}
-                    />
-                  )}
-                  /*  //TODO  ponerle una lupa al buscar
+                      //TODO carga dos veces la peticion de buscar cliente
+                      onChange={(event, customer) => {
+                        if (!customer) {
+                          setcustomerSelected(null);
+                          reset();
+                          setValue("observations", "");
+                          return;
+                        }
+                        console.info("Customer seleccionado", customer);
+                        setcustomerSelected(customer);
+
+                        setLoading(false);
+
+                        /*   
+                      setValue("customer_id", customer.id);
+                       setValue("document", customer.document ?? "");
+                        setValue("name", customer.name ?? "");
+                        setValue("phone", customer.phones[0]?.number ?? "");
+                        setValue("cep", customer.addresses[0]?.cep ?? "");
+                        setValue("street", customer.addresses[0]?.street ?? "");
+                        setValue("number", customer.addresses[0]?.number ?? "");
+                        setValue(
+                          "complement",
+                          customer.addresses[0]?.complement ?? "",
+                        );
+                        setValue(
+                          "neighborhood",
+                          customer.addresses[0]?.neighborhood ?? "",
+                        );
+                        setValue("city", customer.addresses[0]?.city ?? "");
+                        setValue("state", customer.addresses[0]?.state ?? "");
+
+                        setValue(
+                          "observations",
+                          customer.observation?.content ?? "",
+                        );
+
+                        setFormData(customer);  */
+                      }}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Pesquisar cliente"
+                          inputRef={firstInputRef}
+                          fullWidth
+                          disabled={loading}
+                          InputProps={{
+                            ...params.InputProps,
+                            endAdornment: (
+                              <>
+                                {loading && <CircularProgress size={30} />}
+                                {params.InputProps.endAdornment}
+                              </>
+                            ),
+                          }}
+                        />
+                      )}
+
+                      /*  //TODO  ponerle una lupa al buscar
                  InputProps={{
             ...params.InputProps,
             startAdornment: (
@@ -317,9 +408,21 @@ export default function CreateOrder({
             ),
           }}
               */
+                    />
+                  )}
                 />
-              )}
-            />
+              </Box>
+              {/* <Box sx={{ width: { xs: "100%", md: "calc(20% - 8px)" } }}>
+                <button 
+                  sx={{ width: "100%" }}
+                  className="btn-add"
+                  onClick={handleAddCustomer}   
+                            
+                >
+                  +Adicionar Cliente
+                </button>
+              </Box> */}
+            </Box>
           </Stack>
 
           {/* DATOS DEL CLIENTE */}
@@ -684,11 +787,17 @@ export default function CreateOrder({
           </Button>
         </DialogActions>
       </form>
+
       <PrintOrder
         order={order}
         shouldPrint={shouldPrint}
         printWindowRef={printWindowRef}
         // onPrinted={() => setShouldPrint(false)}
+      />
+      <CreateCustomer
+        open={openAddCustomer}
+        setOpen={setOpenAddCustomer}
+        onCustomerCreated={handleCustomerCreated}
       />
     </>
   );
