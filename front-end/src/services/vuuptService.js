@@ -7,10 +7,18 @@ import Swal from "sweetalert2";
 
 export const insertVuupt = async (params, showNotification) => {
   console.log("Vuupt params:", params);
-  
+  Swal.fire({
+    toast: true,
+    position: "top-end",
+    title:LANG.VUUPT.INSERTING,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+    showConfirmButton: false,
+    allowOutsideClick: false,
+  });
   //Obeter longitude y latitude  do cliente no Vuupt
   try {
-   
     const response = await apiFetch(
       `/api/data?customer_code=${params.customer_code}`,
     );
@@ -59,7 +67,8 @@ export const insertVuupt = async (params, showNotification) => {
 
     const insertResult = await insert.json();
     console.log("Pedido insertado en Vuupt:", insertResult);
-  
+    Swal.close();
+
     showNotification(LANG.VUUPT.CREATEDSUCCESS, "success");
   } catch (error) {
     showNotification(error.message || LANG.VUUPT.CREATEDFAIL, "error");

@@ -89,6 +89,7 @@ export const LANG = {
     CREATEDFAIL: "Erro ao inserir o pedido no Vuupt",
     CREATEDSUCCESS: "Pedido inserido com sucesso no Vuupt",
     CUSTOMERCREATEDFAIL: "Erro ao inserir o  cliente no Vuupt ",
+    INSERTING:"Inserindo pedido no Vuupt..."
   },
   DELETEORDER: {
     TITLE: "¿Deseja cancelar este pedido?",
@@ -100,6 +101,8 @@ export const LANG = {
   },
   EDITORDER: {
     WEDIT: "Alterar pedido",
+    ERRORUPD:"Erro ao alterar o pedido",
+    SUCCESSUPD:"Pedido alterado com sucesso",
   },
   CREATECUSTOMER: {
     WIND: "Inserir cliente",

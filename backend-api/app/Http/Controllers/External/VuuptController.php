@@ -76,7 +76,7 @@ class VuuptController extends Controller
                 'field_boolean_1' => $request->paid ? 1 : 0
             ]
         ];
-      
+
         $response = Http::withToken(env('VUUPT_TOKEN'))
             ->post('https://api.vuupt.com/api/v1/services', $orderData);
         // dd($response->json());
@@ -85,7 +85,7 @@ class VuuptController extends Controller
 
     public function storeCustomer(Request $request, GeocodingService $geoService)
     {
-        $coords = $geoService->getGeocodeData($request->address);       
+        $coords = $geoService->getGeocodeData($request->address);
         $customerData = [
             'name' => $request->name,
             'code' =>  $request->customer_code,
@@ -99,5 +99,24 @@ class VuuptController extends Controller
         $response = Http::withToken(env('VUUPT_TOKEN'))
             ->post('https://api.vuupt.com/api/v1/customers', $customerData);
         return $response->json();
+    }
+
+    public function updateService($service, $paid)
+    {
+        $response = Http::withToken(env('VUUPT_TOKEN'))
+            ->put("https://api.vuupt.com/api/v1/services/{$service['id']}", [
+                'extraFields' => [
+                    'field_boolean_1' => (int) $paid
+                ]
+            ]);
+        return $response->json();
+    }
+
+    public function getService()
+    {
+        $serviceData = Http::withToken(env('VUUPT_TOKEN'))
+            ->get('https://api.vuupt.com/api/v1/services?sort=-created_at');
+        $data = collect($serviceData->json()['data']);
+        return $data;
     }
 }

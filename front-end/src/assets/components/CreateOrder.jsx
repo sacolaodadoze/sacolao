@@ -230,6 +230,7 @@ export default function CreateOrder({
           });
           if (windVuupt.isConfirmed) {
             setIsInsertingVuupt(true);
+            
             let params = {
               customer_code: result.customer.customer_code,
               name: result.customer.name,
