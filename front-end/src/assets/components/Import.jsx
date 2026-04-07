@@ -62,7 +62,7 @@ export function Import() {
         ref={fileInputRef}
         style={{ display: "none" }}
         accept=".csv"
-        onChange={(e) => importArchive(e, selectedImport, fileInputRef)}
+        onChange={(e) => importArchive(e, /* selectedImport, */ fileInputRef)}
       />
 
       <Pdf show={showModal} onClose={() => setShowModal(false)} />

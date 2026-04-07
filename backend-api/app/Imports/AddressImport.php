@@ -31,7 +31,7 @@ class AddressImport implements ToModel
         //Validar se ao menos tem um campo de endereço
         $camposEndereco = ['endereco', 'numero', 'cep', 'cidade', 'estado'];
         $camposValidos = array_filter($camposEndereco, fn($campo) => $importHelper->isValid($row[$campo]));
-
+      
         if (empty($camposValidos)) {
             return null;
         }
@@ -43,8 +43,7 @@ class AddressImport implements ToModel
         $complement = $importHelper->validatedValue($row, 'complemento');
         $city = $importHelper->validatedValue($row, 'cidade');
         $state = $importHelper->validatedValue($row, 'estado');
-
-
+       
         return Address::updateOrCreate(
             [
                 'cep' => $row['cep'], //busco por estes campos

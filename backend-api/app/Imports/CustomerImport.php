@@ -16,6 +16,9 @@ use Illuminate\Support\Collection;
 
 class CustomerImport implements ToCollection, WithHeadingRow, WithChunkReading
 {
+    private int $totalRows = 0;
+    private int $inserted = 0;
+    private int $updated = 0;
 
     /**
      * @param array $row
@@ -24,43 +27,43 @@ class CustomerImport implements ToCollection, WithHeadingRow, WithChunkReading
      */
     public function collection(Collection $rows)
     {
+        $this->totalRows += $rows->count(); // suma por chunk
 
         DB::transaction(function () use ($rows) {
-            /*//////Trae solo los clientes que cumplen las dos condiciones:
-                document está en la lista del CSV ,customer_code es NULL*/
-                dd($rows);
-            $documents = [];
-          //  $customers = [];
+            /****** Trae solo los clientes que cumplen las dos condiciones:
+                document está en la lista del CSV ,customer_code es NULL *******/
+            // $documents = [];
 
             foreach ($rows as $row) {
-               $document = (new ImportHelper())->validatedValue($row, 'cnpjcpf');
-              //$document = $row['cnpjcpf'] ?? null;
-                //$codigo = $row['ca3digo'];
+
+                //$document = (new ImportHelper())->validatedValue($row, 'cnpjcpf');
+                $document = preg_replace('/\D/', '', trim($row['cnpjcpf'] ?? ''));
                 // dd($document);
-                /*  if ($document) {
-                    $documents[$document] = $row['codigo'];
-                } */
-                if ($document && !isset($documents[$document])) {
-                    $documents[$document] =  $row['Código'];;
+
+                if ($document !== '' && !isset($documents[$document])) {
+                    // if ($document && !isset($documents[$document])) {
+                    $documents[$document] =  $row['codigo'];
                 }
             }
-             dd($documents);
 
-            // Buscar clientes existentes sin código pero con mismo document
             $existingCustomers = Customer::whereIn('document', array_keys($documents))
                 ->whereNull('customer_code')
                 ->get();
-dd($existingCustomers);
+
             foreach ($existingCustomers as $customer) {
                 $customer->update([
                     'customer_code' => $documents[$customer->document]
                 ]);
             }
             ///////////////////////////////////////
-
             $codes = [];
 
             foreach ($rows as $row) {
+                /* if (in_array($row['codigo'], $existing)) {
+                    $updated++;
+                } else {
+                    $inserted++;
+                } */
 
                 $document = (new ImportHelper())->validatedValue($row, 'cnpjcpf');
 
@@ -77,7 +80,21 @@ dd($existingCustomers);
                     'customer_type' => $customer_type
                 ];
 
-                $codes[] =  $codigo; //$row['codigo'];
+                $codes[] = $row['codigo'];
+            }
+
+            //Saber cuantos upd or insert
+            $existing = Customer::whereIn('customer_code', $codes)
+                ->pluck('customer_code')
+                ->toArray();
+            $existing = array_flip($existing);  //Intercambia claves por valores
+
+            foreach ($codes as $code) {
+                if (isset($existing[$code])) {
+                    $this->updated++;
+                } else {
+                    $this->inserted++;
+                }
             }
 
             //  UPSERT masivo
@@ -125,5 +142,15 @@ dd($existingCustomers);
     public function chunkSize(): int
     {
         return 1000;
+    }
+
+    //  total de filas procesadas
+    public function getStats(): array
+    {
+        return [
+            'total' => $this->totalRows,
+            'inserted' => $this->inserted,
+            'updated' => $this->updated
+        ];
     }
 }

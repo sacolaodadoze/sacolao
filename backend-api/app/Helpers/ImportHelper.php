@@ -25,7 +25,12 @@ class ImportHelper implements WithCustomCsvSettings
     public function validatedValue($row, string $key)
     {
         $value = $row[$key] ?? null;
+        // limpiar
+        $value = trim($value);
+
+        // quitar caracteres no numéricos (para CPF/CNPJ)
+       // $value = preg_replace('/\D/', '', $value);
+
         return $this->isValid($value) ? $value : null;
     }
-  
 }

@@ -20,7 +20,7 @@ class ImportController extends Controller
      */
     public function store(Request $request)
     {
-       // dd($request);
+        // dd($request);
         // Validamos que el archivo llegó y es un CSV
         $request->validate([
             'archivo_csv' => 'required|file|mimes:csv,txt',
@@ -30,10 +30,17 @@ class ImportController extends Controller
         try {
             //  Ejecutamos la importación usando la librería Laravel Excel
             // Pasamos el archivo directamente desde el objeto $request
-           $res= Excel::import(new CustomerImport, $request->file('archivo_csv'));
+            $CustomerImport = new CustomerImport();
+            $res = Excel::import($CustomerImport, $request->file('archivo_csv'));
+            $totalRows = $CustomerImport->getStats()['total'];
+            $inserted = $CustomerImport->getStats()['inserted'];
+            $updated = $CustomerImport->getStats()['updated'];
 
             return response()->json([
                 'message' => '¡Base de datos PostgreSQL actualizada con éxito!',
+                'total_procesados' => $totalRows,
+                'total_insertados' => $inserted,
+                'total_actualizados' => $updated
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
@@ -49,6 +56,6 @@ class ImportController extends Controller
      */
     public function index()
     {
-       //
+        //
     }
 }
