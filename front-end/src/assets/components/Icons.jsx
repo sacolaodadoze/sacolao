@@ -86,14 +86,20 @@ export const AddIcon = () => {
 };
 
 export const EyeIcon = ({ className = "size-5" } ) => (
-  <svg
+<svg
     xmlns="http://www.w3.org/2000/svg"
     fill="none"
     viewBox="0 0 24 24"
     strokeWidth={1.5}
     stroke="currentColor"
-    style={{ width: "20px", height: "20px" }} // Tamaño asegurado
+    className={className}
+    style={{ width: "20px", height: "20px" }}
   >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M2.25 12s3.75-7.5 9.75-7.5S21.75 12 21.75 12 18 19.5 12 19.5 2.25 12 2.25 12Z"
+    />
     <path
       strokeLinecap="round"
       strokeLinejoin="round"

@@ -18,9 +18,9 @@ export const LANG = {
   },
   IMPORT: {
     ACTIONS: "--Ações--",
-    CLIENTES: "Clientes",
+    CLIENTES: "Importar clientes",
     PRODUCTS: "Produtos",
-    TOOLTSELECT: "Importar Clientes/Produtos",
+    // TOOLTSELECT: "Importar Clientes/Produtos",
     PDF: "Ver PDFs",
   },
   LOGGIN: {
@@ -89,7 +89,7 @@ export const LANG = {
     CREATEDFAIL: "Erro ao inserir o pedido no Vuupt",
     CREATEDSUCCESS: "Pedido inserido com sucesso no Vuupt",
     CUSTOMERCREATEDFAIL: "Erro ao inserir o  cliente no Vuupt ",
-    INSERTING:"Inserindo pedido no Vuupt..."
+    INSERTING: "Inserindo pedido no Vuupt...",
   },
   DELETEORDER: {
     TITLE: "¿Deseja cancelar este pedido?",
@@ -101,8 +101,8 @@ export const LANG = {
   },
   EDITORDER: {
     WEDIT: "Alterar pedido",
-    ERRORUPD:"Erro ao alterar o pedido",
-    SUCCESSUPD:"Pedido alterado com sucesso",
+    ERRORUPD: "Erro ao alterar o pedido",
+    SUCCESSUPD: "Pedido alterado com sucesso",
   },
   CREATECUSTOMER: {
     WIND: "Inserir cliente",
@@ -117,11 +117,12 @@ export const LANG = {
     CUSTOMERSUCCESS: "Cliente inserido com sucesso",
     FAILCUSTOMER: "Erro ao inserir cliente",
   },
-  DELETEPDF: {
+  PDF: {
     TITLE: "¿Deseja excluir este PDF?",
     TEXT: "Esta ação não pode ser desfeita",
-    NOTIFICATIONS_PDF_DELETED: "Pdf excluído com sucesso",   
+    NOTIFICATIONS_PDF_DELETED: "Pdf excluído com sucesso",
     ERROR: "Erro ao excluir",
     CONFIRM: "Sím, excluir",
+    WTITLE: "PDFs com dados do cliente a inserir no Hiper",
   },
 };
