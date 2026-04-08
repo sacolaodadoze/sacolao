@@ -197,6 +197,10 @@ export default function CreateOrder({
         method: "POST",
         body: JSON.stringify(data),
       });
+     
+      if (!res.ok) {
+        throw new Error(res.message || "Erro ao criar pedido");
+      }
       const result = await res.json();
       console.log("Respuesta al crear pedido:", result);
 
@@ -230,7 +234,7 @@ export default function CreateOrder({
           });
           if (windVuupt.isConfirmed) {
             setIsInsertingVuupt(true);
-            
+
             let params = {
               customer_code: result.customer.customer_code,
               name: result.customer.name,
@@ -251,8 +255,7 @@ export default function CreateOrder({
       console.log("Guardado:", result);
     } catch (error) {
       setLoadingSave(false);
-      showNotification(error.message || "Erro ao criar pedido", "error");
-      setcustomerSelected(null);
+      showNotification(error.message || "Erro ao criar pedido", "error");      
     } finally {
       setIsInsertingVuupt(false);
     }
