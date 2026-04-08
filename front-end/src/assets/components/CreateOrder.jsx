@@ -199,7 +199,8 @@ export default function CreateOrder({
       });
      
       if (!res.ok) {
-        throw new Error(res.message || "Erro ao criar pedido");
+        const errorData = await res.json();
+        throw new Error(errorData.message || "Erro ao criar pedido");
       }
       const result = await res.json();
       console.log("Respuesta al crear pedido:", result);

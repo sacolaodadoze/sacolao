@@ -130,6 +130,17 @@ class OrderController extends Controller
                 $rules['state']
             );
         }
+         if ($request->filled('pickup') && $request->pickup == true) {
+            unset(               
+                $rules['cep'],
+                $rules['street'],
+                $rules['number'],
+                $rules['neighborhood'],
+                $rules['complement'],
+                $rules['city'],
+                $rules['state']
+            );
+        }
         $data = $request->validate($rules);
         
         //Update pedidio no VUUPT
