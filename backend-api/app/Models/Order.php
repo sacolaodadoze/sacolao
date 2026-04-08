@@ -22,17 +22,35 @@ class Order extends Model
      * @return void
      */
 
-  protected static function booted()
-{
-    static::creating(function ($order) {
+    protected static function booted()
+    {
+        /* static::creating(function ($order) {
 
         $today = Carbon::now()->format('dm');
 
         $countToday = self::whereDate('created_at', Carbon::today())->count();
 
         $order->number = "#{$today}_" . ($countToday + 1);
-    });
-}
+    }); */
+        static::creating(function ($order) {
+
+            $today = now()->format('dm');
+
+            $lastOrder = self::where('number', 'like', "#{$today}_%")
+                ->selectRaw("number, CAST(SPLIT_PART(number, '_', 2) AS INTEGER) as seq")
+                ->orderByDesc('seq')
+                ->first();
+
+            if ($lastOrder) {
+                $lastNumber = (int) explode('_', $lastOrder->number)[1];
+                $next = $lastNumber + 1;
+            } else {
+                $next = 1;
+            }
+            //dd($today, $next);
+            $order->number = "#{$today}_{$next}";
+        });
+    }
 
     /**
      * Obtener el cliente al que pertenece el pedido.
@@ -84,7 +102,7 @@ class Order extends Model
         return $this->hasOne(Delay::class);
     }
 
-      /**
+    /**
      * Obtener la taxa asociada al  pedido.
      */
     public function rate(): BelongsTo
@@ -92,7 +110,7 @@ class Order extends Model
         return $this->belongsTo(Rate::class, 'rate_id');
     }
 
-      /**
+    /**
      * Obtener el usuario asociado al  pedido.
      */
     public function user(): BelongsTo
