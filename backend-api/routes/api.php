@@ -72,6 +72,7 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
     Route::get('/data', [VuuptController::class, 'getData']);
     Route::post('/insert', [VuuptController::class, 'store']);
     Route::post('/vuupt/customers', [VuuptController::class, 'storeCustomer']);
+    Route::put('/vuupt/customers/{id}', [VuuptController::class, 'updateCustomer']);
 
     //Services addCustomer
     Route::get('/address/{cep}', [ExtCustomerController::class, 'address']);

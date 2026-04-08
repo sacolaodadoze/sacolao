@@ -9,6 +9,15 @@ use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use App\Services\GeocodingService;
 
+/* 
+$response->successful(); // 200–299
+$response->failed();     // 400–599
+$response->clientError(); // 400–499
+$response->serverError(); // 500–599
+$response->status();     // código HTTP
+$response->json();       // body como array
+*/
+
 
 class VuuptController extends Controller
 {
@@ -50,7 +59,7 @@ class VuuptController extends Controller
             ->format('Y-m-d\TH:i:sP') : $start->copy()->addMinutes(30)->format('Y-m-d\TH:i:sP');
 
         $orderData = [
-            'title' => $request->delivery_date ? $request->title . " " . "AG" ." ". $request->delivery_hour . " HRS" : $request->title,
+            'title' => "TESTE", // $request->delivery_date ? $request->title . " " . "AG" ." ". $request->delivery_hour . " HRS" : $request->title,
             'type' => "delivery",
             'email' => "",
             'phone_number' => $request->phone_number,
@@ -120,4 +129,22 @@ class VuuptController extends Controller
         return $data;
     }
 
+    public function updateCustomer($id, Request $request, GeocodingService $geoService)
+    {
+        $coords = $geoService->getGeocodeData($request->address);
+
+        $response = Http::withToken(env('VUUPT_TOKEN'))
+            ->put("https://api.vuupt.com/api/v1/customers/{$id}", [
+                'address' => $request->address,
+                'address_complement' => $request->complement ?? "",
+                'latitude' => $coords['latitude'] ?? null,
+                'longitude' => $coords['longitude'] ?? null
+            ]);
+
+        if (!$response->successful()) {
+            $error = $response->json();
+            throw new \Exception($error['message'] ?? 'Error ao actualizar cliente');
+        }
+        return $response->json();
+    }
 }

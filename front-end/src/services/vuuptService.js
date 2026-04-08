@@ -5,12 +5,36 @@ import React from "react";
 import { LANG } from "../assets/constants/languages.js";
 import Swal from "sweetalert2";
 
+const normalizeAddress = (address) => {
+  if (!address) return "";
+
+  return address
+    .toLowerCase()
+    .normalize("NFD") // elimina acentos
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\bav\b/g, "avenida")
+    .replace(/\br\b/g, "rua")
+    .replace(/\bdr\b/g, "doutor")
+    .replace(/[^a-z0-9\s]/g, "") // elimina símbolos
+    .replace(/\s+/g, " ") // espacios múltiples → uno
+    .trim();
+};
+
+const hasAddressChanged = (sistema, complementSis, vuupt, complementVuupt) => {
+  const addressChanged = normalizeAddress(sistema) !== normalizeAddress(vuupt);
+
+  const complementChanged =
+    normalizeAddress(complementSis) !== normalizeAddress(complementVuupt);
+  // console.log("Endereços:", sistema, vuupt);
+  return addressChanged || complementChanged;
+};
+
 export const insertVuupt = async (params, showNotification) => {
   console.log("Vuupt params:", params);
   Swal.fire({
     toast: true,
     position: "top-end",
-    title:LANG.VUUPT.INSERTING,
+    title: LANG.VUUPT.INSERTING,
     didOpen: () => {
       Swal.showLoading();
     },
@@ -24,7 +48,8 @@ export const insertVuupt = async (params, showNotification) => {
     );
     console.log("Get geopoint", response);
     let data;
-    //si no esta el cliente
+
+    //Insertar si no esta o cliente
     if (/* data.data.length === 0 ||  */ !response.ok) {
       console.log("Response", response.ok);
 
@@ -34,35 +59,68 @@ export const insertVuupt = async (params, showNotification) => {
       });
 
       if (!res.ok) {
-        throw new Error(LANG.VUUPT.CUSTOMERCREATEDFAIL);
+        const errorData = await res.json();
+        throw new Error(
+          errorData.message || "Erro ao inserir cliente no Vuupt",
+        );
       }
       const resultAddCustomer = await res.json();
       console.log("Cliente criado no Vuupt:", resultAddCustomer.customer);
       data = resultAddCustomer.customer;
+
+      /////////////////
     } else {
       const responseData = await response.json();
-      console.log(
-        "Cliente por codigo:",
-        responseData,
-        "Longitud",
-        responseData.data.length,
+      console.log("Cliente por codigo:", responseData.data);
+
+      //Comprobar endereço
+      let sistema = params.address;
+      let vuupt = responseData.data[0].address;
+      const changed = hasAddressChanged(
+        sistema,
+        params.complement,
+        vuupt,
+        responseData.data[0].address_complement,
       );
-      data = responseData.data[0];
+
+      console.log("Si, cambio:", changed);
+      if (changed) {
+        const res = await apiFetch(
+          `/api/vuupt/customers/${responseData.data[0].id}`,
+          {
+            method: "PUT",
+            body: JSON.stringify(params),
+          },
+        );
+
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(
+            errorData.message || "Error ao actualizar cliente no Vuupt",
+          );
+        }
+        const responseUpdate = await res.json();
+        console.log("Cliente update:", responseUpdate);
+        data = responseUpdate.customer;
+        ///////////////////
+      } else {
+        data = responseData.data[0];
+      }
     }
 
     console.log("Datos a insertar en Vuupt:", data);
 
     //Insertar pedido no Vuupt
-    const bodyData = { ...(data || {}), ...params };
+    const bodyData = { ...params, ...(data || {}) };
 
     const insert = await apiFetch("/api/insert", {
       method: "POST",
       body: JSON.stringify(bodyData),
     });
 
-    console.log("Inserción en Vuupt:", insert);
     if (!insert.ok) {
-      throw new Error(LANG.VUUPT.CREATEDFAIL);
+      const errorData = await insert.json();
+      throw new Error(errorData.message || LANG.VUUPT.CREATEDFAIL);
     }
 
     const insertResult = await insert.json();
