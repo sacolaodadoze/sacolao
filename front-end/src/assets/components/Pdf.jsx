@@ -89,13 +89,19 @@ export function Pdf({ show, onClose }) {
             <ul>
               {pdfList.map((file) => (
                 <li key={file}>
-                  {file.split("/").pop()}
-                  <button className="btn-action" onClick={() => openPdf(file)}>
-                    <EyeIcon />
-                  </button>
-                  <button className="btn-action btn-del" onClick={() => setConfirmFile(file)}>
-                    <TrashIcon />
-                  </button>
+                  <span >{file.split("/").pop()}</span>                 
+                    <button
+                      className="btn-action ml-4 "
+                      onClick={() => openPdf(file)}
+                    >
+                      <EyeIcon />
+                    </button>
+                    <button
+                      className="btn-action btn-del"
+                      onClick={() => setConfirmFile(file)}
+                    >
+                      <TrashIcon />
+                    </button>                 
                 </li>
               ))}
             </ul>
@@ -111,7 +117,9 @@ export function Pdf({ show, onClose }) {
         <DialogTitle>{LANG.PDF.TITLE}</DialogTitle>
         <DialogContent>{LANG.PDF.TEXT}</DialogContent>
         <DialogActions>
-          <Button onClick={() => setConfirmFile(null)}>{LANG.GLOBAL.CANCEL}</Button>
+          <Button onClick={() => setConfirmFile(null)}>
+            {LANG.GLOBAL.CANCEL}
+          </Button>
           <Button
             color="error"
             onClick={async () => {
@@ -119,7 +127,7 @@ export function Pdf({ show, onClose }) {
               setConfirmFile(null);
             }}
           >
-           {LANG.PDF.CONFIRM}
+            {LANG.PDF.CONFIRM}
           </Button>
         </DialogActions>
       </Dialog>
