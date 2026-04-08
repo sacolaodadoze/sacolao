@@ -76,7 +76,7 @@ class VuuptController extends Controller
                 'field_boolean_1' => $request->paid ? 1 : 0
             ]
         ];
-      
+
         $response = Http::withToken(env('VUUPT_TOKEN'))
             ->post('https://api.vuupt.com/api/v1/services', $orderData);
         // dd($response->json());
@@ -85,7 +85,7 @@ class VuuptController extends Controller
 
     public function storeCustomer(Request $request, GeocodingService $geoService)
     {
-        $coords = $geoService->getGeocodeData($request->address);       
+        $coords = $geoService->getGeocodeData($request->address);
         $customerData = [
             'name' => $request->name,
             'code' =>  $request->customer_code,
@@ -101,24 +101,23 @@ class VuuptController extends Controller
         return $response->json();
     }
 
-    public function updateService($id, $paid)
+    public function updateService($service, $paid)
     {
-         $serviceData = Http::withToken(env('VUUPT_TOKEN'))
-            ->get('https://api.vuupt.com/api/v1/services/' . $id);
-            dd($serviceData->json());
-/* 
-       $serviceData = [
-            'name' => $request->name,
-            'code' =>  $request->customer_code,
-            'address' => $request->address,
-            'address_complement' =>  $request->address_complement ?? "",
-            'phone_number' => $request->phone_number,
-            'latitude' => $coords['latitude'] ?? null,
-            'longitude' => $coords['longitude'] ?? null
-        ]; */
-        //dd($customerData);
         $response = Http::withToken(env('VUUPT_TOKEN'))
-            ->put('https://api.vuupt.com/api/v1/services/' . $serviceData->id, $serviceData);
+            ->put("https://api.vuupt.com/api/v1/services/{$service['id']}", [
+                'extraFields' => [
+                    'field_boolean_1' => (int) $paid
+                ]
+            ]);
         return $response->json();
     }
+
+    public function getService()
+    {
+        $serviceData = Http::withToken(env('VUUPT_TOKEN'))
+            ->get('https://api.vuupt.com/api/v1/services?sort=-created_at');
+        $data = collect($serviceData->json()['data']);
+        return $data;
+    }
+
 }

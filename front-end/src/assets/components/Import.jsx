@@ -18,20 +18,15 @@ export function Import() {
 
   const handleSelectChange = (e) => {
     const value = e.target.value;
-    e.target.value = "";
-    setIsProcessing(true);
+    setSelected("");
 
     if (value === "customer") {
-      //setSelected(valor);
-      // Simula un clic en el input oculto para abrir la ventana del sistema
-      fileInputRef.current.click();
-      // e.target.value = ""; // Reset del select para permitir seleccionar la misma opción otra vez
+      setIsProcessing(true);
+      fileInputRef.current.click(); // Simula un clic en el input oculto para abrir la ventana del sistema
       setIsProcessing(false);
     }
     if (value === "pdf") {
-      //setSelected(valor);
       setShowModal(true);
-      //  e.target.value = "";
     }
   };
 
@@ -41,10 +36,11 @@ export function Import() {
         className="submenu-select"
         //todo ,ver si uso el Useid
         id={importId}
+        value={selected}
         onChange={handleSelectChange} /* {(e) => {
             const value = e.target.value;
-            setSelected(value); // 👈 SOLO visual
-            handleSelectChange(value); // 👈 lógica real           
+            setSelected(value); //  SOLO visual
+            handleSelectChange(value); //  lógica real           
             setTimeout(() => setSelected(""), 0);
           }} */
         disabled={isProcessing} // Deshabilita el select mientras se procesa la acción
@@ -62,7 +58,7 @@ export function Import() {
         ref={fileInputRef}
         style={{ display: "none" }}
         accept=".csv"
-        onChange={(e) => importArchive(e, selectedImport, fileInputRef)}
+        onChange={(e) => importArchive(e, /* selectedImport, */ fileInputRef)}
       />
 
       <Pdf show={showModal} onClose={() => setShowModal(false)} />

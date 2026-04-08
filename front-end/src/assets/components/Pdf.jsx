@@ -13,23 +13,26 @@ import { useNotification } from "../context/NotificationContext";
 import Swal from "sweetalert2";
 import { LANG } from "../constants/languages";
 import { TrashIcon, EyeIcon } from "./Icons";
+import { set } from "zod";
 
 export function Pdf({ show, onClose }) {
   const [pdfList, setPdfList] = useState([]);
   const { showNotification } = useNotification();
   const [confirmFile, setConfirmFile] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   // Cargar PDFs al abrir modal
   const getPdf = async (texto) => {
     try {
-      const res = await apiFetch("/api/customer/pdfs");    
+      setLoading(true);
+      const res = await apiFetch("/api/customer/pdfs");
       if (!res.ok) throw new Error("Error en la petición");
-      const data = await res.json();    
+      const data = await res.json();
       setPdfList(data);
+      setLoading(false);
     } catch (error) {
       console.error("Error al trazer os PDFS", error);
-    } finally {
-      //setLoading(false);
+      setLoading(false);
     }
   };
 
@@ -37,7 +40,7 @@ export function Pdf({ show, onClose }) {
     if (show) getPdf();
   }, [show]);
 
-  const openPdf = (file) => {    
+  const openPdf = (file) => {
     window.open(
       `http://localhost:8000/customer/pdf?file=${encodeURIComponent(file)}`,
     );
@@ -54,7 +57,7 @@ export function Pdf({ show, onClose }) {
 
       // actualizar lista (quitar el eliminado)
       setPdfList((prev) => prev.filter((f) => f !== file));
-      showNotification(LANG.DELETEPDF.NOTIFICATIONS_PDF_DELETED, "success");
+      showNotification(LANG.PDF.NOTIFICATIONS_PDF_DELETED, "success");
     } catch (error) {
       console.error("Error eliminando PDF:", error);
       showNotification(error.message || LANG.GLOBAL.CONNECTION, "error");
@@ -76,39 +79,47 @@ export function Pdf({ show, onClose }) {
         }}
         disablePortal
       >
-        <DialogTitle>
-          {"PDFs com dados do cliente a inserir" /* LANG.EDITORDER.WEDIT */}
-        </DialogTitle>
+        <DialogTitle>{LANG.PDF.WTITLE}</DialogTitle>
         <DialogContent>
-          {pdfList.length === 0 && <p>Não tem clientes a inserir.</p>}
-          <ul>
-            {pdfList.map((file) => (
-              <li key={file}>
-                {file.split("/").pop()}
-                <button className="btn-action" onClick={() => openPdf(file)}>
-                  <EyeIcon />
-                </button>
-                <button
-                  className="btn-action btn-del"
-                  onClick={() => setConfirmFile(file)}
-                >
-                  <TrashIcon />
-                </button>
-              </li>
-            ))}
-          </ul>
+          {loading ? (
+            <p>Cargando...</p>
+          ) : pdfList.length === 0 ? (
+            <p>Não tem clientes a inserir.</p>
+          ) : (
+            <ul>
+              {pdfList.map((file) => (
+                <li key={file}>
+                  <span >{file.split("/").pop()}</span>                 
+                    <button
+                      className="btn-action ml-4 "
+                      onClick={() => openPdf(file)}
+                    >
+                      <EyeIcon />
+                    </button>
+                    <button
+                      className="btn-action btn-del"
+                      onClick={() => setConfirmFile(file)}
+                    >
+                      <TrashIcon />
+                    </button>                 
+                </li>
+              ))}
+            </ul>
+          )}
         </DialogContent>
         <DialogActions>
           <Button onClick={() => onClose(false)}>OK</Button>
         </DialogActions>
       </Dialog>
-      
+
       {/* //Delete */}
       <Dialog open={!!confirmFile} onClose={() => setConfirmFile(null)}>
-        <DialogTitle>¿Eliminar PDF?</DialogTitle>
-        <DialogContent>Esta acción no se puede deshacer</DialogContent>
+        <DialogTitle>{LANG.PDF.TITLE}</DialogTitle>
+        <DialogContent>{LANG.PDF.TEXT}</DialogContent>
         <DialogActions>
-          <Button onClick={() => setConfirmFile(null)}>Cancelar</Button>
+          <Button onClick={() => setConfirmFile(null)}>
+            {LANG.GLOBAL.CANCEL}
+          </Button>
           <Button
             color="error"
             onClick={async () => {
@@ -116,7 +127,7 @@ export function Pdf({ show, onClose }) {
               setConfirmFile(null);
             }}
           >
-            Eliminar
+            {LANG.PDF.CONFIRM}
           </Button>
         </DialogActions>
       </Dialog>

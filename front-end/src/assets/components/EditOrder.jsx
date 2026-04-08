@@ -115,21 +115,19 @@ export default function EditOrder({
       });
 
       if (!res.ok) {
-        throw new Error(result.message || "Erro ao alterar o pedido");
+        throw new Error(result.message || LANG.EDITORDER.ERRORUPD, "error");
       }
 
       const result = await res.json();
-      console.log("Pedido alterado:", result);
-      setSaving(false);
+      console.info("edit", result);
+
       getOrders();
-     
+      setSaving(false);
       showNotification("Pedido alterado com sucesso", "success");
 
       setOpen(false);
     } catch (error) {
       showNotification(error.message || "Erro ao alterar o pedido", "error");
-    } finally {
-      setSaving(false);
     }
   };
   return (

@@ -131,22 +131,27 @@ class OrderController extends Controller
             );
         }
         $data = $request->validate($rules);
-        // dd($data);
+        
         //Update pedidio no VUUPT
-    /*     if ($data['id']) {
-            $order_v = Order::with('customer')->find($data['id']);
-            //  dd($order_v->customer["customer_code"]);
-            if ($data["paid"] !== $order_v->paid) {
+        if (isset($data['id'])) {
+            $order_v = Order::with('customer')->find($data['id']);           
+            if ($data["paid"] !== $order_v->paid) {              
                 $request = new \Illuminate\Http\Request(); //para poder pasarle el parametro, porque recibe un request
                 $request->merge(['customer_code' => $order_v->customer["customer_code"]]);
-                $vuupt = $vuuptController->getData($request);
-               // dd($id_vuupt['data'][0]['id']);
-               dd($vuupt['data'][0]);
-               $vuuptController->updateService($vuupt['data'][0]['id'],$data["paid"]);
-            }
 
+                $vuupt = $vuuptController->getData($request);
+                $customer_id = $vuupt['data'][0]['id']; 
+                           
+                $allServices = $vuuptController->getService();
+              
+                $service = $allServices->firstWhere('customer_id', $customer_id);
           
-        } */
+                if ($service !== null) {
+                  $vuuptController->updateService($service, $data["paid"]);                  
+                }
+            }
+        }
+      
 
         $order = DB::transaction(function () use ($data, $user) {
 
@@ -215,11 +220,10 @@ class OrderController extends Controller
                     ]
                 );
             }
-
             return $order;
         });
 
-        $order->load(['detail', 'customer', 'customer.addresses', 'customer.phones', 'customer.observation', 'entry', 'payment', 'rate', 'user']);
+        $order->load(['detail', 'customer',  'customer.addresses',  'customer.phones',  'customer.observation',  'entry',  'payment',  'rate',  'user']);      
 
         return response()->json($order, 201);
     }
