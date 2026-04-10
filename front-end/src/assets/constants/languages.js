@@ -76,6 +76,7 @@ export const LANG = {
     DELIVERYHOUR: "Hora de entrega",
     DELIVERYDATE: "Data de entrega",
     SCHEDULED: "Agendado",
+    SEARCHCUSTOMER:"Pesquisar cliente",
   },
   VUUPT: {
     TITLE: "Dados do Vuupt",

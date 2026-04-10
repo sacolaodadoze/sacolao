@@ -307,7 +307,7 @@ export default function CreateOrder({
               }}
             >
               <Box
-                sx={{ width: { xs: "100%", md: "calc(77% - 8px)", gap: 2 } }}
+                sx={{ width: { xs: "100%", md: "calc(82% - 8px)", gap: 2 } }}
               >
                 <Controller
                   name="customer_id"
@@ -344,10 +344,8 @@ export default function CreateOrder({
                           reset();
                           setValue("observations", "");
                           return;
-                        }
-                        console.info("Customer seleccionado", customer);
+                        }                        
                         setcustomerSelected(customer);
-
                         setLoading(false);
 
                         /*   
@@ -379,7 +377,7 @@ export default function CreateOrder({
                       renderInput={(params) => (
                         <TextField
                           {...params}
-                          label="Pesquisar cliente"
+                          label={LANG.CREATEORDER.SEARCHCUSTOMER}
                           inputRef={firstInputRef}
                           fullWidth
                           disabled={loading}
@@ -417,14 +415,14 @@ export default function CreateOrder({
                   )}
                 />
               </Box>
-              <Box sx={{ width: { xs: "100%", md: "calc(20% - 8px)" } }}>
+              <Box sx={{ width: { xs: "100%", md: "calc(10% - 8px)" } }}>
                 <button 
                   sx={{ width: "100%" }}
                   className="btn-add"
                   onClick={handleAddCustomer}   
                             
                 >
-                  +Adicionar Cliente
+                  + Cliente
                 </button>
               </Box>
             </Box>
