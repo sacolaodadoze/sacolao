@@ -14,9 +14,10 @@ import { AuthContext } from "./assets/context/AuthContext.jsx";
 //Componente para proteger rutas
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useContext(AuthContext); 
-  if (loading) {
+  //console.log({ user, loading });
+  /* if (loading) {
     return <div>Cargando sesión...</div>; // O un spinner/esqueleto
-  }
+  } */
 
   return user ? children : <Navigate to="/login" replace />;
 };
