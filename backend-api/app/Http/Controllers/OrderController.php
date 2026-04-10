@@ -49,10 +49,10 @@ class OrderController extends Controller
         if (!empty($search)) {
             $query->where(function ($q) use ($search) {
                 // Buscar exacto por número de orden
-                $q->where('number', 'ilike', "%{$search}%")
+                $q->where('number', 'ilike', "{$search}%")
                     // O buscar exacto por el nombre del cliente relacionado
                     ->orWhereHas('customer', function ($q2) use ($search) {
-                        $q2->where('name', 'ilike', "%{$search}%");
+                        $q2->where('name', 'ilike', "{$search}%");
                     });
             });
         }
