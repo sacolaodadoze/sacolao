@@ -417,7 +417,7 @@ export default function CreateOrder({
                   )}
                 />
               </Box>
-              {/* <Box sx={{ width: { xs: "100%", md: "calc(20% - 8px)" } }}>
+              <Box sx={{ width: { xs: "100%", md: "calc(20% - 8px)" } }}>
                 <button 
                   sx={{ width: "100%" }}
                   className="btn-add"
@@ -426,7 +426,7 @@ export default function CreateOrder({
                 >
                   +Adicionar Cliente
                 </button>
-              </Box> */}
+              </Box>
             </Box>
           </Stack>
 

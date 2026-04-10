@@ -67,6 +67,10 @@ export default function CreateCustomer({ open, setOpen, onCustomerCreated }) {
   const handleChangeTab = (event, newValue) => {
     setTab(newValue);
   };
+  const handleClose = () => {
+    reset();
+    setOpen(false);
+  };
 
   const onSubmit = async (data) => {
     setSaving(true);
@@ -79,7 +83,8 @@ export default function CreateCustomer({ open, setOpen, onCustomerCreated }) {
       });
       console.log("Res", res);
       if (!res.ok) {
-        throw new Error(LANG.CREATECUSTOMER.FAILCUSTOMER);
+        const errorData = await res.json();
+        throw new Error(errorData.message || LANG.CREATECUSTOMER.FAILCUSTOMER);
       }
       const result = await res.json();
       console.log("cliente:", result);
@@ -92,9 +97,10 @@ export default function CreateCustomer({ open, setOpen, onCustomerCreated }) {
         error.message || LANG.CREATECUSTOMER.FAILCUSTOMER,
         "error",
       );
+      setSaving(false);
     }
   };
-  
+
   return (
     <Dialog
       open={open}
@@ -291,16 +297,15 @@ export default function CreateCustomer({ open, setOpen, onCustomerCreated }) {
         </FormProvider>
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => setOpen(false)}>Cancelar</Button>
+        <Button onClick={handleClose}>Cancelar</Button>
         <Button
           type="submit"
           form="customer-form"
           variant="contained"
-          //  onClick={handleSubmit(onSubmit)}
-          // disabled={!isValid || saving}
+          onClick={handleSubmit(onSubmit)}
+          disabled={!isValid || saving}
         >
-          Salvar
-          {/*  {saving ? <CircularProgress size={20} /> : "Salvar"} */}
+          {saving ? <CircularProgress size={20} /> : "Salvar"}
         </Button>
       </DialogActions>
     </Dialog>

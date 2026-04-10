@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use App\Services\PdfService;
+use App\Rules\CpfValid;
+use App\Rules\PhoneValid;
 
 class CustomerController extends Controller
 {
@@ -38,13 +40,13 @@ class CustomerController extends Controller
     {
         $validated = $request->validate([
             'customer_type' => 'required|in:1,2',
-            'document'      => 'required|string',
+            'document'      => ['required', new CpfValid],
             'name'          => 'required|string',
-            'phone_p'       => 'required|string',
-            'phone_s'       => 'nullable|string',
+            'phone_p'       => ['required', new PhoneValid],
+            'phone_s'       => ['nullable', new PhoneValid],
             'observations'  => 'nullable|string',
 
-            // Dirección principal
+             // Dirección principal
             'cep_1'         => 'nullable|string',
             'number_1'         => 'nullable|string',
             'complement_1'        => 'nullable|string',
