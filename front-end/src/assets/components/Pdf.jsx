@@ -26,7 +26,7 @@ export function Pdf({ show, onClose }) {
     try {
       setLoading(true);
       const res = await apiFetch("/api/customer/pdfs");
-      if (!res.ok) throw new Error("Error en la petición");
+      if (!res.ok) throw new Error("Error na petición");
       const data = await res.json();
       setPdfList(data);
       setLoading(false);

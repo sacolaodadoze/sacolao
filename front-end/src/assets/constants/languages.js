@@ -21,7 +21,7 @@ export const LANG = {
     CLIENTES: "Importar clientes",
     PRODUCTS: "Produtos",
     // TOOLTSELECT: "Importar Clientes/Produtos",
-    PDF: "Ver PDFs",
+    PDF: "Ver clientes a inserir",
   },
   LOGGIN: {
     ERROR: "Nome de usuário ou senha incorretos",

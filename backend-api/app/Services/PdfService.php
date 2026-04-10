@@ -28,7 +28,7 @@ class PdfService
         foreach ($customer->addresses as $address) {
             $html .= '<li>' .
                 ($address->is_primary === 1 ? 'Principal' : 'Cobrança') .  ':' . $address->cep . " - " . $address->street . "," . ($address->number ?? "S/N") . ","
-                . ($address->complement ?? "-") . ", " . ($address->neighborhood ?? "-") . "," . $address->state . "-" . $address->city .
+                . ($address->complement ?? "") . ", " . ($address->neighborhood ?? "") . "," . $address->state . "-" . $address->city .
                 '</li>';
         }
 
@@ -38,7 +38,7 @@ class PdfService
 
         $name = Str::slug($customer->name); // convierte a formato seguro
         $date = now()->format('d-m-Y'); // fecha bonita
-        $fileName = "{$customer->id}_{$name}_({$date}).pdf";
+        $fileName = "{$name}_({$date}).pdf";
 
         $path = "private/customers/{$fileName}";
 
