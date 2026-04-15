@@ -240,6 +240,7 @@ export default function CreateOrder({
               customer_code: result.customer.customer_code,
               name: result.customer.name,
               title: result.number,
+              code_vuupt: result.code_vuupt,
               paid: data.paid,
               address: `${result.customer.addresses[0]?.street}, ${result.customer.addresses[0]?.number} - ${result.customer.addresses[0]?.neighborhood}, ${result.customer.addresses[0]?.city}- ${result.customer.addresses[0]?.state}, ${result.customer.addresses[0]?.cep},Brasil`,
               complement: result.customer.addresses[0]?.complement,

@@ -35,6 +35,20 @@ export function OrderList() {
   const [perPage, setPerPage] = useState(20);
   const [total, setTotal] = useState(0);
 
+  //Recargar para actulizar el status 
+   useEffect(() => {
+  const interval = setInterval(() => {
+    getOrders(search, perPage, currentPage);
+  }, 1800000); // 1800000 --30 minutos
+
+  return () => clearInterval(interval);
+}, []);   
+
+/* // otro useEffect cuando cambian filtros
+useEffect(() => {
+  getOrders();
+}, [search, perPage, currentPage]);
+ */
   const statusId = useId();
   const fetchStatus = () => {
     apiFetch("/api/status")
@@ -65,7 +79,7 @@ export function OrderList() {
   };
   */
 
-  const getOrders = async (search = "", perPage = 20, currentPage = 1) => {
+  const getOrders = async (search, perPage, currentPage) => {
     setIsLoading(true);
     try {
       const response = await apiFetch(
@@ -78,7 +92,7 @@ export function OrderList() {
 
       const data = await response.json();
       setOrders(data.data); // Guardamos os dados das ordenes
-      setCurrentPage(data.current_page);
+     // setCurrentPage(data.current_page);
       setTotal(data.total);
 
       if (data.data.length === 0) {

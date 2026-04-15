@@ -86,4 +86,8 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
     Route::get('/customer/pdfs', [PdfController::class, 'list']);
    // Route::get('/customer/pdf', [PdfController::class, 'show']); //esta en web
     Route::delete('/customer/pdf', [PdfController::class, 'delete']);
+
+
+
+    Route::get('/test-sync', [OrderController::class, 'testSync']);
 });

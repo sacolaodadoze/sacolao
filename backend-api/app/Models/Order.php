@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 
 class Order extends Model
 {
@@ -49,6 +50,13 @@ class Order extends Model
             }
             //dd($today, $next);
             $order->number = "#{$today}_{$next}";
+
+            //code_vuupt
+            do {
+                $code = /* 'ORD-' .  */strtoupper(Str::random(8));
+            } while (self::where('code_vuupt', $code)->exists());
+
+            $order->code_vuupt = $code;
         });
     }
 

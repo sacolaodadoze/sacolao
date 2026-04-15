@@ -113,7 +113,7 @@ export function OrderTable({
             <th style={{ width: "135px" }}>Data</th>
             <th>Cliente</th>
             <th>Endereço</th>
-            {/*   <th style={{ width: "165px" }}>Estado</th> */}
+              <th style={{ width: "165px" }}>Estado</th>
             <th style={{ width: "155px" }}>Ações</th>
           </tr>
         </thead>
@@ -150,8 +150,7 @@ export function OrderTable({
                 </td>
 
                 {/* 6. Estado */}
-                {/*  <td>
-                  {order.status.name} */}
+                <td>{order.status.name}</td>
 
                 {/*    <select                 
                   className="filter-select"

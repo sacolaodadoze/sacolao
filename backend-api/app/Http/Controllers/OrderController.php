@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Order;
 use App\Models\Phone;
 use Illuminate\Support\Facades\Log;
+use App\Jobs\SyncOrderStatus;
 
 use function Laravel\Prompts\alert;
 
@@ -65,11 +66,13 @@ class OrderController extends Controller
         });  */
         //}
         //dd($request->perPage);
+        $perPage = (int) $request->perPage ?? 20;
+        $page = (int) $request->currentPage;
         $orders = $query->orderBy('id', 'desc')->paginate(
-            $request->perPage,
-            ['*'],
+            $perPage,
+          /*   ['*'],
             'page',
-            $request->page
+            $page */
         ); //->get();
 
         return response()->json($orders);
@@ -130,8 +133,8 @@ class OrderController extends Controller
                 $rules['state']
             );
         }
-         if ($request->filled('pickup') && $request->pickup == true) {
-            unset(               
+        if ($request->filled('pickup') && $request->pickup == true) {
+            unset(
                 $rules['cep'],
                 $rules['street'],
                 $rules['number'],
@@ -142,27 +145,27 @@ class OrderController extends Controller
             );
         }
         $data = $request->validate($rules);
-        
+
         //Update pedidio no VUUPT
         if (isset($data['id'])) {
-            $order_v = Order::with('customer')->find($data['id']);           
-            if ($data["paid"] !== $order_v->paid) {              
+            $order_v = Order::with('customer')->find($data['id']);
+            if ($data["paid"] !== $order_v->paid) {
                 $request = new \Illuminate\Http\Request(); //para poder pasarle el parametro, porque recibe un request
                 $request->merge(['customer_code' => $order_v->customer["customer_code"]]);
 
                 $vuupt = $vuuptController->getData($request);
-                $customer_id = $vuupt['data'][0]['id']; 
-                           
+                $customer_id = $vuupt['data'][0]['id'];
+
                 $allServices = $vuuptController->getService();
-              
+
                 $service = $allServices->firstWhere('customer_id', $customer_id);
-          
+
                 if ($service !== null) {
-                  $vuuptController->updateService($service, $data["paid"]);                  
+                    $vuuptController->updateService($service, $data["paid"]);
                 }
             }
         }
-      
+
 
         $order = DB::transaction(function () use ($data, $user) {
 
@@ -234,7 +237,7 @@ class OrderController extends Controller
             return $order;
         });
 
-        $order->load(['detail', 'customer',  'customer.addresses',  'customer.phones',  'customer.observation',  'entry',  'payment',  'rate',  'user']);      
+        $order->load(['detail', 'customer',  'customer.addresses',  'customer.phones',  'customer.observation',  'entry',  'payment',  'rate',  'user']);
 
         return response()->json($order, 201);
     }
@@ -283,5 +286,14 @@ class OrderController extends Controller
         } catch (\Exception $e) {
             return response()->json(['message' => 'Erro ao excluir pedido'], 500);
         }
+    }
+
+    public function testSync()
+    {
+        SyncOrderStatus::dispatch();
+
+        return response()->json([
+            'message' => 'Job enviado'
+        ]);
     }
 }

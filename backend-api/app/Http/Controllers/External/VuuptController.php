@@ -60,6 +60,7 @@ class VuuptController extends Controller
 
         $orderData = [
             'title' => $request->delivery_date ? $request->title . " " . "AG" . " " . $request->delivery_hour . " HRS" : $request->title,
+            'code'=> $request->code_vuupt,
             'type' => "delivery",
             'email' => "",
             'phone_number' => $request->phone_number,
