@@ -11,7 +11,7 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::job(new SyncOrderStatus)
-    ->everyThirtyMinutes()
+    ->everyThirtyMinutes()  
     ->withoutOverlapping()
     ->when(function () {
         return Order::where('status_id', '!=', 6)
