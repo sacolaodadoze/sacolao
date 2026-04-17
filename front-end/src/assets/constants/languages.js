@@ -76,7 +76,7 @@ export const LANG = {
     DELIVERYHOUR: "Hora de entrega",
     DELIVERYDATE: "Data de entrega",
     SCHEDULED: "Agendado",
-    SEARCHCUSTOMER:"Pesquisar cliente",
+    SEARCHCUSTOMER: "Pesquisar cliente",
   },
   VUUPT: {
     TITLE: "Dados do Vuupt",
@@ -91,6 +91,8 @@ export const LANG = {
     CREATEDSUCCESS: "Pedido inserido com sucesso no Vuupt",
     CUSTOMERCREATEDFAIL: "Erro ao inserir o  cliente no Vuupt ",
     INSERTING: "Inserindo pedido no Vuupt...",
+    CHANGEADDRESS: "Endereço diferente",
+    TEXTADDR: "O endereço do cliente no sistema é diferente do endereço registrado no Vuupt. Deseja inserir mesmo asim?",
   },
   DELETEORDER: {
     TITLE: "¿Deseja cancelar este pedido?",

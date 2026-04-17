@@ -55,6 +55,8 @@ class CustomerImport implements ToCollection, WithHeadingRow, WithChunkReading
                     'customer_code' => $documents[$customer->document]
                 ]);
             }
+
+            //TODO Insertar estos clientes en vuupt con el codigo 
             ///////////////////////////////////////
             $codes = [];
 

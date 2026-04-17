@@ -61,7 +61,7 @@ export const useImport = () => {
       setIsProcessing(false); // Finalizamos estado de carga
       // Reset para permitir seleccionar el mismo archivo después
       e.target.value = "";
-      fileInputRef.current.value = ""; // Limpa a referencia física do input file
+      fileInputRef.value = ""; // Limpa a referencia física do input file
     }
   };
   return {

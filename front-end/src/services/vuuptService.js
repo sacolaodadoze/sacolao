@@ -25,7 +25,7 @@ const hasAddressChanged = (sistema, complementSis, vuupt, complementVuupt) => {
 
   const complementChanged =
     normalizeAddress(complementSis) !== normalizeAddress(complementVuupt);
-  // console.log("Endereços:", sistema, vuupt);
+  console.log("Endereços sistema:", sistema, "Endereços vuupt:", vuupt);
   return addressChanged || complementChanged;
 };
 
@@ -83,25 +83,47 @@ export const insertVuupt = async (params, showNotification) => {
         responseData.data[0].address_complement,
       );
 
-      console.log("Si, cambio:", changed);
+      console.log("Si, cambió:", changed);
       if (changed) {
-        const res = await apiFetch(
-          `/api/vuupt/customers/${responseData.data[0].id}`,
-          {
-            method: "PUT",
-            body: JSON.stringify(params),
-          },
-        );
-
-        if (!res.ok) {
-          const errorData = await res.json();
-          throw new Error(
-            errorData.message || "Error ao actualizar cliente no Vuupt",
+        const windVuupt = await Swal.fire({
+          title: LANG.VUUPT.CHANGEADDRESS,
+          text: LANG.VUUPT.TEXTADDR,
+          icon: "info",
+          showCancelButton: true,
+          confirmButtonText: LANG.VUUPT.CONFIRM,
+          cancelButtonText: LANG.GLOBAL.CANCEL,
+          allowOutsideClick: false,
+        });
+        if (windVuupt.isConfirmed) {
+          //Update endereço no Vuupt
+          /* const res = await apiFetch(
+            `/api/vuupt/customers/${responseData.data[0].id}`,
+            {
+              method: "PUT",
+              body: JSON.stringify(params),
+            },
           );
+          if (!res.ok) {
+            const errorData = await res.json();
+            throw new Error(
+              errorData.message || "Error ao actualizar cliente no Vuupt",
+            );
+          }
+          const responseUpdate = await res.json();
+          console.log("Cliente update:", responseUpdate);
+          data = responseUpdate.customer; */
+          data = responseData.data[0];
+          Swal.fire({
+            toast: true,
+            position: "top-end",
+            title: LANG.VUUPT.INSERTING,
+            didOpen: () => {
+              Swal.showLoading();
+            },
+            showConfirmButton: false,
+            allowOutsideClick: false,
+          });
         }
-        const responseUpdate = await res.json();
-        console.log("Cliente update:", responseUpdate);
-        data = responseUpdate.customer;
         ///////////////////
       } else {
         data = responseData.data[0];
