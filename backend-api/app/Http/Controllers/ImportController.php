@@ -30,7 +30,10 @@ class ImportController extends Controller
         try {
             //  Ejecutamos la importación usando la librería Laravel Excel
             // Pasamos el archivo directamente desde el objeto $request
-            $CustomerImport = new CustomerImport();
+            $CustomerImport = new CustomerImport(
+                 app(\App\Services\GeocodingService::class),
+                   app(\App\Services\VuuptService::class)
+                 );
             $res = Excel::import($CustomerImport, $request->file('archivo_csv'));
             $totalRows = $CustomerImport->getStats()['total'];
             $inserted = $CustomerImport->getStats()['inserted'];

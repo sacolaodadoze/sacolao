@@ -3,6 +3,7 @@
 namespace App\Imports;
 
 use App\Helpers\ImportHelper;
+use App\Http\Controllers\External\VuuptController;
 use App\Models\Customer;
 use App\Imports\AddressImport;
 use App\Imports\PhoneImport;
@@ -12,6 +13,9 @@ use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Illuminate\Support\Collection;
+use App\Services\GeocodingService;
+use App\Services\VuuptService;
+
 
 
 class CustomerImport implements ToCollection, WithHeadingRow, WithChunkReading
@@ -20,6 +24,14 @@ class CustomerImport implements ToCollection, WithHeadingRow, WithChunkReading
     private int $inserted = 0;
     private int $updated = 0;
 
+    protected $vuuptService;
+    protected $geoService;
+
+    public function __construct(GeocodingService $geoService, VuuptService $vuuptService)
+    {
+        $this->vuuptService = $vuuptService;
+        $this->geoService = $geoService;
+    }
     /**
      * @param array $row
      *
@@ -28,8 +40,10 @@ class CustomerImport implements ToCollection, WithHeadingRow, WithChunkReading
     public function collection(Collection $rows)
     {
         $this->totalRows += $rows->count(); // suma por chunk
+        //$customersToInsert = [];
 
-        DB::transaction(function () use ($rows) {
+
+        DB::transaction(function () use ($rows, &$customersToInsert) {
             /****** Trae solo los clientes que cumplen las dos condiciones:
                 document está en la lista del CSV ,customer_code es NULL *******/
             // $documents = [];
@@ -51,12 +65,32 @@ class CustomerImport implements ToCollection, WithHeadingRow, WithChunkReading
                 ->get();
 
             foreach ($existingCustomers as $customer) {
+                // dd($customer);  
                 $customer->update([
                     'customer_code' => $documents[$customer->document]
                 ]);
+                $customer->save();
+
+                //Inserttar en vuupt
+                $data = Customer::with('phones', 'addresses')->find($customer->id);
+                //  dd($data);
+                $customerData = [
+                    'name' => $data['name'],
+                    'code' =>  $data['customer_code'],
+                    'address' => ($data['addresses'][0]['street'] ?? '') . ', ' .
+                        ($data['addresses'][0]['number'] ?? '') . ' ' .
+                        ($data['addresses'][0]['neighborhood'] ?? '') . ' ' .
+                        ($data['addresses'][0]['city'] ?? '') . '-' .
+                        ($data['addresses'][0]['state'] ?? '') . ', ' .
+                        ($data['addresses'][0]['cep'] ?? ''),
+                    'phone_number' => $data['phones'][0]['number'] ?? "",
+                ];
+              
+                //dd($customerData);
+                $this->vuuptService->storeCustomer($customerData);
+                //  $customersToInsert[] = $customer;                
             }
 
-            //TODO Insertar estos clientes en vuupt con el codigo 
             ///////////////////////////////////////
             $codes = [];
 
@@ -114,8 +148,7 @@ class CustomerImport implements ToCollection, WithHeadingRow, WithChunkReading
             /*  dd(
     count($codes),
     $customersDB->count(),
-    Customer::count()
-); */
+    Customer::count()  ); */
 
             //Insertar endereços e telefones
             foreach ($rows as $row) {
@@ -128,6 +161,11 @@ class CustomerImport implements ToCollection, WithHeadingRow, WithChunkReading
                 }
             }
         });
+
+        /* foreach ($customersToInsert as $customer) {
+           // dd($customer);
+            $this->vuuptService->storeCustomer($customer);  
+        } */
     }
 
     /**

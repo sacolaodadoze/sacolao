@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use App\Services\GeocodingService;
+use App\Services\VuuptService;
 
 /* 
 $response->successful(); // 200–299
@@ -21,6 +22,12 @@ $response->json();       // body como array
 
 class VuuptController extends Controller
 {
+    protected $vuuptService;
+
+    public function __construct(VuuptService $vuuptService)
+    {
+        $this->vuuptService = $vuuptService;
+    }
 
     public function getData(Request $request)
     {
@@ -60,7 +67,7 @@ class VuuptController extends Controller
 
         $orderData = [
             'title' => $request->delivery_date ? $request->title . " " . "AG" . " " . $request->delivery_hour . " HRS" : $request->title,
-            'code'=> $request->code_vuupt,
+            'code' => $request->code_vuupt,
             'type' => "delivery",
             'email' => "",
             'phone_number' => $request->phone_number,
@@ -93,22 +100,17 @@ class VuuptController extends Controller
         return $response->json();
     }
 
-    public function storeCustomer(Request $request, GeocodingService $geoService)
+    public function storeCustomer(Request $request)
     {
-        $coords = $geoService->getGeocodeData($request->address);
         $customerData = [
             'name' => $request->name,
             'code' =>  $request->customer_code,
             'address' => $request->address,
             'address_complement' =>  $request->address_complement ?? "",
-            'phone_number' => $request->phone_number,
-            'latitude' => $coords['latitude'] ?? null,
-            'longitude' => $coords['longitude'] ?? null
+            'phone_number' => $request->phone_number ?? "",      
         ];
-        //dd($customerData);
-        $response = Http::withToken(env('VUUPT_TOKEN'))
-            ->post('https://api.vuupt.com/api/v1/customers', $customerData);
-        return $response->json();
+      
+        return response()->json($this->vuuptService->storeCustomer($customerData));
     }
 
     public function updateService($service, $paid)

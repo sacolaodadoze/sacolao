@@ -51,7 +51,7 @@ export const insertVuupt = async (params, showNotification) => {
 
     //Insertar si no esta o cliente
     if (/* data.data.length === 0 ||  */ !response.ok) {
-      console.log("Response", response.ok);
+      console.log("Insertar cliente,response:", response.ok);
 
       const res = await apiFetch("/api/vuupt/customers", {
         method: "POST",

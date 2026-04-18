@@ -7,7 +7,8 @@ class GeocodingService
     function getGeocodeData($address)
     {
 
-        $address = urlencode($address);
+        $address = urlencode($address);   
+      
         $googleMapUrl = "https://maps.googleapis.com/maps/api/geocode/json?address={$address}&key=" . env('GOOGLE_MAPS_API_KEY');
         $geocodeResponseData = file_get_contents($googleMapUrl);
         $responseData = json_decode($geocodeResponseData, true);
