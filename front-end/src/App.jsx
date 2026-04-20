@@ -21,7 +21,7 @@ const PrivateRoute = ({ children }) => {
      return (
       <div className="flex-center" style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
          {/* Aquí puedes poner un spinner de CSS o simplemente texto */}
-         <h2>Cargando...</h2>  //TODO: Cambiar por un spinner de CSS
+         <h2>Cargando...</h2>  {/* TODO: Cambiar por un spinner de CSS */}
       </div>
     );
   }
