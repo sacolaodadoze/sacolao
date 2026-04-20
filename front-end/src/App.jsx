@@ -9,16 +9,22 @@ import { OrderList } from "./assets/components/OrderList.jsx";
 import { OrderManage } from "./assets/components/OrderManage.jsx";
 import { LoginForm } from "./assets/components/LoginForm.jsx";
 import { AuthContext } from "./assets/context/AuthContext.jsx";
+import { showAlert } from "./assets/helpers/alertHelper.js";
 
 
 //Componente para proteger rutas
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useContext(AuthContext); 
   //console.log({ user, loading });
-  /* if (loading) {
-    return <div>Cargando sesión...</div>; // O un spinner/esqueleto
-  } */
-
+  if (loading) {
+    //return <div>Cargando sesión...</div>; // O un spinner/esqueleto
+     return (
+      <div className="flex-center" style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+         {/* Aquí puedes poner un spinner de CSS o simplemente texto */}
+         <h2>Cargando...</h2>  //TODO: Cambiar por un spinner de CSS
+      </div>
+    );
+  }
   return user ? children : <Navigate to="/login" replace />;
 };
 
