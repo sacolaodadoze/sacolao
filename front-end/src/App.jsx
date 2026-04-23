@@ -20,7 +20,9 @@ const PrivateRoute = ({ children }) => {
   if (loading) {
     //return <div>Cargando sesión...</div>; // O un spinner/esqueleto
      return (
+
      <div className="flex-center" style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    
          {/* <h2>Cargando...</h2>  //TODO: Cambiar por un spinner de CSS */}
          <img src={loader} alt="Carregando..." />;
 
