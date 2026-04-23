@@ -68,6 +68,9 @@ export function Header() {
           >
             {LANG.NAV.CARDAPIO}
           </NavLink>
+           <NavLink to="/manage" className="nav-link">
+            {LANG.NAV.ADMIN}
+          </NavLink>
         </div>
         <div style={{ marginLeft: "auto", marginRight: "-1.5rem" }}>
           <Import />

@@ -15,6 +15,7 @@ export const LANG = {
     MANAGE: "Gerenciar Pedido",
     VUUPT: "VUUPT",
     CARDAPIO: "Cardapio",
+    ADMIN:"Administração",
   },
   IMPORT: {
     ACTIONS: "--Ações--",

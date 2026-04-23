@@ -11,6 +11,7 @@ import { OrderManage } from "./assets/components/OrderManage.jsx";
 import { LoginForm } from "./assets/components/LoginForm.jsx";
 import { AuthContext } from "./assets/context/AuthContext.jsx";
 import { showAlert } from "./assets/helpers/alertHelper.js";
+import Admin from "./assets/components/admin/Admin.jsx";
 
 
 //Componente para proteger rutas
@@ -67,6 +68,7 @@ function App() {
           <Route index element={<Home />} />
           <Route path="orders" element={<OrderList/>} />
           <Route path="order/manage" element={<OrderManage />} />
+          <Route path="manage" element={<Admin />} />
           {/* Aquí puedes añadir más rutas: path="clientes", path="perfil", etc. */}
         </Route>
 
