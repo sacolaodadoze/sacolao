@@ -3,6 +3,7 @@ import { useContext } from "react";
 import { Navigate } from "react-router-dom";
 import { Outlet, Route, Routes, BrowserRouter } from "react-router-dom";
 import "./App.css";
+import loader from "./assets/loader.gif";
 
 import { Header } from "./assets/components/Header.jsx";
 import { OrderList } from "./assets/components/OrderList.jsx";
@@ -21,7 +22,8 @@ const PrivateRoute = ({ children }) => {
      return (
       <div className="flex-center" style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
          {/* Aquí puedes poner un spinner de CSS o simplemente texto */}
-         <h2>Cargando...</h2>  //TODO: Cambiar por un spinner de CSS
+         {/* <h2>Cargando...</h2>  //TODO: Cambiar por un spinner de CSS */}
+         <img src={loader} alt="Carregando..." />;
       </div>
     );
   }

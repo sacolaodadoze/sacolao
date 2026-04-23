@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\DB;
 use App\Services\PdfService;
 use App\Rules\CpfValid;
 use App\Rules\PhoneValid;
+use Illuminate\Support\Facades\Log;
+
 
 class CustomerController extends Controller
 {
@@ -46,7 +48,7 @@ class CustomerController extends Controller
             'phone_s'       => ['nullable', new PhoneValid],
             'observations'  => 'nullable|string',
 
-             // Dirección principal
+            // Dirección principal
             'cep_1'         => 'nullable|string',
             'number_1'         => 'nullable|string',
             'complement_1'        => 'nullable|string',
@@ -65,6 +67,14 @@ class CustomerController extends Controller
             'city_2'        => 'nullable|string',
         ]);
         // dd($validated);
+
+        $existing = Customer::where('document', $validated['document'])->first();
+
+        if ($existing) {
+            return response()->json([
+                'message' => 'Ya existe um cliente com esse CPF/CNPJ'
+            ], 409);
+        }
         $customer = DB::transaction(function () use ($validated) {
 
             //Cliente
@@ -75,6 +85,21 @@ class CustomerController extends Controller
                 'customer_code' => null,
                 //  'observations'  => $validated['observations'] ?? null,
             ]);
+            /*     $customer = Customer::firstOrCreate(
+                ['document' => $validated['document']], // condición
+                [
+                    'customer_type' => $validated['customer_type'],
+                    'name'          => $validated['name'],
+                    'customer_code' => null,
+                ]
+            );
+
+            if (!$customer->wasRecentlyCreated) {
+                /*  return response()->json([
+                    'message' => 'Ya existe um cliente com esse documento'
+                ], 409); */
+            /*  throw new \Exception('Ya existe um cliente com esse documento');
+            } */
 
 
             //Teléfonos
