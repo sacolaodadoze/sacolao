@@ -1,0 +1,226 @@
+:root {
+  /* Palette requested: predominant greens, yellow, orange, rare celeste */
+  --primary: #15803d;
+  /* Green 700 - Main Brand Color */
+  --primary-light: #22c55e;
+  /* Green 500 - Lighter for highlights */
+  --primary-hover: #14532d;
+  /* Green 900 - Hover state */
+
+  --accent-orange: #f97316;
+  /* Orange 500 - Secondary/Actions */
+  --accent-yellow: #facc15;
+  /* Yellow 400 - Highlights/Accents */
+
+  --rare-celeste: #38bdf8;
+  /* Sky 400 - Few instances */
+
+  --background: #fcfdfa;
+  /* Very slight warm/natural tint */
+  --surface: #ffffff;
+
+  --text-main: #1e293b;
+  /* Slate 800 */
+  --text-muted: #64748b;
+  /* Slate 500 */
+  --border: #e2e8f0;
+
+  --success: #16a34a;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+
+  --radius: 12px;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --transition: all 0.2s ease-in-out;
+  width: 100%;
+}
+
+body,
+html {
+  margin: 0;
+  font-family:  Helvetica, sans-serif;
+  background: #fafafa;
+  height: 100%;
+}
+.site-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* HEADER */
+.header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 15px 0 0;
+  background: var(--primary) /* #1b5e20 */;
+  color: var(--background);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  flex-wrap: wrap; /* Permite que los elementos salten de línea */
+  justify-content: space-between;
+}
+
+.logo {
+  font-weight: bold;
+}
+
+.main-header {
+  background-color: var(--surface);
+  border-bottom: 2px solid var(--accent-yellow);
+  /* Yellow accent line */
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: var(--shadow-sm);
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-weight: 700;
+  font-size: 1.25rem;
+  /* color: var(--primary); */
+}
+
+.logo-img {
+  height: 50px;
+  width: auto;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.search {
+  flex: 1;
+  padding: 8px;
+  border-radius: var(--radius);
+  border: none;
+}
+
+.cart {
+  cursor: pointer;
+}
+
+.delivery-info {
+  width: 100%; /* Al ocupar el 100%, obliga a los demás a quedarse arriba */
+  text-align: center; /* Opcional: para centrar el texto abajo */
+  order: 10; /* Asegura que siempre sea el último elemento */
+}
+
+/* MENU BUTTON */
+.menu-btn {
+  font-size: 20px;
+  background: none;
+  font-weight: bold;
+  border: none;
+  color: var(--primary-hover);
+  cursor: pointer;
+}
+
+/* SIDEBAR */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -260px;
+  width: 260px;
+  height: 100%;
+  background: var(--background);
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);
+  transition: 0.3s;
+  z-index: 1100;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar.open {
+  left: 0;
+}
+
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px;
+  border-bottom: 1px solid #ddd;
+  font-weight: bold;
+  color: var(--primary-hover);
+  /* background: var(--primary); */
+}
+
+.sidebar nav p {
+  padding: 12px 15px;
+  cursor: pointer;
+}
+
+.sidebar nav p:hover {
+  background: var(--primary-hover )/* #e8f5e9 */;
+  color: var(--background);
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  padding: 15px;
+  border-top: 1px solid #ddd;
+}
+
+/* OVERLAY */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+}
+
+/* MAIN */
+.main {
+  padding: 20px;
+  flex: 1;
+}
+
+/* FOOTER */
+.footer {
+  background: var(--primary) /* #1b5e20 */;
+  color: var(--background);
+  display: flex;
+  justify-content: space-around;
+  padding: 20px;
+  flex-wrap: wrap;
+}
+
+.footer h3,
+.footer h4 {
+  margin-top: 0;
+  /*   text-decoration: underline; */
+  display: inline-block; /* Para que la línea no ocupe todo el ancho de la página */
+ /*  border-bottom: 2px solid; */
+}
+
+.categories {
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+  background: var(--surface);
+  color: var(--primary-hover);
+  padding: 0rem;
+  /*font-weight: bold;
+   border-radius: var(--radius); */
+  box-shadow: var(--shadow);
+  align-items: center;
+  /* border-left: 4px solid var(--accent-yellow); */
+}
+
+/* 
+.content {
+  flex: 1;
+} */

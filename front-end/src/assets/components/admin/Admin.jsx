@@ -2,9 +2,11 @@ import React, { useState } from "react";
 //import "./admin.css";
 
 const menuItems = [
-  { name: "Productos", icon: "📦" },
+  { name: "Produtos", icon: "📦" },
   { name: "Categorías", icon: "🗂️" },
   { name: "Promoções", icon: "💸" },
+  { name: "Taxa", icon: "💱" },
+  { name: "Agendamento", icon: "📅" },
  /*  { name: "Configuración", icon: "⚙️" }, */
 ];
 
