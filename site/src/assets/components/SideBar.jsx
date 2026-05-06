@@ -8,11 +8,15 @@ export default function SideBar({ menuOpen, setMenuOpen }) {
         </div>
 
         <nav>
-          <p>🥦 Verduras</p>
-          <p>🍎 Frutas</p>
-          <p>🥤 Bebidas</p>
-          <p>🍞 Panadería</p>
-          <p>🔥 Ofertas</p>
+          <p> Prontos para consumo</p>
+          <p> Legumes y ovos</p>
+          <p> Lácteos</p>
+          <p> Hortaliças</p>
+          <p> Frutas</p>
+          <p> Hortaliças</p>
+          <p> Massas artesanais</p>
+          <p> Bebidas</p>
+          <p> Ofertas</p>
         </nav>
 
         {/*  <div className="sidebar-footer">
@@ -20,7 +24,7 @@ export default function SideBar({ menuOpen, setMenuOpen }) {
           <p>ℹ️ Sobre nosotros</p>
         </div> */}
       </aside>
-      {/* OVERLAY */}
+      {/* OVERLAY-- fondo oscuro/transparente que cubre la pantalla*/}
       {menuOpen && <div className="overlay" onClick={() => setMenuOpen(false)} />}
       
     </>

@@ -5,13 +5,13 @@ export default function Footer() {
         <h3>Sacolão da Doze</h3>
         <p>📍 Calle X, Ciudad</p>
         <p>📞 +123 456 789</p>
-        <p>💬 WhatsApp disponible</p>
+        <p>💬 WhatsApp</p>
       </div>
 
       <div>
         <h4>Categorías</h4>
         <p>Frutas</p>
-        <p>Verduras</p>
+        <p>Hortaliças</p>
         <p>Bebidas</p>
         
       </div>
@@ -23,7 +23,7 @@ export default function Footer() {
       </div>
 
        <div>
-        <h4>Quem somos</h4>        
+        <h4>{/* ℹ️ */} Quem somos</h4>        
       </div>
       
     </footer>
