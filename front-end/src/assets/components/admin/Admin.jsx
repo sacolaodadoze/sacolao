@@ -3,15 +3,15 @@ import React, { useState } from "react";
 
 const menuItems = [
   { name: "Produtos", icon: "📦" },
-  { name: "Categorías", icon: "🗂️" },
+  { name: "Categorias", icon: "🗂️" },
   { name: "Promoções", icon: "💸" },
   { name: "Taxa", icon: "💱" },
   { name: "Agendamento", icon: "📅" },
- /*  { name: "Configuración", icon: "⚙️" }, */
+   { name: "Configuración", icon: "⚙️" },
 ];
 
 export default function Admin() {
-  const [active, setActive] = useState("Productos");
+  const [active, setActive] = useState("Produtos");
 
   return (
     <div className="admin-container">

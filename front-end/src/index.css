@@ -445,8 +445,8 @@ tr:hover td {
 .admin-container {
   display: flex;
   height: 100vh;
-  font-family: Arial, sans-serif;
-}
+  font-family: Arial, sans-serif;  
+} 
 
 /* Sidebar */
 .sidebar {
@@ -455,6 +455,7 @@ tr:hover td {
   border-right: 2px solid #e0e0e0;
   display: flex;
   flex-direction: column;
+ 
 }
 
 .logo {
@@ -494,7 +495,7 @@ tr:hover td {
 /* Main */
 .main-content {
   flex: 1;
-  padding: 30px;
+  padding:  25px;
   background-color: #fafafa;
 }
 

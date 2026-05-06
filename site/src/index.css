@@ -56,7 +56,7 @@ html {
   justify-content: flex-start;
   gap: 12px;
   padding: 0px 0px 9px 0px;
-  background: var(--primary) /* #1b5e20 */; /* #2e7d32 */
+  background: var(--primary); /* #1b5e20 */ /* #2e7d32 */
   color: var(--background);
   position: sticky;
   z-index: 1000;
