@@ -1,0 +1,136 @@
+/* Top bar */
+.topbar {
+  width: 100%;
+  height: 38px;
+  background: linear-gradient(
+    90deg,
+    #f28c28,
+    #ff9f43
+  ); /*var(--orange);/* #063818; */
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(8px);
+  overflow: hidden;
+}
+
+.topbar-content {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  animation: softPulse 3s ease-in-out infinite;
+}
+
+.topbar-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.topbar-divider {
+  width: 1.5px;
+  height: 18px;
+  background: rgba(255, 255, 255, 0.3);
+  margin: 0 12px;
+}
+/* @keyframes iconFloat {
+
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-1px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
+} */
+.topbar-emoji {
+  animation: glow 2s infinite;
+}
+
+@keyframes glow {
+  /* Nombre de la animacion */
+  /* Inicio de la animacion */
+  0% {
+    transform: scale(1.5);
+  }
+  /* Mitad de la animacion */
+  50% {
+    transform: scale(1.15);
+  }
+  /* Final de la animacion, vuelve al tamanno normal */
+  100% {
+    transform: scale(1.5);
+  }
+}
+
+/* Top Bar en movimiento*/
+/* .topbar {
+  width: 100%;
+  height: 38px;
+  background: var(--orange);/*  #063818; */
+/* overflow: hidden;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+   backdrop-filter: blur(8px);
+}
+
+.topbar-track {
+  display: flex;
+  align-items: center;
+  gap: 60px;
+  white-space: nowrap;
+  animation: scrollBar 28s linear infinite;
+}
+
+.topbar-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.topbar-icon {
+  font-size: 18px !important;
+  animation: pulse 2.5s infinite;
+}
+.topbar-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes scrollBar {
+  0% {
+    transform: translateX(100%);
+  }
+
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+
+  50% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+} */
+/* **** */

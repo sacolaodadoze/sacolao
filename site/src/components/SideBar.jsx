@@ -1,3 +1,4 @@
+import "./SideBar.css";
 export default function SideBar({ menuOpen, setMenuOpen }) {
   return (
     <>

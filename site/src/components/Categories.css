@@ -1,0 +1,12 @@
+.categories {  
+  display: flex;
+  flex-direction: row;
+  gap: 18px;
+  background: var(--surface);
+  color: var(--primary);
+  padding-left: 20px;
+  /*font-weight: bold;
+   border-radius: var(--radius); */
+  box-shadow: var(--shadow);
+  align-items: center;
+}
