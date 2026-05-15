@@ -13,8 +13,8 @@ export default function Footer() {
   return (
     <footer className="footer">
       <div>
-        <h3>Sacolão da Doze</h3>       
-          {/* 📍 */}       
+        <h3>Sacolão da Doze</h3>
+        {/* 📍 */}
         <a
           className="icone-tittle"
           href="https://www.google.com/maps?q=-22.9749716,-49.8767675&z=17&hl=pt-BR"
@@ -29,23 +29,21 @@ export default function Footer() {
           {/* 📞 */}
           <LocalPhoneOutlined /> (14) 3322 - 2152 <br /> (14) 3335 - 6129
         </p>
-       
-          {/* 💬 */}
-          <a
-           className="icone-tittle"
-            href="https://wa.me/14998242254"
-            target="_blank"
-            rel="noopener noreferrer"           
-          >
-            <img
-              className="icone-tittle"
-              src="/img/whatsApp.png"
-              alt="WhatsApp"
-            />
-            +(14) 9982 - 42254
 
-          </a>
-        
+        {/* 💬 */}
+        <a
+          className="icone-tittle"
+          href="https://wa.me/14998242254"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img
+            className="location-icon"
+            src="/img/whatsApp.png"
+            alt="WhatsApp"
+          />
+          +(14) 9982 - 42254
+        </a>
       </div>
 
       {/* TODO: poner luego las categorias */}
@@ -74,7 +72,7 @@ export default function Footer() {
       <div>
         <h4>
           {" "}
-          <NoteAltOutlined /> Agendamento de entrefa
+          <NoteAltOutlined /> Agendamento de entrega
         </h4>
         <p style={{ textDecoration: "solid" }}>Segunda-feira a Sexta-feira</p>
         <p>09:00 às 12:30 - 15:30 às 17:30</p>
@@ -84,21 +82,26 @@ export default function Footer() {
 
       <div>
         <Link to="/about">
-          {" "}
           <h4>
-            {" "}
             <InfoOutlined /> Quem somos
           </h4>
         </Link>
-        {/*  <Link to="/about">{/* ℹ️  Nossa historia</Link> */}
-        <p>Siga-nos</p>
-        <Link
-          to="https://www.instagram.com/sacolaodadoze/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img className="img-redes" src="/img/instagram.png" alt="Instagram" />
-        </Link>
+
+        <p>
+          Siga-nos
+          <Link
+            to="https://www.instagram.com/sacolaodadoze/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img
+              className="img-redes"
+              src="/img/instagram.png"
+              alt="Instagram"
+            />
+          </Link>
+        </p>
+
         {/*  <Link
           to="https://www.facebook.com/sacolaodadoze"
           target="_blank"

@@ -23,7 +23,7 @@ export default function Header() {
         <Button
            sx={{
             backgroundColor:'#f28c28'/*  'rgb(231, 184, 97)' */, 
-             marginTop: '-4px',
+             marginTop: '-2px',
              borderRadius: '0 12px 12px 0',
            /*  "&:hover": {
               backgroundColor: "#e64a19", // Cor ao passar o mouse

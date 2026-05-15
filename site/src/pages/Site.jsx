@@ -12,14 +12,15 @@ export default function Site({ children }) {
 
   return (
     <div className="site-container">
-      {/* HEADER */}
-      <Header />
+      <div className="sticky-header">
+        {/* HEADER */}
+        <Header />
 
-      {/* SIDEBAR */}
-      <SideBar menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
+        {/* SIDEBAR */}
+        <SideBar menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
 
-      <Categories setMenuOpen={setMenuOpen} />
-
+        <Categories setMenuOpen={setMenuOpen} />
+      </div>
       {/* MAIN */}
       <main className="main">{children || <Carrusel />}</main>
 

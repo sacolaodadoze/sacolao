@@ -42,7 +42,7 @@ export default function AboutUs() {
 
           <div className="history-block">
             <div className="history-image">
-              <img src="/img/history/1.jpeg" alt="" />
+              <img src="/img/history/1.jpeg" alt="Uma porta aberta por Deus" />
             </div>
 
             <div className="history-text">
@@ -65,7 +65,7 @@ export default function AboutUs() {
 
           <div className="history-block reverse">
             <div className="history-image">
-              <img src="/img/history/2.jpeg" alt="" />
+              <img src="/img/history/2.jpeg" alt="Tijolo por tijolo" />
             </div>
 
             <div className="history-text">
@@ -99,7 +99,7 @@ export default function AboutUs() {
 
           <div className="history-block">
             <div className="history-image">
-              <img src="/img/history/market-front.jpg" alt="" />
+              <img src="/img/history/market-front.jpg" alt="A essência que nunca mudou" />
             </div>
 
             <div className="history-text">
@@ -120,11 +120,11 @@ export default function AboutUs() {
 
           <div className="history-block reverse">
             <div className="history-image">
-              <img src="/img/history/fresh-products.jpg" alt="" />
+              <img src="/img/history/fresh-products.jpg" alt="O sonho do produto limpo" />
             </div>
 
             <div className="history-text">
-              <h3>O sonho do produto limpo</h3>
+              <h3>'O sonho do produto limpo'</h3>
 
               <p>
                 Em algum momento, surgiu um sonho simples e revolucionário para
@@ -140,7 +140,7 @@ export default function AboutUs() {
           </div>
           <div className="history-block">
             <div className="history-image">
-              <img src="/img/history/market-front.jpg" alt="" />
+              <img src="/img/history/market-front.jpg" alt="Uma nova geração, um novo impulso" />
             </div>
 
             <div className="history-text">
@@ -180,6 +180,7 @@ export default function AboutUs() {
           </div>
         </section>
 
+        <h2 className="about-intro-title">Porque Sacolão da Doze </h2>
         {/* Cards */}
         <section className="about-cards">
           <div className="about-card">
@@ -226,7 +227,7 @@ export default function AboutUs() {
             </div>
           </div>
 
-       {/*    <div className="about-card">
+          {/*    <div className="about-card">
             <img src="/img/cards/delivery.jpg" alt="" />
 
             <div className="card-content">
@@ -241,6 +242,6 @@ export default function AboutUs() {
           </div> */}
         </section>
       </div>
-     </Site> 
+    </Site>
   );
 }
