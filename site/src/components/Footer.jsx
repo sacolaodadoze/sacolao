@@ -3,22 +3,18 @@ import "./Footer.css";
 import {
   InfoOutlined,
   WatchLaterOutlined,
-  FmdGoodOutlined,  
+  FmdGoodOutlined,
   PermPhoneMsgOutlined,
   NoteAltOutlined,
-  LocalPhoneOutlined
-} from '@mui/icons-material';
-
+  LocalPhoneOutlined,
+} from "@mui/icons-material";
 
 export default function Footer() {
   return (
     <footer className="footer">
       <div>
-        <h3>Sacolão da Doze</h3>
-        {/*  <p c>
-          {/* 📍 */}
-        {/*  <FmdGoodOutlinedIcon /> Rua Doze de Outubro, 630 <br /> Vila Margarida, Ourinhos- SP
-        </p> */}
+        <h3>Sacolão da Doze</h3>       
+          {/* 📍 */}       
         <a
           className="icone-tittle"
           href="https://www.google.com/maps?q=-22.9749716,-49.8767675&z=17&hl=pt-BR"
@@ -31,17 +27,25 @@ export default function Footer() {
 
         <p className="icone-tittle">
           {/* 📞 */}
-          <LocalPhoneOutlined /> (14)3322-2152 ou (14)3335-6129  (14) 998242254
+          <LocalPhoneOutlined /> (14) 3322 - 2152 <br /> (14) 3335 - 6129
         </p>
-        <p className="icone-tittle">
+       
           {/* 💬 */}
-          <img
-            className="icone-tittle"
-            src="/img/whatsApp.png"
-            alt="WhatsApp"
-          />{" "}
-          + 55 14 3335-6129
-        </p>
+          <a
+           className="icone-tittle"
+            href="https://wa.me/14998242254"
+            target="_blank"
+            rel="noopener noreferrer"           
+          >
+            <img
+              className="icone-tittle"
+              src="/img/whatsApp.png"
+              alt="WhatsApp"
+            />
+            +(14) 9982 - 42254
+
+          </a>
+        
       </div>
 
       {/* TODO: poner luego las categorias */}
@@ -57,20 +61,20 @@ export default function Footer() {
       <div>
         <h4>
           {" "}
-          <WatchLaterOutlined /* sx={{marginTop: 1}} */ /> Horario
+          <WatchLaterOutlined /* sx={{marginTop: 1}} */ /> Horário
         </h4>
         <p style={{ textDecoration: "solid" }}>Segunda-feira a Sexta-feira</p>
-        <p>08:00 às 13:00 - 15:00 às 17:00</p>
+        <p>08:00 às 13:00 - 15:00 às 18:30</p>
         <p style={{ textDecoration: "solid" }}>Sábado</p>
         <p>08:00 às 16:00</p>
-        <p style={{ textDecoration: "solid" }}>Domingo</p>
+        <p style={{ textDecoration: "solid" }}>Domingos e Feriados</p>
         <p>08:00 às 12:00</p>
       </div>
 
       <div>
         <h4>
           {" "}
-          <NoteAltOutlined /> Agendamento
+          <NoteAltOutlined /> Agendamento de entrefa
         </h4>
         <p style={{ textDecoration: "solid" }}>Segunda-feira a Sexta-feira</p>
         <p>09:00 às 12:30 - 15:30 às 17:30</p>
@@ -79,12 +83,14 @@ export default function Footer() {
       </div>
 
       <div>
-       <Link to="/about"> <h4>
+        <Link to="/about">
           {" "}
-          <InfoOutlined /> Quem somos
-        </h4>
+          <h4>
+            {" "}
+            <InfoOutlined /> Quem somos
+          </h4>
         </Link>
-       {/*  <Link to="/about">{/* ℹ️  Nossa historia</Link> */}
+        {/*  <Link to="/about">{/* ℹ️  Nossa historia</Link> */}
         <p>Siga-nos</p>
         <Link
           to="https://www.instagram.com/sacolaodadoze/"
@@ -93,13 +99,13 @@ export default function Footer() {
         >
           <img className="img-redes" src="/img/instagram.png" alt="Instagram" />
         </Link>
-        <Link
+        {/*  <Link
           to="https://www.facebook.com/sacolaodadoze"
           target="_blank"
           rel="noopener noreferrer"
         >
           <img className="img-redes" src="/img/facebook.png" alt="Facebook" />
-        </Link>
+        </Link> */}
       </div>
     </footer>
   );

@@ -8,7 +8,7 @@ export default function Carrusel() {
     "/img/food/1.jpg",
     "/img/food/2.jpg",
     "/img/food/3.jpg",
-    "/img/food/4.jpg",
+    "/img/food/4.jpg",    
   ];
 
   const moveCarousel = (direction) => {

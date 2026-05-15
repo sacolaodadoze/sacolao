@@ -48,13 +48,15 @@ html {
   font-family: Helvetica, sans-serif;
   background: var(--);
   height: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 .site-container {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  width: 100%;
 }
-
 
 .delivery-info {
   width: 100%; /* Al ocupar el 100%, obliga a los demás a quedarse arriba */
@@ -83,7 +85,7 @@ html {
 
 /* MAIN */
 .main {
-  padding: 20px;
+  padding: 0px;
   flex: 1;
 }
 
@@ -120,5 +122,3 @@ html {
   right: 10px;
 }
 /*  */
-
-
