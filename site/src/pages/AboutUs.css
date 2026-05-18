@@ -81,18 +81,32 @@
 
 /* HISTORY */
 
+/* .market-history {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+  padding: 0 30px;
+} */
+
 .market-history {
   display: flex;
   flex-direction: column;
-  gap: 70px;
-  margin-top: 30px;
-  padding: 0 8px;
+
+  gap: 10px;
+
+  /* margin: 40px auto 0; */
+
+  /* padding: 0 30px; */
+   padding: 40px 30px  50px 40px;
+
+  max-width: 1400px;
 }
 
 .history-block {
   display: flex;
   align-items: center;
-  gap: 37px;
+  gap: 57px;
   width: 100%;
 }
 
@@ -119,7 +133,7 @@
 
 .history-text h3 {
   color: #094b21;
-  font-size: 28px;
+  font-size: 25px;
   margin-bottom: 20px;
 }
 
@@ -127,7 +141,7 @@
   color: #666;
   font-size: 18px;
   line-height: 1.8;
-  text-align: justify;
+  text-align: left;
 }
 
 /* CARDS */

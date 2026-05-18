@@ -5,6 +5,7 @@ import Header from "../components/Header.jsx";
 import Categories from "../components/Categories.jsx";
 import Carrusel from "../components/Carrusel.jsx";
 import WhatsAppButton from "../components/WhatsAppButton.jsx";
+import Us from "../components/Us.jsx";
 /* import Banner from "./Banner.jsx"; */
 
 export default function Site({ children }) {
@@ -22,7 +23,14 @@ export default function Site({ children }) {
         <Categories setMenuOpen={setMenuOpen} />
       </div>
       {/* MAIN */}
-      <main className="main">{children || <Carrusel />}</main>
+      <main className="main">
+        {children || (
+          <>
+            <Carrusel />
+             <Us />
+          </>
+        )}
+      </main>
 
       {/* FOOTER */}
       <Footer />

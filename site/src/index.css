@@ -51,17 +51,6 @@ html {
   box-sizing: border-box;
   overflow-x: hidden;
 }
-.sticky-header {
-  position: sticky;
-
-  top: 0;
-
-  z-index: 1000;
-
-  background: white;
-
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-}
 .site-container {
   display: flex;
   flex-direction: column;

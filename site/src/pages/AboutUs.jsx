@@ -38,7 +38,7 @@ export default function AboutUs() {
         </section> */}
 
         <section className="market-history">
-          <h2 className="about-intro-title">Nossa história</h2>
+         {/*  <h2 className="about-intro-title">Nossa história</h2> */}
 
           <div className="history-block">
             <div className="history-image">
