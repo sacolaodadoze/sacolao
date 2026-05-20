@@ -7,6 +7,19 @@
   justify-content: space-around;
   padding: 15px;
   flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.footer > div {
+  display: flex;
+  flex-direction: column;
+ 
+}
+
+.footer p {
+  margin-top: 2;
+  margin-bottom: 0;
+  color: var(--background);
 }
 
 .footer h3,
@@ -15,6 +28,8 @@
   align-items: center;
   gap: 3px;
   color: var(--background) /* #5f5f5f */;
+
+   margin-bottom: 10px;
   /*  margin-top: 0;
   margin-bottom: 4px; */
   /* display: inline-block;  */ /* Para que la línea no ocupe todo el ancho de la página */
@@ -23,15 +38,29 @@
 
 .footer a {
   margin-top: 0;
-  margin-bottom: 4px;
+  margin-bottom: 0;
   color: var(--background);
   text-decoration: none;
+   color: inherit;
 }
 
 .footer a:hover {
-  /*  text-decoration: underline; */
-  color: var(--orange) /* #f28c28 */;
+  color: var(--orange) !important; /* #f28c28 */
 }
+
+.footer-link {
+   display: flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--background) /* #5f5f5f */;
+
+   margin-bottom: 3px;
+}
+
+.footer-link:hover {
+  color: orange !important;
+}
+
 
 .location-icon {
   transition: 0.3s;
@@ -40,6 +69,7 @@
 .footer a:hover .location-icon {
   animation: bounce 0.5s;
 }
+
 @keyframes bounce {
   0% {
     transform: translateY(0);
@@ -64,6 +94,37 @@
   width: 24px;
   height: 24px;
   position: relative;
-  left: 11px;
-  top: 7px;
+  left: 13px;
+  top: 1px;
+   vertical-align: middle;
+}
+
+@media (max-width: 768px) {
+
+  .footer {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 25px;
+
+    padding: 30px 20px;
+
+    text-align: left;
+  }
+
+  .footer > div {
+    width: 100%;
+  }
+
+  .footer h3,
+  .footer h4 {
+    margin-bottom: 10px;
+  }
+
+  .footer p,
+  .footer a {
+    margin-bottom: 8px;
+  }
+
 }

@@ -9,9 +9,12 @@ import TopBar from "./TopBar";
 export default function Header() {
   return (
     <header className="header">
-    <TopBar/>
+      <TopBar />
       <div className="logo-container">
-       <Link to="/"> <img src={logo} alt="Logo" className="logo-img" /></Link>
+        <Link to="/">
+          {" "}
+          <img src={logo} alt="Logo" className="logo-img" />
+        </Link>
         Sacolão da Doze
       </div>
       <div className="search-container">
@@ -21,13 +24,12 @@ export default function Header() {
           className="search"
         />
         <Button
-           sx={{
-            backgroundColor:'#f28c28'/*  'rgb(231, 184, 97)' */, 
-             marginTop: '-2px',
-             borderRadius: '0 12px 12px 0',
-           /*  "&:hover": {
-              backgroundColor: "#e64a19", // Cor ao passar o mouse
-            }, */
+          sx={{
+            backgroundColor: "#f28c28",
+            marginTop: "-2px",
+            borderRadius: "0 12px 12px 0",
+            whiteSpace: "nowrap",
+            flexShrink: 0,
           }}
           variant="contained"
           startIcon={<SearchIcon />}

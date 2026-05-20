@@ -9,9 +9,9 @@ export default function Us() {
       </div>
 
       <div className="history-text">
-        <h3>Porque o Sacolão da Doze </h3>
+        <h3>Quem é o Sacolão da Doze </h3>
 
-        <p>
+        <p> 
           Tudo começou em 1992 com coragem, pouca condição e muita vontade de
           trabalhar. Val e Elias eram um casal jovem, recém-casados, dispostos a
           construir algo com as próprias mãos. Antes do Sacolão, tentaram a

@@ -8,7 +8,12 @@ export default function Carrusel() {
     "/img/food/1.jpg",
     "/img/food/2.jpg",
     "/img/food/3.jpg",
-    "/img/food/4.jpg",    
+   /*  "/img/food/4.jpg", */
+    "/img/food/5.jpeg",
+    "/img/food/6.JPG",
+    "/img/food/7.JPG",
+    "/img/food/8.jpg",
+    "/img/food/9.jpg",
   ];
 
   const moveCarousel = (direction) => {
@@ -25,9 +30,9 @@ export default function Carrusel() {
   };
 
   useEffect(() => {
-    const interval = setInterval(() => {    
+    const interval = setInterval(() => {
       moveCarousel(1);
-    }, 4000);   
+    }, 4000);
     return () => clearInterval(interval);
   }, [currentIndex]);
 

@@ -1,4 +1,4 @@
-.categories {  
+.categories {
   display: flex;
   flex-direction: row;
   gap: 18px;
@@ -9,4 +9,26 @@
    border-radius: var(--radius); */
   box-shadow: var(--shadow);
   align-items: center;
+}
+
+@media (max-width: 768px) {
+  .categories {
+    display: flex;
+    overflow-x: auto;
+    white-space: nowrap;
+
+    gap: 16px;
+
+    padding: 10px;
+
+    scrollbar-width: none;
+  }
+
+  .categories::-webkit-scrollbar {
+    display: none;
+  }
+
+  .categories p {
+    flex-shrink: 0;
+  }
 }

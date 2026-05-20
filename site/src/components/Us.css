@@ -3,9 +3,9 @@
   align-items: center;
   gap: 40px;
 
- max-width: 1200px;
-   margin: 10px auto 0; 
-/* 
+  max-width: 1200px;
+  margin: 25px auto 25px;
+  /* 
   margin: 35px 45px; */
 
   /*   display: flex;
@@ -44,4 +44,41 @@
   font-size: 15px;
   line-height: 1.8;
   text-align: left;
+}
+
+@media (max-width: 768px) {
+
+  .history-block {
+    display: flex;
+    flex-direction: column;
+
+    gap: 0;
+  }
+
+  .history-image,
+  .history-text {
+    flex: unset !important;
+
+    width: 100%;
+
+    margin: 0;
+    padding: 0;
+  }
+
+  .history-image {
+    margin-bottom: 0;
+  }
+
+  .history-image img {
+    width: 100%;
+    height: auto;
+
+    display: block;
+  }
+
+  .history-text h3,
+  .history-text p {
+    margin-top: 0;
+  }
+
 }

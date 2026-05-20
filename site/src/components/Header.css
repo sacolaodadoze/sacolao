@@ -5,8 +5,8 @@
   padding: 0px 0px 9px 0px;
   background: var(--primary); /* #1b5e20 */ /* #2e7d32 */
   color: var(--background);
-  position: sticky;
-  z-index: 1000;
+ /*  position: sticky;
+  z-index: 1000; */
   flex-wrap: wrap; /* Permite que los elementos salten de línea */
   justify-content: space-between;
   align-items: center;
@@ -57,4 +57,25 @@
 
 .cart {
   cursor: pointer;
+}
+
+@media (max-width: 768px) {
+
+  .search-container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 0;
+  }
+
+  .search {
+    flex: 1;
+    min-width: 0;
+  }
+   .header {
+    position: sticky;
+    top: 0;
+    z-index: 9999;
+  }
+
 }

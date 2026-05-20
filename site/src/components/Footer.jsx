@@ -81,12 +81,11 @@ export default function Footer() {
       </div>
 
       <div>
-        <Link to="/about">
-          <h4>
+        <h4 >
+          <Link to="/about" className="footer-link">
             <InfoOutlined /> Quem somos
-          </h4>
-        </Link>
-
+          </Link>
+        </h4>
         <p>
           Siga-nos
           <Link
