@@ -46,11 +46,36 @@
   text-align: left;
 }
 
-@media (max-width: 768px) {
+.read-more-link {
+  color: var(--orange);
 
+  text-decoration: none;
+
+  font-weight: 600;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 5px;
+}
+
+.read-more-link::after {
+  content: "→";
+
+  transition: transform 0.2s;
+}
+
+.read-more-link:hover::after {
+  transform: translateX(4px);
+}
+
+@media (max-width: 768px) {
   .history-block {
     display: flex;
     flex-direction: column;
+    padding: 0 10px;
+    box-sizing: border-box;
 
     gap: 0;
   }
@@ -80,5 +105,4 @@
   .history-text p {
     margin-top: 0;
   }
-
 }

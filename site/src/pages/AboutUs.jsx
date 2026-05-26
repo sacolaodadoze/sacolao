@@ -180,7 +180,7 @@ export default function AboutUs() {
           </div>
         </section>
 
-        <h2 className="about-intro-title">Porque Sacolão da Doze </h2>
+        <h2 className="about-intro-title">Por que Sacolão da Doze ? </h2>
         {/* Cards */}
         <section className="about-cards">
           <div className="about-card">

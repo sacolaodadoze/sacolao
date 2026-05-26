@@ -1,11 +1,11 @@
-.header {  
+.header {
   display: flex;
   justify-content: flex-start;
   gap: 12px;
-  padding: 0px 0px 9px 0px;
+  padding: 0px 0px 17px 0px;
   background: var(--primary); /* #1b5e20 */ /* #2e7d32 */
   color: var(--background);
- /*  position: sticky;
+  /*  position: sticky;
   z-index: 1000; */
   flex-wrap: wrap; /* Permite que los elementos salten de línea */
   justify-content: space-between;
@@ -39,7 +39,6 @@
   flex: 1;
   margin-right: auto;
   align-items: center;
-  
 }
 
 .search {
@@ -59,23 +58,82 @@
   cursor: pointer;
 }
 
-@media (max-width: 768px) {
+.whatsapp-notice {
+  position: absolute;
+  top: 100%;
+  left: 44%;
+  transform: translateX(-50%);
+  margin-top: 4px;
+  font-size: 14px;
+  color: var(--background);
+  font-weight: 600;
+  white-space: nowrap;
+  animation: floatNotice 2.5s ease-in-out infinite;
+}
 
+@keyframes floatNotice {
+  0% {
+    transform: translateX(-50%) translateY(0px);
+    opacity: 0.8;
+  }
+
+  50% {
+    transform: translateX(-50%) translateY(-2px);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateX(-50%) translateY(0px);
+    opacity: 0.8;
+  }
+}
+
+@media (max-width: 768px) {
+  .logo-container {
+    margin-top: 5px;
+  }
   .search-container {
     display: flex;
+
     align-items: center;
-    width: 100%;
+
     gap: 0;
+
+    margin: 0 6px;
+
+    width: calc(100% - 12px);
+
+    box-sizing: border-box;
   }
 
   .search {
     flex: 1;
     min-width: 0;
+    border-right: none;
+    border-radius: 12px 0 0 12px;
+    height: 38px;
   }
-   .header {
+
+  .search-container button {
+    flex-shrink: 0;
+    margin-left: -2px;
+    height: 38px;
+     font-size: 10px;
+  }
+
+  .header {
     position: sticky;
     top: 0;
     z-index: 9999;
+    padding-bottom: 27px;
   }
 
+  .whatsapp-notice {
+    font-size: 15px;
+    font-weight: 500;
+    margin-top: 3px;
+    white-space: nowrap;
+    left: 50%;
+    transform: translateX(-50%);
+  }
 }

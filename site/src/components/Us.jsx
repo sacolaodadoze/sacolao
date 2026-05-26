@@ -9,7 +9,7 @@ export default function Us() {
       </div>
 
       <div className="history-text">
-        <h3>Quem é o Sacolão da Doze </h3>
+        <h3>Quem somos </h3>
 
         <p> 
           Tudo começou em 1992 com coragem, pouca condição e muita vontade de
@@ -18,7 +18,7 @@ export default function Us() {
           sorte com uma pastelaria. Havia empenho, havia conhecimento — mas o
           negócio deu muito trabalho e pouco retorno. 
         </p>
-        <Link to="/about" className="btn btn-primary">
+        <Link to="/about" onClick={() => window.scrollTo(0, 0)} className="read-more-link">
           Leia mais
         </Link>
       </div>

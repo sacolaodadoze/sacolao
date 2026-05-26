@@ -82,7 +82,7 @@ export default function Footer() {
 
       <div>
         <h4 >
-          <Link to="/about" className="footer-link">
+          <Link to="/about" className="footer-link"  onClick={() => window.scrollTo(0, 0)}>
             <InfoOutlined /> Quem somos
           </Link>
         </h4>

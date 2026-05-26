@@ -26,7 +26,7 @@ export default function Header() {
         <Button
           sx={{
             backgroundColor: "#f28c28",
-            marginTop: "-2px",
+            marginTop: "-1px",
             borderRadius: "0 12px 12px 0",
             whiteSpace: "nowrap",
             flexShrink: 0,
@@ -37,10 +37,15 @@ export default function Header() {
           Buscar
         </Button>
         {/*  <span className="search-icon">🔍</span> */}
+        <p className="whatsapp-notice">
+        🛒 Compras no momento apenas pelo WhatsApp
+      </p>
       </div>
 
       {/* <div className="cart">🛒 (2)</div>
       <br /> */}
+        
+      
     </header>
   );
 }

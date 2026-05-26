@@ -5,6 +5,10 @@ import Site from "./pages/Site.jsx";
 import ScrollToTop from "./components/ScrollToTop";
 import AboutUs from "./pages/AboutUs.jsx";
 
+if ("scrollRestoration" in window.history) {
+  window.history.scrollRestoration = "manual";
+}
+
 function App() {
   return (
     <>

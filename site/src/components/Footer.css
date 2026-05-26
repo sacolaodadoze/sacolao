@@ -17,8 +17,9 @@
 }
 
 .footer p {
-  margin-top: 2;
-  margin-bottom: 0;
+  /* margin-top: 5px; 
+  margin-bottom: 1px;*/
+  margin: 6px 0;
   color: var(--background);
 }
 

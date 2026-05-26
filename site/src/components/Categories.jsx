@@ -15,9 +15,9 @@ export default function Categories({ setMenuOpen }) {
   return (
     <div className="categories">
       {/* TODO poner despues las categorias */}
-      <button className="menu-btn"/*  onMouseEnter={() => setMenuOpen(true)} */>
+      {/* <button className="menu-btn"/*  onMouseEnter={() => setMenuOpen(true)} >
         ☰
-      </button>
+      </button> */}
 
       {categorias.map((categoria) => (
         <p key={categoria.id}>{categoria.nombre}</p>
