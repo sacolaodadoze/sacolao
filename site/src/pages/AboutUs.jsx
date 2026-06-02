@@ -38,7 +38,7 @@ export default function AboutUs() {
         </section> */}
 
         <section className="market-history">
-         {/*  <h2 className="about-intro-title">Nossa história</h2> */}
+          {/*  <h2 className="about-intro-title">Nossa história</h2> */}
 
           <div className="history-block">
             <div className="history-image">
@@ -49,16 +49,14 @@ export default function AboutUs() {
               <h3>Uma porta aberta por Deus</h3>
 
               <p>
-                Tudo começou em 1992 com coragem, pouca condição e muita vontade
-                de trabalhar. Val e Elias eram um casal jovem, recém-casados,
-                dispostos a construir algo com as próprias mãos. Antes do
-                Sacolão, tentaram a sorte com uma pastelaria. Havia empenho,
-                havia conhecimento — mas o negócio deu muito trabalho e pouco
-                retorno. Quando surgiu a oportunidade de comprar um pequeno
-                comércio de hortifruti, a decisão foi tomada com fé. “Foi uma
-                porta aberta por Deus”, conta Val. “Deu tão certo que foi muito
-                gostoso — a gente foi prosperando, foi fazendo junto.” E deu
-                certo. Muito certo.
+                Tudo começou em 1992, em uma pequena quitanda na Rua Doze de
+                Outubro, na cidade de Ourinhos/SP. Val e Elias, um casal jovem e
+                muito trabalhador, viram naquela oportunidade uma “porta aberta
+                por Deus”, como costuma contar Val sobre esse início. O começo
+                foi duro: às 5h da manhã, Val já saia com a filha mais velha
+                para abrir a loja, enquanto Elias cuidava das compras, dividindo
+                o frete dos produtos com o Tio Arnaldo, que os ajudou muito
+                naquela época.
               </p>
             </div>
           </div>
@@ -72,109 +70,49 @@ export default function AboutUs() {
               <h3>Tijolo por tijolo</h3>
 
               <p>
-                Os primeiros anos foram duros. Acordar às cinco da manhã era
-                rotina — e às vezes era preciso levar a filha mais velha junto
-                para o trabalho. A primeira filha nasceu naquele mesmo ano de
-                1992, a segunda em 2000. O Sacolão cresceu junto com a família.
-                Elias assumiu as compras desde o início. Nos primeiros tempos, o
-                tio Arnaldo — que tinha caminhão próprio — fazia o frete junto
-                com Elias, como parceiro nessa logística inicial. A equipe
-                interna foi se formando aos poucos: começaram apenas os dois
-                fundadores, depois quatro colaboradores, depois seis, depois dez
-                — e segue crescendo. O negócio foi crescendo, e chegou o dia em
-                que compraram o próprio caminhão. Começaram num ponto alugado.
-                Por volta de oito anos depois, compraram o primeiro prédio
-                próprio. O segundo prédio próprio — onde o Sacolão está
-                instalado até hoje — veio aos dezoito anos de história. Três
-                endereços. Três saltos de confiança. E por trás de cada um
-                desses saltos, pessoas. O Sacolão não chegou até aqui sozinho —
-                cada colaborador que passou por essa casa deixou um pedaço da
-                sua história aqui dentro. São eles que, dia após dia, carregam
-                os valores da família para o atendimento, para a gôndola, para a
-                mesa de cada cliente. O crescimento do Sacolão é, também, o
-                crescimento deles.
+                Com muito esforço e a medida que a quitanda crescia, eles
+                contrataram os primeiros colaboradores e se mudaram para um novo
+                prédio, onde se fixaram por 10 anos. O segundo prédio, onde o
+                Sacolão está instalado até hoje, veio aos dezoito anos de
+                história. Nesta época, a equipe já havia crescido para oito
+                pessoas, e o time segue aumentando. Cada colaborador que passou
+                e passa por essa casa deixa um pedaço da sua história aqui
+                dentro. O segredo desse crescimento? Uma resposta simples:
+                Dedicação, qualidade e atendimento. Foi dessa base sólida que
+                surgiu um sonho simples que revolucionou o hortifrúti local na
+                época: vender verduras já limpas, lavadas e prontas. O que
+                começou com a alface, a rúcula e o agrião, virou padrão. Um
+                cuidado que nasceu simples, mas que reflete um propósito
+                gigante: a nossa missão de facilitar a alimentação saudável na
+                vida das pessoas com excelência e praticidade.
               </p>
             </div>
           </div>
-
-          <div className="history-block">
+   
+   <div className="history-block">
             <div className="history-image">
-              <img src="/img/history/market-front.jpg" alt="A essência que nunca mudou" />
-            </div>
-
-            <div className="history-text">
-              <h3>A essência que nunca mudou</h3>
-
-              <p>
-                O que fez o Sacolão crescer? Val tem uma resposta simples e
-                honesta: **dedicação, qualidade e atendimento**. Ao longo dos
-                anos, clientes se tornaram amigas. Pessoas que acompanharam o
-                crescimento da família, que viram as filhas crescerem, que estão
-                presentes até hoje. “Além dos clientes, a gente tem como grandes
-                amigas”, diz Val. “Pessoas que visitaram minhas filhas, que a
-                gente está junto até hoje. Isso pra mim é muito gratificante — é
-                uma benção.”
-              </p>
-            </div>
-          </div>
-
-          <div className="history-block reverse">
-            <div className="history-image">
-              <img src="/img/history/fresh-products.jpg" alt="O sonho do produto limpo" />
-            </div>
-
-            <div className="history-text">
-              <h3>'O sonho do produto limpo'</h3>
-
-              <p>
-                Em algum momento, surgiu um sonho simples e revolucionário para
-                o setor: vender verdura limpa, lavada, pronta. Começaram com
-                alface, rúcula e agrião. A ideia foi aceita pelos clientes de
-                imediato. O que era um sonho virou padrão — e hoje o Sacolão
-                oferece praticamente todos os produtos higienizados, com legumes
-                picados e muito mais. Um detalhe que parece pequeno, mas conta
-                uma história grande: **a família sempre pensou no cliente antes
-                de pensar no processo.**
-              </p>
-            </div>
-          </div>
-          <div className="history-block">
-            <div className="history-image">
-              <img src="/img/history/market-front.jpg" alt="Uma nova geração, um novo impulso" />
+              <img
+                src="/img/history/nova_geracao.png"
+                alt="Uma nova geração, um novo impulso"
+              />
             </div>
 
             <div className="history-text">
               <h3>Uma nova geração, um novo impulso</h3>
 
               <p>
-                Depois de anos tocando o negócio com garra e tradição, uma nova
-                força entrou em cena: Mayara, filha de Val e Elias, trouxe
-                modernidade, gestão e tecnologia para uma operação que já era
-                sólida. “A gente veio tocando”, lembra Val. “Mas depois que ela
-                chegou — a modernidade, as tecnologias — isso a gente já não
-                estava mais preparado para fazer. Ficamos mais seguros com
-                alguém que entende.” Não foi ruptura. Foi evolução. A base
-                construída com amor e suor pelos fundadores encontrou na filha o
-                olhar estratégico para ir além.
-              </p>
-            </div>
-          </div>
-
-          <div className="history-block reverse">
-            <div className="history-image">
-              <img src="/img/history/fresh-products.jpg" alt="" />
-            </div>
-
-            <div className="history-text">
-              <h3>Trinta e poucos anos depois</h3>
-
-              <p>
-                O Sacolão da Doze é hoje uma referência em Ourinhos. Não apenas
-                pelo que vende, mas pelo que representa: uma família que apostou
-                em algo com coragem, cuidou com amor e soube se reinventar sem
-                perder a essência. “É gratificante você olhar pra trás e ver
-                tudo que passou, e como foi”, reflete Val. Essa história ainda
-                está sendo escrita…
+                Depois de anos tocando o negócio com garra e tradição, o futuro
+                ganhou um novo impulso com a chegada da Mayara, a filha que
+                testemunhou os momentos duros de dedicação e trabalho dos pais.
+                Ela trouxe modernidade, gestão e tecnologia para uma operação
+                que já era sólida. “A gente veio tocando”, lembra Val, “mas a
+                modernidade… a gente já não estava preparado. Ficamos mais
+                seguros com alguém que entende”. Não foi uma ruptura, foi
+                evolução. O Sacolão da Doze é, hoje, uma referência que vai além
+                do comércio; representa uma família que apostou com coragem,
+                cuidou com amor e soube se reinventar sem perder a essência. “É
+                gratificante olhar para trás”, reflete Val. Uma linda história
+                que continua sendo escrita...
               </p>
             </div>
           </div>
@@ -198,7 +136,7 @@ export default function AboutUs() {
             <div className="card-content">
               <h3>Massas</h3>
 
-              <p></p>
+              <p>Sinta o verdadeiro sabor da massa fresca.Preparadas todos os dias com ingredientes de alta qualidade.</p>
             </div>
           </div>
 
