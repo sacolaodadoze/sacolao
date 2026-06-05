@@ -88,8 +88,8 @@ export default function AboutUs() {
               </p>
             </div>
           </div>
-   
-   <div className="history-block">
+
+          <div className="history-block">
             <div className="history-image">
               <img
                 src="/img/history/nova_geracao.png"
@@ -136,7 +136,10 @@ export default function AboutUs() {
             <div className="card-content">
               <h3>Massas</h3>
 
-              <p>Sinta o verdadeiro sabor da massa fresca.Preparadas todos os dias com ingredientes de alta qualidade.</p>
+              <p>
+                Sinta o verdadeiro sabor da massa fresca.Preparadas todos os
+                dias com ingredientes de alta qualidade.
+              </p>
             </div>
           </div>
 
