@@ -18,6 +18,7 @@ use App\Http\Controllers\PdfController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\DeliverySettingController;
 use App\Http\Controllers\Admin\DeliveryRateController;
+use App\Http\Controllers\Admin\CategoryController;
 
 /* Route::get('/user', function (Request $request) {
     return $request->user();
@@ -89,6 +90,9 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
     Route::get('/customer/pdfs', [PdfController::class, 'list']);
     // Route::get('/customer/pdf', [PdfController::class, 'show']); //esta en web
     Route::delete('/customer/pdf', [PdfController::class, 'delete']);
+
+    //Categories
+    Route::get('/categories', [CategoryController::class, 'index']);
 
     //Test Sync
     Route::get('/test-sync', [OrderController::class, 'testSync']);
