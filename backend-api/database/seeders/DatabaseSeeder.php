@@ -34,5 +34,8 @@ class DatabaseSeeder extends Seeder
       //  $this->call(RateSeeder::class); 
 
          //OrderFactory::new()->count(50)->create();
+         $this->call(DeliveryRateSeeder::class);
+         $this->call(SettingSeeder::class);
+        $this->call(DeliverySettingSeeder::class);
     }
 }

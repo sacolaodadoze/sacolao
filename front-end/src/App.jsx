@@ -4,6 +4,7 @@ import { Navigate } from "react-router-dom";
 import { Outlet, Route, Routes, BrowserRouter } from "react-router-dom";
 import "./App.css";
 import loader from "./assets/loader.gif";
+import { Loader } from "./assets/components/admin/Loader.jsx";
 
 import { Header } from "./assets/components/Header.jsx";
 import { OrderList } from "./assets/components/OrderList.jsx";
@@ -13,18 +14,17 @@ import { AuthContext } from "./assets/context/AuthContext.jsx";
 import { showAlert } from "./assets/helpers/alertHelper.js";
 import Admin from "./assets/components/admin/Admin.jsx";
 
-
 //Componente para proteger rutas
 const PrivateRoute = ({ children }) => {
-  const { user, loading } = useContext(AuthContext); 
+  const { user, loading } = useContext(AuthContext);
   //console.log({ user, loading });
   if (loading) {
     //return <div>Cargando sesión...</div>; // O un spinner/esqueleto
-     return (
-     <div>
-         {/* <h2>Cargando...</h2>  //TODO: Cambiar por un spinner de CSS */}
-         <img src={loader} alt="Carregando..." />;
-
+    return (
+      <div>    
+        {/*  <img src={loader} alt="Carregando..." />;
+         */}
+        <Loader />
       </div>
     );
   }
@@ -35,7 +35,7 @@ const PrivateRoute = ({ children }) => {
 const Layout = () => {
   return (
     <>
-      <Header/>
+      <Header />
       <main style={{ padding: "20px" }}>
         <Outlet /> {/* Aquí es donde React Router "inyecta" la página actual */}
       </main>
@@ -47,35 +47,32 @@ const Layout = () => {
 const Home = () => {
   const { user, loading } = useContext(AuthContext);
   return (
-    <h1 className="page-title">
-      Bem-vindo ao Sistema de Gestão de Pedidos
-    </h1>
+    <h1 className="page-title">Bem-vindo ao Sistema de Gestão de Pedidos</h1>
   );
 };
 
 function App() {
-  return (   
-      <Routes>
-        {/* Usamos el Layout como padre de todas las rutas internas */}
-        <Route
-          path="/"
-          element={
-            <PrivateRoute>
-              <Layout />
-            </PrivateRoute>
-          }
-        >
-          <Route index element={<Home />} />
-          <Route path="orders" element={<OrderList/>} />
-          <Route path="order/manage" element={<OrderManage />} />
-          <Route path="manage" element={<Admin />} />
-          {/* Aquí puedes añadir más rutas: path="clientes", path="perfil", etc. */}
-        </Route>
+  return (
+    <Routes>
+      {/* Usamos el Layout como padre de todas las rutas internas */}
+      <Route
+        path="/"
+        element={
+          <PrivateRoute>
+            <Layout />
+          </PrivateRoute>
+        }
+      >
+        <Route index element={<Home />} />
+        <Route path="orders" element={<OrderList />} />
+        <Route path="order/manage" element={<OrderManage />} />
+        <Route path="manage" element={<Admin />} />
+        {/* Aquí puedes añadir más rutas: path="clientes", path="perfil", etc. */}
+      </Route>
 
-        {/* Ruta para el Login (sin Header) */}
-        <Route path="/login" element={<LoginForm/>} />
-      </Routes>  
- 
+      {/* Ruta para el Login (sin Header) */}
+      <Route path="/login" element={<LoginForm />} />
+    </Routes>
   );
 }
 

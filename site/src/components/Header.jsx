@@ -5,17 +5,22 @@ import "./Header.css";
 import Button from "@mui/material/Button";
 import { Link } from "react-router-dom";
 import TopBar from "./TopBar";
+import { useContext } from "react";
+import { SettingsContext } from "../context/SettingsContext.jsx";
 
-export default function Header() {
+export default function Header(/* {settings} */) {
+  const settings = useContext(SettingsContext);
+  console.log(settings);
+  if (!settings) return null;
   return (
     <header className="header">
-      <TopBar />
+      <TopBar /*  settings={settings} */ />
       <div className="logo-container">
         <Link to="/">
           {" "}
           <img src={logo} alt="Logo" className="logo-img" />
         </Link>
-        Sacolão da Doze
+        {settings.business_name || "Sacolão da Doze"}
       </div>
       <div className="search-container">
         <input
@@ -37,15 +42,11 @@ export default function Header() {
           Buscar
         </Button>
         {/*  <span className="search-icon">🔍</span> */}
-        <p className="whatsapp-notice">
-        🛒 Compras no momento apenas pelo WhatsApp
-      </p>
+        <p className="whatsapp-notice">🛒{settings.info}</p>
       </div>
 
       {/* <div className="cart">🛒 (2)</div>
       <br /> */}
-        
-      
     </header>
   );
 }

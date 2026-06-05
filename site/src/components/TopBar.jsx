@@ -1,21 +1,25 @@
 /* import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
 import SupportAgentIcon from "@mui/icons-material/SupportAgent"; */
+import { useContext } from "react";
+import { SettingsContext } from "../context/SettingsContext";
 import "./TopBar.css";
-export default function TopBar() {
+export default function TopBar(/* {settings} */) {
+  const settings = useContext(SettingsContext);
+  console.log(settings);
+  if (!settings) return null;
   return (
     <div className="topbar">
       <div className="topbar-item">
         <span className="topbar-emoji">🚚</span>
-        <span>Tempo de entrega entre 90 e 120 min</span>
+        <span>Tempo de entrega entre {settings.delivery_time} </span>
       </div>
 
       <div className="topbar-divider"></div>
 
       <div className="topbar-item">
         <span className="topbar-emoji">🛒</span>
-        <span>Taxa de entrega GRÁTIS acima de
-          R$ 140,00</span>
+        <span>fre{settings.free_rate}</span>
       </div>
 
       {/*  <div className="topbar-item">

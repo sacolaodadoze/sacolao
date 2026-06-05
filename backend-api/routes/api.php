@@ -15,6 +15,9 @@ use App\Http\Controllers\RateController;
 use App\Http\Controllers\External\GeocodingController;
 use App\Http\Controllers\External\VuuptController;
 use App\Http\Controllers\PdfController;
+use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\DeliverySettingController;
+use App\Http\Controllers\Admin\DeliveryRateController;
 
 /* Route::get('/user', function (Request $request) {
     return $request->user();
@@ -84,10 +87,21 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
 
     //PDF   
     Route::get('/customer/pdfs', [PdfController::class, 'list']);
-   // Route::get('/customer/pdf', [PdfController::class, 'show']); //esta en web
+    // Route::get('/customer/pdf', [PdfController::class, 'show']); //esta en web
     Route::delete('/customer/pdf', [PdfController::class, 'delete']);
 
-
-
+    //Test Sync
     Route::get('/test-sync', [OrderController::class, 'testSync']);
 });
+
+//Settings
+Route::get('/settings', [SettingController::class, 'index']);
+Route::put('/settings', [SettingController::class, 'update']);
+
+//Delivery Settings
+Route::get('/delivery-settings', [DeliverySettingController::class, 'index']);
+Route::put('/delivery-settings', [DeliverySettingController::class, 'update']);
+
+//Delivery Rates
+Route::get('/delivery-rates', [DeliveryRateController::class, 'index']);
+Route::put('/delivery-rates', [DeliveryRateController::class, 'update']);

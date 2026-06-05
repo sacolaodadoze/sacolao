@@ -1,13 +1,21 @@
 import React, { useState } from "react";
+import {SettingsForm} from "./SettingsForm";
+import { DeliverySettingsForm } from "./DeliverySettingsForm";
+import {DeliveryRatesForm} from "./DeliveryRates";
+import SettingsIcon from '@mui/icons-material/Settings';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
+import InventoryIcon from '@mui/icons-material/Inventory';
+import CategoryIcon from '@mui/icons-material/Category';
 //import "./admin.css";
 
 const menuItems = [
-  { name: "Produtos", icon: "📦" },
-  { name: "Categorias", icon: "🗂️" },
-  { name: "Promoções", icon: "💸" },
+  { name: "Produtos", icon:<InventoryIcon/> /* "📦" */ },
+  { name: "Categorias", icon: <CategoryIcon /> /* "🗂️" */ },
+  { name: "Promoções", icon:<ShoppingCartCheckoutIcon/> /* "💸" */ },
   { name: "Taxa", icon: "💱" },
-  { name: "Agendamento", icon: "📅" },
-   { name: "Configuración", icon: "⚙️" },
+  { name: "Agendamento", icon: <CalendarMonthIcon /> /* "📅"  */},
+   { name: "Configuração", icon: <SettingsIcon /> /* "⚙️" */ },
 ];
 
 export default function Admin() {
@@ -35,8 +43,16 @@ export default function Admin() {
 
       {/* Main content */}
       <main className="main-content">
-        <h1>{active}</h1>
-        <p>Aquí irá el contenido de {active}</p>
+      {/*   <h1>{active}</h1>     */} 
+        {active === "Configuração" && (
+          <SettingsForm />
+        )} 
+          {active === "Agendamento" && (
+          <DeliverySettingsForm />
+        )} 
+         {active === "Taxa" && (
+          <DeliveryRatesForm />
+        )}
       </main>
     </div>
   );
