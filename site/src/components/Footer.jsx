@@ -28,7 +28,7 @@ export default function Footer() {
 
         <p className="icone-tittle">
           {/* 📞 */}
-          <LocalPhoneOutlined /* fontSize="medium" */ /> + (14) 3322 - 2152 <br /> + (14) 3335 - 6129
+          <LocalPhoneOutlined /* fontSize="medium" */ /> +(14) 3322 - 2152 <br /> +(14) 3335 - 6129
         </p>
 
         {/* 💬 */}
@@ -45,7 +45,7 @@ export default function Footer() {
             {/* src="/img/whatsApp.png"
             alt="WhatsApp" */}
          
-          + (14) 99824 - 2254
+          +(14) 99824 - 2254
         </a>
       </div>
 
@@ -82,7 +82,7 @@ export default function Footer() {
         <p style={{ textDecoration: "solid" }}>Sábado</p>
         <p>09:00 às 12:30</p>
          <p style={{ textDecoration: "solid" }}>Domingos</p>
-        <p>Não entregamos</p>
+        <p>Não fazemos entregas</p>
       </div>
 
       <div>
