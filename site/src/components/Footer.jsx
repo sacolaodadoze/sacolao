@@ -7,6 +7,7 @@ import {
   PermPhoneMsgOutlined,
   NoteAltOutlined,
   LocalPhoneOutlined,
+  WhatsApp,
 } from "@mui/icons-material";
 
 export default function Footer() {
@@ -21,13 +22,13 @@ export default function Footer() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          <FmdGoodOutlined fontSize="large" className="location-icon" /> Rua
+          <FmdGoodOutlined /* fontSize="medium" */ className="location-icon" /> Rua
           Doze de Outubro, 630 <br /> Vila Margarida, Ourinhos- SP
         </a>
 
         <p className="icone-tittle">
           {/* 📞 */}
-          <LocalPhoneOutlined /> (14) 3322 - 2152 <br /> (14) 3335 - 6129
+          <LocalPhoneOutlined /* fontSize="medium" */ /> + (14) 3322 - 2152 <br /> + (14) 3335 - 6129
         </p>
 
         {/* 💬 */}
@@ -37,12 +38,14 @@ export default function Footer() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          <img
-            className="location-icon"
-            src="/img/whatsApp.png"
-            alt="WhatsApp"
-          />
-          +(14) 9982 - 42254
+          <p className="location-icon">
+           <WhatsApp  /* fontSize="medium" */  /* className="whatsapp-icon" */ />
+          </p>
+            
+            {/* src="/img/whatsApp.png"
+            alt="WhatsApp" */}
+         
+          + (14) 99824 - 2254
         </a>
       </div>
 
@@ -78,6 +81,8 @@ export default function Footer() {
         <p>09:00 às 12:30 - 15:30 às 17:30</p>
         <p style={{ textDecoration: "solid" }}>Sábado</p>
         <p>09:00 às 12:30</p>
+         <p style={{ textDecoration: "solid" }}>Domingos</p>
+        <p>Não entregamos</p>
       </div>
 
       <div>
