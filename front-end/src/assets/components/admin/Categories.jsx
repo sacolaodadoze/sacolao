@@ -1,4 +1,5 @@
 import { useState, useEffect, use } from "react";
+import { useForm, Controller } from "react-hook-form";
 
 import {
   Box,
@@ -17,14 +18,16 @@ import {
 
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { CreateCategory } from "./CreateCategory.jsx";
+import { CategoryModal } from "./CategoryModal.jsx";
 import { useNotification } from "../../context/NotificationContext.jsx";
 import { apiFetch } from "../../../api/apiFetch.js";
 import { Loader } from "./Loader.jsx";
+import { LANG } from "../../constants/languages.js";
+import Swal from "sweetalert2";
 
 export function Categories() {
   const [loading, setLoading] = useState(false);
-  const [openAddCategory, setOpenAddCategory] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
   const [categories, setCategories] = useState([
     /* 
     {
@@ -49,46 +52,126 @@ export function Categories() {
       active: false,
     }, */
   ]);
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const { showNotification } = useNotification();
+  const [active, setActive] = useState(null);
 
-  const handleActiveChange = (id) => {
-    setCategories((prev) =>
-      prev.map((category) =>
-        category.id === id
-          ? { ...category, active: !category.active }
-          : category,
-      ),
-    );
+  const loadCategories = async () => {
+    setLoading(true);
+    try {
+      const res = await apiFetch("/api/categories");
+
+      const data = await res.json();
+      // console.log(data);
+      if (data) {
+        setCategories(data);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
-    const fetchSettings = async () => {
-      setLoading(true);
-      try {
-        const res = await apiFetch("/api/categories");
-
-        const data = await res.json();
-        // console.log(data);
-
-        if (data) {
-          setCategories(data);
-        }
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchSettings();
+    loadCategories();
   }, []);
 
   const handleEdit = (category) => {
-    console.log("Editar:", category);
+    setSelectedCategory(category);
+    setOpenModal(true);
   };
 
-  const handleDelete = (id) => {
-    console.log("Eliminar:", id);
+  const handleSaveCategory = async (data) => {
+    try {
+      await apiFetch("/sanctum/csrf-cookie");
+
+      if (selectedCategory) {
+        const response = await apiFetch(
+          `/api/categories/${selectedCategory.id}`,
+          {
+            method: "PUT",
+            body: JSON.stringify(data),
+          },
+        );
+        if (response.ok) {
+          showNotification(LANG.CATEGORIES.SUCCESSEDIT, "success");
+          await loadCategories();
+          setOpenModal(false);
+          setSelectedCategory(null);
+        } else {
+          showNotification(LANG.CATEGORIES.ERROREDIT, "error");
+        }
+      } else {
+        const response = await apiFetch("/api/categories", {
+          method: "POST",
+          body: JSON.stringify(data),
+        });
+        if (response.ok) {
+          showNotification(LANG.CATEGORIES.SUCCESSADD, "success");
+          await loadCategories();
+          setOpenModal(false);
+          setSelectedCategory(null);
+        } else {
+          showNotification(LANG.CATEGORIES.ERRORADD, "error");
+        }
+      }
+    } catch (error) {
+      console.error(error);
+      showNotification("Aconteceu um error", "error");
+    }
+  };
+
+  const handleActiveChange = async (category) => {
+    setActive(category.id);
+    try {
+      await apiFetch(`/api/categories/${category.id}`, {
+        method: "PUT",
+        body: JSON.stringify({
+          ...category,
+          active: !category.active,
+        }),
+      });
+
+      setCategories((prev) =>
+        prev.map((c) =>
+          c.id === category.id ? { ...c, active: !c.active } : c,
+        ),
+      );
+      setActive(null);
+    } catch (error) {
+      console.error(error);
+      setActive(null);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    const deleteMessage = await Swal.fire({
+      title: LANG.CATEGORIES.TITLE,
+      text: LANG.CATEGORIES.TEXT,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: LANG.CATEGORIES.CONFIRM,
+      cancelButtonText: LANG.GLOBAL.CANCEL,
+    });
+
+    if (deleteMessage.isConfirmed) {
+      try {
+        const response = await apiFetch(`/api/categories/${id}`, {
+          method: "DELETE",
+        });
+        if (response.ok) {
+          await loadCategories();
+          showNotification(
+            LANG.CATEGORIES.NOTIFICATIONS_CATEGORY_DELETED,
+            "success",
+          );
+        }
+      } catch (error) {
+        console.error(error);
+        showNotification(LANG.GLOBAL.ERROR, "error");
+      }
+    }
   };
 
   if (loading) {
@@ -105,7 +188,7 @@ export function Categories() {
             mb: 3,
           }}
         >
-          <Typography variant="h5">Categorias</Typography>
+          <Typography variant="h5">{LANG.CATEGORIES.CATEGORIES}</Typography>
 
           <Button
             variant="outlined"
@@ -121,9 +204,12 @@ export function Categories() {
                 opacity: 0.9,
               },
             }}
-            onClick={() => setOpenAddCategory(true)}
+            onClick={() => {
+              setSelectedCategory(null);
+              setOpenModal(true);
+            }}
           >
-            + Adicionar categoria
+            + {LANG.CATEGORIES.CATEGORY}
           </Button>
         </Box>
 
@@ -131,11 +217,11 @@ export function Categories() {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Nome</TableCell>
-                <TableCell>Slug</TableCell>
-                <TableCell>Ordem</TableCell>
-                <TableCell>Ativa</TableCell>
-                <TableCell align="right">Ações</TableCell>
+                <TableCell>{LANG.CATEGORIES.CATEGORY}</TableCell>
+                <TableCell>{LANG.CATEGORIES.SLUG}</TableCell>
+                <TableCell>{LANG.CATEGORIES.ORDER}</TableCell>
+                <TableCell>{LANG.CATEGORIES.ACTIVE}</TableCell>
+                <TableCell align="right">{LANG.CATEGORIES.ACTIONS}</TableCell>
               </TableRow>
             </TableHead>
 
@@ -151,7 +237,8 @@ export function Categories() {
                   <TableCell>
                     <Switch
                       checked={category.active}
-                      onChange={() => handleActiveChange(category.id)}
+                      disabled={active === category.id}
+                      onChange={() => handleActiveChange(category)}
                     />
                   </TableCell>
 
@@ -181,17 +268,14 @@ export function Categories() {
           </Table>
         </TableContainer>
       </Box>
-
-      <CreateCategory
-        open={openAddCategory}
-        onClose={() => setOpenAddCategory(false)}
-        onSubmit={(data) => {
-          console.log(data);
-
-          // POST /api/categories
-
-          setOpenAddCategory(false);
+      <CategoryModal
+        open={openModal}
+        initialData={selectedCategory}
+        onClose={() => {
+          setOpenModal(false);
+          setSelectedCategory(null);
         }}
+        onSubmit={handleSaveCategory}
       />
     </>
   );
