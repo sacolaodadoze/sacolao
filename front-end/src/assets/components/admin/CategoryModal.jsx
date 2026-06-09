@@ -59,7 +59,7 @@ export function CategoryModal({ open, onClose, onSubmit, initialData = null }) {
         image: "",
       });
     }
-  }, [open,initialData, reset]);
+  }, [open, initialData, reset]);
 
   const submit = (data) => {
     onSubmit(data);
@@ -107,6 +107,9 @@ export function CategoryModal({ open, onClose, onSubmit, initialData = null }) {
                 value={field.value ?? ""}
                 label={LANG.CATEGORIES.SLUG}
                 fullWidth
+                InputProps={{
+                  readOnly: true,
+                }}
                 //helperText="Ex: frutas"
               />
             )}
