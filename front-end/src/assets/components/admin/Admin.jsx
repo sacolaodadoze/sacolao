@@ -8,6 +8,7 @@ import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import CategoryIcon from '@mui/icons-material/Category';
 import { Categories } from "./Categories";
+import { Products } from "./Products";
 //import "./admin.css";
 
 const menuItems = [
@@ -56,6 +57,9 @@ export default function Admin() {
         )}
           {active === "Categorias" && ( 
             <Categories />
+          )}
+          {active === "Produtos" && ( 
+            <Products />
           )}
       </main>
     </div>

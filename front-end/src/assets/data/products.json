@@ -1,0 +1,45 @@
+[
+  {
+    "id": 1,
+    "code": "BAN001",
+    "name": "Banana Prata",
+    "category_id": null,
+    "unit": "",
+    "price_per_kg": "",
+    "price_per_unit": "",
+    "active": true,
+    "image": "https://hiper-gestao.s3.amazonaws.com/445121cc-5955-4e5d-aaac-d1c76082ed4d/imagem-de-produto/99b2d1b3-dcdb-47bb-955b-b3aa732ea541/original.jpeg"
+  },
+  {
+    "id": 2,
+    "code": "TOM001",
+    "name": "Tomate",
+    "category_id": null,
+    "unit": "",
+    "price_per_kg": "",
+    "price_per_unit": "",
+    "active": true,
+    "image": "https://hiper-gestao.s3.amazonaws.com/445121cc-5955-4e5d-aaac-d1c76082ed4d/imagem-de-produto/285407b6-97ad-495e-b3d0-fc4572e8367a/original.jpeg"
+  },
+  {
+    "id": 3,
+    "code": "MEL001",
+    "name": "Melancia",
+    "category_id": 1,
+    "unit": "un",
+    "price_per_kg": "",
+    "price_per_unit": 19.9,
+    "active": true,
+      "image": "https://hiper-gestao.s3.amazonaws.com/445121cc-5955-4e5d-aaac-d1c76082ed4d/imagem-de-produto/5acc44ff-163e-4ed9-b7bf-e2d3488d4011/original.jpeg"
+  },
+  {
+    "id": 4,
+    "code": "MOR001",
+    "name": "Morango",
+    "category_id": 1,
+    "unit": "bandeja",
+    "price_per_kg": "",
+    "price_per_unit": 6.99,
+    "active": true
+  }
+]

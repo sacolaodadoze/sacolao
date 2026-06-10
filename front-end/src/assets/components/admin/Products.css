@@ -1,0 +1,11 @@
+.table {
+  width: "100%";
+  border-collapse: "collapse";
+  table-layout: "fixed";
+}
+.product-column {
+  max-width: 350px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

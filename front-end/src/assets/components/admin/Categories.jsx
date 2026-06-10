@@ -215,34 +215,34 @@ export function Categories() {
 
         <TableContainer component={Paper}>
           <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>{LANG.CATEGORIES.CATEGORY}</TableCell>
-                <TableCell>{LANG.CATEGORIES.SLUG}</TableCell>
-                <TableCell>{LANG.CATEGORIES.ORDER}</TableCell>
-                <TableCell>{LANG.CATEGORIES.ACTIVE}</TableCell>
-                <TableCell align="right">{LANG.CATEGORIES.ACTIONS}</TableCell>
-              </TableRow>
-            </TableHead>
+            <thead>
+              <tr>
+                <th>{LANG.CATEGORIES.CATEGORY}</th>
+                <th>{LANG.CATEGORIES.SLUG}</th>
+                <th>{LANG.CATEGORIES.ORDER}</th>
+                <th>{LANG.CATEGORIES.ACTIVE}</th>
+                <th align="right">{LANG.CATEGORIES.ACTIONS}</th>
+              </tr>
+            </thead>
 
-            <TableBody>
+            <tbody>
               {categories.map((category) => (
-                <TableRow key={category.id}>
-                  <TableCell>{category.name}</TableCell>
+                <tr key={category.id}>
+                  <td>{category.name}</td>
 
-                  <TableCell>{category.slug}</TableCell>
+                  <td>{category.slug}</td>
 
-                  <TableCell>{category.position}</TableCell>
+                  <td>{category.position}</td>
 
-                  <TableCell>
+                  <td>
                     <Switch
                       checked={category.active}
                       disabled={active === category.id}
                       onChange={() => handleActiveChange(category)}
                     />
-                  </TableCell>
+                  </td>
 
-                  <TableCell align="right">
+                  <td align="right">
                     <IconButton onClick={() => handleEdit(category)}>
                       <EditIcon />
                     </IconButton>
@@ -253,18 +253,18 @@ export function Categories() {
                     >
                       <DeleteIcon />
                     </IconButton>
-                  </TableCell>
-                </TableRow>
+                  </td>
+                </tr>
               ))}
 
               {categories.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={5} align="center">
+                <tr>
+                  <td colSpan={5} align="center">
                     Nenhuma categoria cadastrada
-                  </TableCell>
-                </TableRow>
+                  </td>
+                </tr>
               )}
-            </TableBody>
+            </tbody>
           </Table>
         </TableContainer>
       </Box>
