@@ -16,7 +16,7 @@ import { Controller, useForm } from "react-hook-form";
 import { useEffect } from "react";
 
 export function ProductModal({ open, onClose, onSubmit, product = null }) {
-    console.log(product);
+  //  console.log(product);
   const { control, handleSubmit, reset } = useForm({
     defaultValues: {
       featured: false,

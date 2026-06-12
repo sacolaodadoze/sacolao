@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import productsData from "../../data/products.json";
 import "./Products.css";
+import { LANG } from "../../constants/languages.js";
+import { apiFetch } from "../../../api/apiFetch.js";
+import { Loader } from "./Loader.jsx";
 
 import {
   Box,
@@ -15,6 +18,7 @@ import {
   TextField,
   Chip,
   Tooltip,
+  TablePagination,
 } from "@mui/material";
 
 import EditIcon from "@mui/icons-material/Edit";
@@ -26,6 +30,14 @@ export function Products() {
   const [products, setProducts] = useState(productsData);
   const [openModal, setOpenModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [loadingSync, setLoadingSync] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  //Paginado
+  const [currentPage, setCurrentPage] = useState(1);
+  // const [lastPage, setLastPage] = useState(1); //
+  const [perPage, setPerPage] = useState(20);
+  const [total, setTotal] = useState(0);
 
   const categories = [
     { id: 1, name: "Frutas" },
@@ -49,9 +61,55 @@ export function Products() {
     );
   };
 
-  const handleSaveProduct = (data) => {
+  const loadProducts = async (perPage, currentPage) => {
+    setLoading(true);
+    try {
+      const res = await apiFetch(
+        `/api/products?page=${currentPage}&per_page=${perPage}`,
+      );
 
+      const data = await res.json();
+      console.log(data);
+      if (data) {
+        setProducts(data.data);
+        setTotal(data.total);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  useEffect(() => {
+    loadProducts(perPage, currentPage);
+  }, []);
+
+  const handleSaveProduct = (data) => {};
+
+  const handleSync = async () => {
+    setLoadingSync(true);
+    try {
+      const res = await apiFetch("/api/products", {
+        method: "PUT",
+      });
+      //  console.log("res:", res);
+      if (res.ok) {
+        const data = await res.json();
+        // console.log(data);
+        showNotification(LANG.CATEGORIES.SUCCESSEDIT, "success");
+        await loadProducts();
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoadingSync(false);
+    }
+  };
+
+  if (loading) {
+    return <Loader />;
+  }
 
   return (
     <>
@@ -79,6 +137,9 @@ export function Products() {
                 color: "#fff",
               },
             }}
+            onClick={() => {
+              handleSync();
+            }}
           >
             Update Produtos
           </Button>
@@ -92,6 +153,7 @@ export function Products() {
                 <th>Produto</th>
                 <th style={{ width: "190px" }}>Categoria</th>
                 {/*   <th style={{ width: "120px" }}>Unidade</th> */}
+                <th style={{ width: "90px" }}>Preço</th>
                 <th style={{ width: "125px" }}>Preço Kg</th>
                 <th style={{ width: "125px" }}>Preço Un</th>
                 <th style={{ width: "80px" }}>Ativo</th>
@@ -143,7 +205,7 @@ export function Products() {
                       </Select>
                     </Tooltip>
                   </td>
-
+                  <td /* className="product-column" */>{product.price}</td>
                   {/*     <td>
                   <Select
                     size="small"
@@ -242,6 +304,21 @@ export function Products() {
         onClose={() => setOpenModal(false)}
         onSubmit={handleSaveProduct}
         product={selectedProduct}
+      />
+
+      <TablePagination
+        component="div"
+        labelRowsPerPage={LANG.ORDERSLIST.PERPAGE}
+        count={total}
+        page={currentPage - 1} // MUI base 0
+        rowsPerPage={perPage}
+        onPageChange={(event, currentPage) => setCurrentPage(currentPage + 1)}
+        onRowsPerPageChange={(event) => {
+          const newPerPage = parseInt(event.target.value, 10);
+          setPerPage(newPerPage);
+          setCurrentPage(1);
+        }}
+        rowsPerPageOptions={[10, 20, 50, 100]}
       />
     </>
   );

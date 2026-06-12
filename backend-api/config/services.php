@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+     'hiper' => [
+        'api_key' => env('HIPER_API_KEY'),
+        'token_url' => env('HIPER_TOKEN_URL'),
+        'products_url' => env('HIPER_PRODUCTS_URL'),
+    ],
+
 ];

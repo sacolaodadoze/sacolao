@@ -19,6 +19,7 @@ use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\DeliverySettingController;
 use App\Http\Controllers\Admin\DeliveryRateController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\ProductController;
 
 /* Route::get('/user', function (Request $request) {
     return $request->user();
@@ -96,6 +97,10 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
     Route::post('/categories', [CategoryController::class, 'store']);
     Route::put('/categories/{category}', [CategoryController::class, 'update']);
     Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->middleware('admin');
+
+    //Produtos
+    Route::get('/products', [ProductController::class, 'index']);
+    Route::put('/products', [ProductController::class, 'update']);
 
     //Test Sync
     Route::get('/test-sync', [OrderController::class, 'testSync']);

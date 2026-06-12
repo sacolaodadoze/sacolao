@@ -14,12 +14,12 @@ return new class extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->string('code')->unique();
-            $table->foreignId('category_id');
+            $table->foreignId('category_id')->nullable()->constrained()->nullOnDelete();
             $table->string('name');
 
-            $table->string('slug')->unique();
+            $table->string('slug')->unique()->nullable();
             $table->text('description')->nullable();
-            $table->decimal('price', 10, 2);
+            $table->decimal('price', 10, 2)->nullable()->default(0);
             $table->decimal('sale_price', 10, 2)->nullable(); //promoçoes
 
 
@@ -33,8 +33,8 @@ return new class extends Migration
 
             $table->decimal('average_weight', 8, 3)->nullable(); // peso medio
 
-            $table->string('unit'); // kg, un, bandeja, maço...
-            $table->integer('stock')->default(0);
+            $table->string('unit')->nullable(); // kg, un, bandeja, maço...
+            $table->decimal('stock', 10, 3)->default(0);
             $table->string('image')->nullable();
             $table->boolean('active')->default(true);
 
