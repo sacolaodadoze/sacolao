@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Product;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 
 class HiperProductService
 {
@@ -24,39 +25,73 @@ class HiperProductService
 
     public function getProducts()
     {
+
         $token = trim($this->getToken());
+
         $response = Http::withToken($token)
             ->get(config('services.hiper.products_url'));
-/* 
-        dd(
-            $response->status(),
-            $response->json()
-        ); */
-        return $response->json();
+
+        $products = $response->json();
+
+
+        /*   $codes = collect($products['produtos'])->pluck('codigo');
+
+        dd([
+            'total' => $codes->count(),
+            'unicos' => $codes->unique()->count(),
+        ]); */
+        foreach ($products['produtos'] as $item) {
+            if ($item['codigo'] == "3002") {
+                dd($item);
+            }
+            //try {
+
+
+            Product::updateOrCreate(
+                [
+                    'code' => $item['codigo']
+                ],
+                [
+                    'name' => $item['nome'],
+                    'slug' => Str::slug($item['nome']),
+                    'image' => $item['imagem']   ?? '',
+                    'description' => $item['descricao'] ?? '',
+                    'stock' => $item['quantidadeEmEstoque'] ?? 0,
+                    'unit' => $item['unidade'] ?? '',
+                    'average_weight' => $item['peso'] ?? 0,
+                    'price' => $item['preco'] ?? 0,
+                    'active' => $item['ativo']
+                ]
+            );
+            /*    } catch (\Exception $e) {
+            dd($e->getMessage(), $products);
+        } */
+        }
+
+        $apiCodes = collect($products['produtos'])
+    ->pluck('codigo')
+    ->map(fn($c) => (string) $c);
+
+$dbCodes = Product::pluck('code')
+    ->map(fn($c) => (string) $c);
+
+dd($apiCodes->diff($dbCodes)->values());
     }
 
-    public function sync()
+
+    /* public function sync()
     {
         $response = Http::get(
             config('services.hiper.products_url')
         );
+        dd(config('services.hiper.products_url'));
 
         $products = $response->json();
+   /*     dd(
+    $response->successful(),
+    $response->status(),
+    $response->body() 
+);
 
-        foreach ($products as $item) {
-
-            Product::updateOrCreate(
-                [
-                    'code' => $item['code']
-                ],
-                [
-                    'name' => $item['name'],
-                    'image' => $item['image'],
-                    'description' => $item['description'],
-                    'barcode' => $item['barcode'],
-                    'average_weight' => $item['average_weight'],
-                ]
-            );
-        }
-    }
+    }*/
 }

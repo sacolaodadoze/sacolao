@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import productsData from "../../data/products.json";
 import "./Products.css";
 import { LANG } from "../../constants/languages.js";
@@ -24,13 +24,17 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SettingsIcon from "@mui/icons-material/Settings";
+import SaveIcon from "@mui/icons-material/Save";
+import { useNotification } from "../../context/NotificationContext.jsx";
 import { ProductModal } from "./EditProduct";
 
 export function Products() {
+  const { showNotification } = useNotification();
   const [products, setProducts] = useState(productsData);
   const [openModal, setOpenModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [loadingSync, setLoadingSync] = useState(false);
+  const [loadingSave, setLoadingSave] = useState(false);
   const [loading, setLoading] = useState(false);
 
   //Paginado
@@ -83,21 +87,43 @@ export function Products() {
 
   useEffect(() => {
     loadProducts(perPage, currentPage);
-  }, []);
+  }, [currentPage, perPage]);
 
-  const handleSaveProduct = (data) => {};
-
-  const handleSync = async () => {
-    setLoadingSync(true);
+  const handleSaveProduct = async (product) => {
+    console.log(product);   
+    setLoadingSave(true);
     try {
-      const res = await apiFetch("/api/products", {
+      const res = await apiFetch(`/api/products/${product.id}`, {
         method: "PUT",
+        body: JSON.stringify(product),
       });
       //  console.log("res:", res);
       if (res.ok) {
         const data = await res.json();
         // console.log(data);
-        showNotification(LANG.CATEGORIES.SUCCESSEDIT, "success");
+         setOpenModal(false);
+         setSelectedProduct(null);
+        showNotification(LANG.PRODUCTS.SUCCESS, "success");
+        await loadProducts();
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoadingSave(false);
+    }
+  };
+
+  const handleSync = async () => {
+    setLoadingSync(true);
+    try {
+      const res = await apiFetch("/api/products/sync", {
+        method: "PUT",
+      });
+        console.log("res:", res);
+      if (res.ok) {
+        const data = await res.json();
+         console.log(data);
+        showNotification(LANG.PRODUCTS.SUCCESSUPD, "success");
         await loadProducts();
       }
     } catch (error) {
@@ -107,7 +133,7 @@ export function Products() {
     }
   };
 
-  if (loading) {
+  if (loading || loadingSync || loadingSave) {
     return <Loader />;
   }
 
@@ -252,7 +278,12 @@ export function Products() {
                   </td>
 
                   <td>
-                    <Switch checked={product.active} />
+                    <Switch
+                      checked={product.active}
+                      onChange={(e) =>
+                        handleChange(product.id, "active", e.target.checked)
+                      }
+                    />
                   </td>
 
                   <td>
@@ -265,6 +296,16 @@ export function Products() {
                       }}
                     >
                       <SettingsIcon />
+                    </IconButton>
+                    {/* Save */}
+                    <IconButton
+                      color="success"
+                      size="small"
+                      onClick={() => {
+                        handleSaveProduct(product);
+                      }}
+                    >
+                      <SaveIcon />
                     </IconButton>
 
                     <IconButton color="error" size="small">

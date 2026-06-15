@@ -15,9 +15,17 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-         $perPage = (int) $request->perPage ?? 20;
-        $page = (int) $request->currentPage;
-        $products = Product::paginate($perPage, ['*'], 'page', $page);
+        $perPage = $request->integer('per_page', 20);
+        $page = $request->integer('page', 1);
+
+        $products = Product::orderBy('id', 'asc')
+            ->paginate(
+                $perPage,
+                ['*'],
+                'page',
+                $page
+            );
+
         return response()->json($products);
     }
 
@@ -30,11 +38,28 @@ class ProductController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Update the specified resource in storage.
      */
-    public function store(Request $request)
+    public function update(Request $request, Product $product)
+
     {
-        //
+        $data = $request->validate([
+            'category_id' => ['nullable', 'integer'],
+            'price_per_kg' => ['nullable', 'numeric'],
+            'price_per_unit' => ['nullable', 'numeric'],
+            'active' => ['nullable', 'boolean'],
+            'featured' => ['nullable', 'boolean'],
+            'promotion' => ['nullable', 'boolean'],
+            'new_product' => ['nullable', 'boolean'],
+            'week_offer' => ['nullable', 'boolean'],
+        ]);
+
+        $product->update($data);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Produto atualizado com sucesso',
+        ]);
     }
 
     /**
@@ -54,30 +79,12 @@ class ProductController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update or insert in storage.
      */
-    public function update(HiperProductService $service)
+    public function sync(HiperProductService $service)
     {
-        $products = $service->getProducts();
-       // dd($products['produtos']);
-        foreach ($products['produtos'] as $item) {
-
-            Product::updateOrCreate(
-                [
-                    'code' => $item['codigo']
-                ],
-                [
-                    'name' => $item['nome'],
-                    'description' => $item['descricao']??'',
-                    'price' => $item['preco'],
-                    'average_weight' => $item['peso'],
-                    'unit' => $item['unidade']??'',
-                    'image' => $item['imagem']?? '',
-                    'stock' => $item['quantidadeEmEstoque']?? 0,
-                    //'category_id' => "nu"
-                ]
-            );
-        }
+       
+        $service->getProducts();
 
         return response()->json([
             'success' => true

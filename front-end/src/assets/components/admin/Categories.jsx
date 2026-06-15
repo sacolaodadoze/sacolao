@@ -84,7 +84,7 @@ export function Categories() {
 
   const handleSaveCategory = async (data) => {
     try {
-      await apiFetch("/sanctum/csrf-cookie");
+     // await apiFetch("/sanctum/csrf-cookie");
 
       if (selectedCategory) {
         const response = await apiFetch(

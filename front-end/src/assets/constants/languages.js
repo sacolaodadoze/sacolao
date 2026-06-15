@@ -198,4 +198,8 @@ export const LANG = {
     ERROREDIT: "Erro ao alterar categoria",
     SUCCESSEDIT: "Categoria alterada com sucesso",
   },
+  PRODUCTS:{
+    SUCCESS:'ok',
+    SUCCESSUPD:"Produto alterado con sucesso ",
+  }
 };

@@ -20,6 +20,7 @@ use App\Http\Controllers\Admin\DeliverySettingController;
 use App\Http\Controllers\Admin\DeliveryRateController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\StoreController;
 
 /* Route::get('/user', function (Request $request) {
     return $request->user();
@@ -92,6 +93,18 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
     // Route::get('/customer/pdf', [PdfController::class, 'show']); //esta en web
     Route::delete('/customer/pdf', [PdfController::class, 'delete']);
 
+    //Settings
+    Route::get('/settings', [SettingController::class, 'index']);
+    Route::put('/settings', [SettingController::class, 'update']);
+
+    //Delivery Settings
+    Route::get('/delivery-settings', [DeliverySettingController::class, 'index']);
+    Route::put('/delivery-settings', [DeliverySettingController::class, 'update']);
+
+    //Delivery Rates
+    Route::get('/delivery-rates', [DeliveryRateController::class, 'index']);
+    Route::put('/delivery-rates', [DeliveryRateController::class, 'update']);
+
     //Categories
     Route::get('/categories', [CategoryController::class, 'index']);
     Route::post('/categories', [CategoryController::class, 'store']);
@@ -100,20 +113,21 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
 
     //Produtos
     Route::get('/products', [ProductController::class, 'index']);
-    Route::put('/products', [ProductController::class, 'update']);
+    Route::put('/products/sync', [ProductController::class, 'sync']);
+    Route::put('/products/{product}', [ProductController::class, 'update']);
+    
 
     //Test Sync
     Route::get('/test-sync', [OrderController::class, 'testSync']);
 });
 
-//Settings
-Route::get('/settings', [SettingController::class, 'index']);
-Route::put('/settings', [SettingController::class, 'update']);
+//Site
+Route::prefix('store')->group(function () {
 
-//Delivery Settings
-Route::get('/delivery-settings', [DeliverySettingController::class, 'index']);
-Route::put('/delivery-settings', [DeliverySettingController::class, 'update']);
-
-//Delivery Rates
-Route::get('/delivery-rates', [DeliveryRateController::class, 'index']);
-Route::put('/delivery-rates', [DeliveryRateController::class, 'update']);
+    //Route::get('/home', [StoreController::class, 'home']);
+    Route::get('/products', [StoreController::class, 'products']);
+    Route::get('/categories', [StoreController::class, 'categories']);
+    Route::get('/settings', [StoreController::class, 'settings']);
+    Route::get('/delivery-settings', [StoreController::class, 'deliverySettings']);
+    Route::get('/delivery-rates', [StoreController::class, 'deliveryRates']);
+});
