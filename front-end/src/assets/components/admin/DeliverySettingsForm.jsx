@@ -172,7 +172,7 @@ export function DeliverySettingsForm() {
 
         {/* HORÁRIOS */}
         <Box>
-          <Typography variant="h6">{LANG.SETTINGS.HOURS}</Typography>
+          <Typography variant="h6" className="page-title">{LANG.SETTINGS.HOURS}</Typography>
           <Box
             sx={{
               display: "flex",
@@ -220,7 +220,7 @@ export function DeliverySettingsForm() {
         </Box>
 
         {/* Configurações */}
-        <Typography variant="h6">{LANG.SETTINGS.OTHER}</Typography>
+        <Typography variant="h6" className="page-title">{LANG.SETTINGS.OTHER}</Typography>
         <Box
           sx={{
             display: "flex",

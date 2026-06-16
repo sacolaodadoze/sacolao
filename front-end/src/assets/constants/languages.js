@@ -199,7 +199,16 @@ export const LANG = {
     SUCCESSEDIT: "Categoria alterada com sucesso",
   },
   PRODUCTS:{
-    SUCCESS:'ok',
+    SUCCESS:'Sincronização feita com sucesso',
     SUCCESSUPD:"Produto alterado con sucesso ",
+    SEARCH:" Buscar",
+    CLEAN: "Limpar",
+    PLACEHOLDERSEARCH:"Nome ou código"
+  },
+  RATES:{
+    TAXA:"Taxa",
+    INITIALDISTANCE:"Distância inicial",
+    FINALDISTANCE:"Distância final",
+    MINORDER:"Pedido mínimo",
   }
 };

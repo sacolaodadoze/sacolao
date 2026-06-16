@@ -17,8 +17,26 @@ class ProductController extends Controller
     {
         $perPage = $request->integer('per_page', 20);
         $page = $request->integer('page', 1);
+        $search = $request->search;
+        $categoryId = $request->input('category_id');
+        
+        $query = Product::query();
 
-        $products = Product::orderBy('id', 'asc')
+        // Buscar por nombre o código
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'ILIKE', "%{$search}%")
+                    ->orWhere('code', 'ILIKE', "%{$search}%");
+            });
+        }
+
+        // Filtrar por categoría
+        if ($categoryId) {
+            $query->where('category_id', $categoryId);
+        }
+
+        $products = $query
+            ->orderBy('id')
             ->paginate(
                 $perPage,
                 ['*'],
@@ -27,14 +45,16 @@ class ProductController extends Controller
             );
 
         return response()->json($products);
-    }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        /*   $products = Product::orderBy('id', 'asc')
+            ->paginate(
+                $perPage,
+                ['*'],
+                'page',
+                $page
+            );
+
+        return response()->json($products); */
     }
 
     /**
@@ -83,7 +103,7 @@ class ProductController extends Controller
      */
     public function sync(HiperProductService $service)
     {
-       
+
         $service->getProducts();
 
         return response()->json([

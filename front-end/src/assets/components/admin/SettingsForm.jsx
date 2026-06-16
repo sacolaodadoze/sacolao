@@ -185,7 +185,7 @@ export function SettingsForm() {
         {/* NEGÓCIO */}
 
         <Box>
-          <Typography variant="h6">{LANG.SETTINGS.BUSINESS}</Typography>
+          <Typography variant="h5"className="page-title">{LANG.SETTINGS.BUSINESS}</Typography>
 
           <Box
             sx={{

@@ -16,9 +16,10 @@ import { Controller, useForm } from "react-hook-form";
 import { useEffect } from "react";
 
 export function ProductModal({ open, onClose, onSubmit, product = null }) {
-   //console.log(product);
+ // console.log(product);
   const { control, handleSubmit, reset } = useForm({
     defaultValues: {
+      id: null,
       featured: false,
       promotion: false,
       new_product: false,
@@ -29,6 +30,7 @@ export function ProductModal({ open, onClose, onSubmit, product = null }) {
   useEffect(() => {
     if (product) {
       reset({
+        id: product.id ?? null,
         featured: product.featured ?? false,
         promotion: product.promotion ?? false,
         new_product: product.new_product ?? false,
@@ -38,8 +40,9 @@ export function ProductModal({ open, onClose, onSubmit, product = null }) {
     }
   }, [product, reset]);
 
-  const submit = (product) => {
-    onSubmit(product.id,product);
+  const submit = (id,product) => {
+    //console.log("Edit", product);
+    onSubmit(id, product);
     reset();
   };
 
@@ -117,7 +120,7 @@ export function ProductModal({ open, onClose, onSubmit, product = null }) {
           }}
         >
           {/* CHECKBOXES */}
-          <Box sx={{ display: "flex", flexDirection: "column",   width: 390 }}>
+          <Box sx={{ display: "flex", flexDirection: "column", width: 390 }}>
             <Controller
               name="featured"
               control={control}
@@ -198,9 +201,9 @@ export function ProductModal({ open, onClose, onSubmit, product = null }) {
 
             <img
               src={product.image || "/no-image.png"}
-              alt={product.name}
+              /* alt={product.name} */
               style={{
-                width: "200px",
+                width: "250px",
                 height: "200px",
                 objectFit: "contain",
                 border: "1px solid #ddd",

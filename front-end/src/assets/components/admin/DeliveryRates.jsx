@@ -9,13 +9,14 @@ import {
   Typography,
 } from "@mui/material";
 
- import DeleteIcon from "@mui/icons-material/Delete"; 
+import DeleteIcon from "@mui/icons-material/Delete";
 /* import { TrashIcon, EditIcon } from "../Icons"; */
 import { useFieldArray, useForm, Controller } from "react-hook-form";
 import { apiFetch } from "../../../api/apiFetch.js";
 import { LANG } from "../../constants/languages.js";
 /* import { settingsSchema } from "../../../forms/rateSettingsForm.js" */
-import {Loader} from "./Loader.jsx";
+import { Loader } from "./Loader.jsx";
+import AddIcon from "@mui/icons-material/Add";
 
 import { useNotification } from "../../context/NotificationContext.jsx";
 
@@ -51,7 +52,7 @@ export function DeliveryRatesForm() {
         const res = await apiFetch("/api/delivery-rates");
 
         const data = await res.json();
-       // console.log(data);
+        // console.log(data);
 
         if (data) {
           replace(data);
@@ -87,14 +88,16 @@ export function DeliveryRatesForm() {
     }
   };
 
-    if (loading) {
-      return <Loader />;
-    }
-  
+  if (loading) {
+    return <Loader />;
+  }
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Stack spacing={3}>
-        <Typography variant="h5">Taxas de entrega</Typography>
+        <Typography variant="h5" className="page-title">
+          Taxas de entrega
+        </Typography>
         {/* ADD */}
         <Button
           variant="outlined"
@@ -103,7 +106,7 @@ export function DeliveryRatesForm() {
             alignSelf: "flex-end",
             borderColor: "#f97316",
             color: "#f97316",
-            borderRadius:"12px",
+            borderRadius: "12px",
             "&:hover": {
               backgroundColor: "#f97316",
               color: "#fff",
@@ -119,7 +122,7 @@ export function DeliveryRatesForm() {
             })
           }
         >
-          + Adicionar taxa
+          <AddIcon fontSize="small" /> {LANG.RATES.TAXA}
         </Button>
 
         {fields.map((field, index) => (
@@ -155,7 +158,7 @@ export function DeliveryRatesForm() {
                   render={({ field }) => (
                     <TextField
                       {...field}
-                      label="Distância inicial"
+                      label={LANG.RATES.INITIALDISTANCE}
                       type="number"
                       fullWidth
                     />
@@ -179,7 +182,7 @@ export function DeliveryRatesForm() {
                   render={({ field }) => (
                     <TextField
                       {...field}
-                      label="Distância final"
+                      label={LANG.RATES.FINALDISTANCE}
                       type="number"
                       fullWidth
                     />
@@ -203,7 +206,7 @@ export function DeliveryRatesForm() {
                   render={({ field }) => (
                     <TextField
                       {...field}
-                      label="Pedido mínimo"
+                      label={LANG.RATES.MINORDER}
                       type="number"
                       fullWidth
                     />
@@ -227,7 +230,7 @@ export function DeliveryRatesForm() {
                   render={({ field }) => (
                     <TextField
                       {...field}
-                      label="Taxa"
+                      label={LANG.RATES.TAXA}
                       type="number"
                       fullWidth
                     />

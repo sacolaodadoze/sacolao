@@ -25,6 +25,8 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SettingsIcon from "@mui/icons-material/Settings";
 import SaveIcon from "@mui/icons-material/Save";
+import ClearIcon from "@mui/icons-material/Clear";
+import SearchIcon from "@mui/icons-material/Search";
 import { useNotification } from "../../context/NotificationContext.jsx";
 import { ProductModal } from "./EditProduct";
 
@@ -36,6 +38,8 @@ export function Products() {
   const [loadingSync, setLoadingSync] = useState(false);
   const [loadingSave, setLoadingSave] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [search, setSearch] = useState("");
+  const [categoryId, setCategoryId] = useState("");
 
   //Paginado
   const [currentPage, setCurrentPage] = useState(1);
@@ -65,15 +69,20 @@ export function Products() {
     );
   };
 
-  const loadProducts = async (perPage, currentPage) => {
+  const loadProducts = async (
+    perPage,
+    currentPage,
+    searchValue = search,
+    categoryValue = categoryId,
+  ) => {
     setLoading(true);
     try {
       const res = await apiFetch(
-        `/api/products?page=${currentPage}&per_page=${perPage}`,
+        `/api/products?page=${currentPage}&per_page=${perPage}&search=${searchValue}&category_id=${categoryValue}`,
       );
 
       const data = await res.json();
-      console.log(data);
+      //console.log(data);
       if (data) {
         setProducts(data.data);
         setTotal(data.total);
@@ -90,7 +99,7 @@ export function Products() {
   }, [currentPage, perPage]);
 
   const handleSaveProduct = async (product) => {
-    console.log(product);   
+    console.log(product);
     setLoadingSave(true);
     try {
       const res = await apiFetch(`/api/products/${product.id}`, {
@@ -101,9 +110,9 @@ export function Products() {
       if (res.ok) {
         const data = await res.json();
         // console.log(data);
-         setOpenModal(false);
-         setSelectedProduct(null);
-        showNotification(LANG.PRODUCTS.SUCCESS, "success");
+        setOpenModal(false);
+        setSelectedProduct(null);
+        showNotification(LANG.PRODUCTS.SUCCESSUPD, "success");
         await loadProducts();
       }
     } catch (error) {
@@ -119,11 +128,11 @@ export function Products() {
       const res = await apiFetch("/api/products/sync", {
         method: "PUT",
       });
-        console.log("res:", res);
+      //  console.log("res:", res);
       if (res.ok) {
         const data = await res.json();
-         console.log(data);
-        showNotification(LANG.PRODUCTS.SUCCESSUPD, "success");
+        console.log(data);
+        showNotification(LANG.PRODUCTS.SUCCESS, "success");
         await loadProducts();
       }
     } catch (error) {
@@ -133,9 +142,22 @@ export function Products() {
     }
   };
 
-  if (loading || loadingSync || loadingSave) {
+  const handleSearch = async () => {
+    setCurrentPage(1);
+
+    await loadProducts(perPage, 1, search, categoryId);
+  };
+
+  const handleClear = async () => {
+    setSearch("");
+    setCategoryId("");
+    setCurrentPage(1);
+    await loadProducts(perPage, 1, "", "");
+  };
+
+  /*  if (loading || loadingSync || loadingSave) {
     return <Loader />;
-  }
+  } */
 
   return (
     <>
@@ -145,10 +167,12 @@ export function Products() {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            mb: 1,
+            mb: 2,
           }}
         >
-          <Typography variant="h5">Produtos</Typography>
+          <Typography variant="h5" className="page-title">
+            Produtos
+          </Typography>
 
           <Button
             variant="outlined"
@@ -171,68 +195,155 @@ export function Products() {
           </Button>
         </Box>
 
-        <TableContainer component={Paper}>
-          <table className="table">
-            <thead>
-              <tr>
-                {/* <th>Código</th> */}
-                <th>Produto</th>
-                <th style={{ width: "190px" }}>Categoria</th>
-                {/*   <th style={{ width: "120px" }}>Unidade</th> */}
-                <th style={{ width: "90px" }}>Preço</th>
-                <th style={{ width: "125px" }}>Preço Kg</th>
-                <th style={{ width: "125px" }}>Preço Un</th>
-                <th style={{ width: "80px" }}>Ativo</th>
-                <th style={{ width: "90px" }}>Ações</th>
-                <th style={{ width: "91px" }}>Status</th>
-              </tr>
-            </thead>
+        <Box
+          sx={{
+            display: "flex",
+            gap: 2,
+            mb: 2,
+          }}
+        >
+          <TextField
+            size="small"
+            label="Buscar"
+            placeholder={LANG.PRODUCTS.PLACEHOLDERSEARCH}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            sx={{ width: 350 }}
+          />
 
-            <tbody>
-              {products.map((product) => (
-                <tr key={product.id}>
-                  {/* <td>{product.code}</td> */}
-                  <td className="product-column">{product.name}</td>
+          <Select
+            size="small"
+            value={categoryId}
+            onChange={(e) => setCategoryId(e.target.value)}
+            displayEmpty
+            sx={{ minWidth: 220 }}
+          >
+            <MenuItem value="">Todas as categorias</MenuItem>
 
-                  <td>
-                    <Tooltip
-                      title={
-                        categories.find((c) => c.id === product.category_id)
-                          ?.name || ""
-                      }
-                      arrow
+            {categories.map((category) => (
+              <MenuItem key={category.id} value={category.id}>
+                {category.name}
+              </MenuItem>
+            ))}
+          </Select>
+
+          <Button
+            variant="contained"
+            size="small"
+            startIcon={<SearchIcon />}
+            onClick={handleSearch}
+            /* onClick={() => {
+              setCurrentPage(1);
+              loadProducts(perPage, 1);
+            }} */
+          >
+            {LANG.PRODUCTS.SEARCH}
+          </Button>
+          <Button
+            variant="outlined"
+            size="small"
+            startIcon={<ClearIcon />}
+            onClick={handleClear}
+          >
+            {LANG.PRODUCTS.CLEAN}
+          </Button>
+        </Box>
+        
+        {/* Table */}
+        <Box sx={{ position: "relative" }}>
+          {loading && (
+            <Box
+              sx={{
+                position: "absolute",
+                inset: 0,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: "rgba(255,255,255,0.7)",
+                zIndex: 10,
+              }}
+            >
+              <Loader />
+            </Box>
+          )}
+
+          <TableContainer component={Paper}>
+            <table className="table">
+              <thead>
+                <tr>
+                  {/* <th>Código</th> */}
+                  <th style={{ width: "93px" }}>Imagen</th>
+                  <th>Produto</th>
+                  <th style={{ width: "190px" }}>Categoria</th>
+                  {/*   <th style={{ width: "120px" }}>Unidade</th> */}
+                  <th style={{ width: "90px" }}>Preço</th>
+                  <th style={{ width: "125px" }}>Preço Kg</th>
+                  <th style={{ width: "125px" }}>Preço Un</th>
+                  <th style={{ width: "80px" }}>Ativo</th>
+                  <th style={{ width: "90px" }}>Ações</th>
+                  <th style={{ width: "91px" }}>Status</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {products.map((product) => (
+                  <tr key={product.id}>
+                    {/* <td>{product.code}</td> */}
+                    <td
+                      style={{
+                        padding: "1px",
+                        width: "60px",
+                      }}
                     >
-                      <Select
-                        size="small"
-                        value={product.category_id || ""}
-                        onChange={(e) =>
-                          handleChange(
-                            product.id,
-                            "category_id",
-                            e.target.value,
-                          )
-                        }
-                        sx={{
-                          width: "100%",
-                          "& .MuiSelect-select": {
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            whiteSpace: "nowrap",
-                          },
-                        }}
-                      >
-                        <MenuItem value="">Selecione</MenuItem>
+                      <img
+                        // loading="lazy"
+                        src={product.image || "/no-image.png"}
+                        /*   onError={(e) => {                       
+                        e.target.src = "/no-image.png";
+                      }} */
+                      />
+                    </td>
+                    <td className="product-column">{product.name}</td>
 
-                        {categories.map((category) => (
-                          <MenuItem key={category.id} value={category.id}>
-                            {category.name}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </Tooltip>
-                  </td>
-                  <td /* className="product-column" */>{product.price}</td>
-                  {/*     <td>
+                    <td>
+                      <Tooltip
+                        title={
+                          categories.find((c) => c.id === product.category_id)
+                            ?.name || ""
+                        }
+                        arrow
+                      >
+                        <Select
+                          size="small"
+                          value={product.category_id || ""}
+                          onChange={(e) =>
+                            handleChange(
+                              product.id,
+                              "category_id",
+                              e.target.value,
+                            )
+                          }
+                          sx={{
+                            width: "100%",
+                            "& .MuiSelect-select": {
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              whiteSpace: "nowrap",
+                            },
+                          }}
+                        >
+                          <MenuItem value="">Selecione</MenuItem>
+
+                          {categories.map((category) => (
+                            <MenuItem key={category.id} value={category.id}>
+                              {category.name}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </Tooltip>
+                    </td>
+                    <td style={{ textAlign: "center" }}>{product.price}</td>
+                    {/*     <td>
                   <Select
                     size="small"
                     value={product.unit || ""}
@@ -251,94 +362,114 @@ export function Products() {
                   </Select>
                 </td> */}
 
-                  <td>
-                    <TextField
-                      size="small"
-                      type="number"
-                      value={product.price_per_kg || ""}
-                      onChange={(e) =>
-                        handleChange(product.id, "price_per_kg", e.target.value)
-                      }
-                    />
-                  </td>
+                    <td>
+                      <TextField
+                        size="small"
+                        type="number"
+                        value={product.price_per_kg || ""}
+                        onChange={(e) =>
+                          handleChange(
+                            product.id,
+                            "price_per_kg",
+                            e.target.value,
+                          )
+                        }
+                      />
+                    </td>
 
-                  <td>
-                    <TextField
-                      size="small"
-                      type="number"
-                      value={product.price_per_unit || ""}
-                      onChange={(e) =>
-                        handleChange(
-                          product.id,
-                          "price_per_unit",
-                          e.target.value,
-                        )
-                      }
-                    />
-                  </td>
+                    <td>
+                      <TextField
+                        size="small"
+                        type="number"
+                        value={product.price_per_unit || ""}
+                        onChange={(e) =>
+                          handleChange(
+                            product.id,
+                            "price_per_unit",
+                            e.target.value,
+                          )
+                        }
+                      />
+                    </td>
 
-                  <td>
-                    <Switch
-                      checked={product.active}
-                      onChange={(e) =>
-                        handleChange(product.id, "active", e.target.checked)
-                      }
-                    />
-                  </td>
+                    <td>
+                      <Switch
+                        checked={product.active}
+                        onChange={(e) =>
+                          handleChange(product.id, "active", e.target.checked)
+                        }
+                      />
+                    </td>
 
-                  <td>
-                    <IconButton
-                      color="primary"
-                      size="small"
-                      onClick={() => {
-                        setSelectedProduct(product);
-                        setOpenModal(true);
-                      }}
-                    >
-                      <SettingsIcon />
-                    </IconButton>
-                    {/* Save */}
-                    <IconButton
-                      color="success"
-                      size="small"
-                      onClick={() => {
-                        handleSaveProduct(product);
-                      }}
-                    >
-                      <SaveIcon />
-                    </IconButton>
+                    <td>
+                      <IconButton
+                        // color=""
+                        size="small"
+                        sx={{
+                          color: "#64748b",
+                          "&:hover": {
+                            backgroundColor: "#14532d",
+                            color: "#fff",
+                          },
+                        }}
+                        onClick={() => {
+                          setSelectedProduct(product);
+                          setOpenModal(true);
+                        }}
+                      >
+                        <SettingsIcon />
+                      </IconButton>
 
-                    <IconButton color="error" size="small">
+                      {/* Save */}
+                      <IconButton
+                        color="disabled"
+                        size="small"
+                        sx={{
+                          color: "#64748b",
+                          "&:hover": {
+                            backgroundColor: "#14532d",
+                            color: "#fff",
+                          },
+                        }}
+                        onClick={() => {
+                          handleSaveProduct(product);
+                        }}
+                      >
+                        <SaveIcon />
+                      </IconButton>
+
+                      {/*  <IconButton color="error" size="small">
                       <DeleteIcon />
-                    </IconButton>
-                  </td>
-                  <td>
-                    {isConfigured(product) ? (
-                      <Chip label="✓" color="success" size="small" />
-                    ) : (
-                      <Chip label="…" color="warning" size="small" />
-                    )}
-                  </td>
-                  {/* ⚠ */}
-                </tr>
-              ))}
+                    </IconButton> */}
+                    </td>
+                    <td>
+                      {isConfigured(product) ? (
+                        <Chip label="✓" color="success" size="small" />
+                      ) : (
+                        <Chip label="…" color="warning" size="small" />
+                      )}
+                    </td>
+                    {/* ⚠ */}
+                  </tr>
+                ))}
 
-              {products.length === 0 && (
-                <tr>
-                  <td
-                    colSpan={9}
-                    style={{
-                      textAlign: "center",
-                      padding: "20px",
-                    }}
-                  >
-                    Nenhum produto cadastrado
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </TableContainer>
+                {products.length === 0 && (
+                  <tr>
+                    <td
+                      colSpan={9}
+                      style={{
+                        textAlign: "center",
+                        padding: "20px",
+                      }}
+                    >
+                      Nenhum produto cadastrado
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </TableContainer>
+        </Box>
       </Box>
       <ProductModal
         open={openModal}

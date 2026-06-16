@@ -18,6 +18,7 @@ import {
 
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import AddIcon from '@mui/icons-material/Add';
 import { CategoryModal } from "./CategoryModal.jsx";
 import { useNotification } from "../../context/NotificationContext.jsx";
 import { apiFetch } from "../../../api/apiFetch.js";
@@ -188,7 +189,7 @@ export function Categories() {
             mb: 3,
           }}
         >
-          <Typography variant="h5">{LANG.CATEGORIES.CATEGORIES}</Typography>
+          <Typography variant="h5" className="page-title">{LANG.CATEGORIES.CATEGORIES}</Typography>
 
           <Button
             variant="outlined"
@@ -209,7 +210,7 @@ export function Categories() {
               setOpenModal(true);
             }}
           >
-            + {LANG.CATEGORIES.CATEGORY}
+            <AddIcon fontSize="small"/>  {LANG.CATEGORIES.CATEGORY}
           </Button>
         </Box>
 

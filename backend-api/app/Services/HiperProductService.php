@@ -16,7 +16,7 @@ class HiperProductService
         );
         if (!$response->successful()) {
             throw new \Exception(
-                'Erro ao gerar token Hiper'
+                'Erro ao gerar token do Hiper'
             );
         }
 
@@ -26,12 +26,28 @@ class HiperProductService
     public function getProducts()
     {
 
-        $token = trim($this->getToken());
-
+        $token =trim($this->getToken());      
         $response = Http::withToken($token)
             ->get(config('services.hiper.products_url'));
 
         $products = $response->json();
+
+
+/*         file_put_contents(
+    storage_path('app/hiper_key.json'),
+    $response->body()
+); 
+
+dd('guardado');*/
+
+
+/*        $apiCodes = collect($products['produtos'])
+        ->pluck('codigo')
+        ->map(fn($c) => (string) $c);
+
+    $dbCodes = Product::pluck('code')
+        ->map(fn($c) => (string) $c);
+
 
 
         /*   $codes = collect($products['produtos'])->pluck('codigo');
@@ -41,9 +57,7 @@ class HiperProductService
             'unicos' => $codes->unique()->count(),
         ]); */
         foreach ($products['produtos'] as $item) {
-            if ($item['codigo'] == "3002") {
-                dd($item);
-            }
+         
             //try {
 
 
@@ -68,14 +82,15 @@ class HiperProductService
         } */
         }
 
-        $apiCodes = collect($products['produtos'])
-    ->pluck('codigo')
-    ->map(fn($c) => (string) $c);
+        /* $apiCodes = collect($products['produtos'])
+            ->pluck('codigo')
+            ->map(fn($c) => (string) $c);
 
-$dbCodes = Product::pluck('code')
-    ->map(fn($c) => (string) $c);
+        $dbCodes = Product::pluck('code')
+            ->map(fn($c) => (string) $c);
 
-dd($apiCodes->diff($dbCodes)->values());
+        dd($apiCodes->diff($dbCodes)->values()); */
+          
     }
 
 
