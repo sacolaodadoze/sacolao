@@ -16,7 +16,7 @@ import { Controller, useForm } from "react-hook-form";
 import { useEffect } from "react";
 
 export function ProductModal({ open, onClose, onSubmit, product = null }) {
- // console.log(product);
+  // console.log(product);
   const { control, handleSubmit, reset } = useForm({
     defaultValues: {
       id: null,
@@ -40,7 +40,7 @@ export function ProductModal({ open, onClose, onSubmit, product = null }) {
     }
   }, [product, reset]);
 
-  const submit = (id,product) => {
+  const submit = (id, product) => {
     //console.log("Edit", product);
     onSubmit(id, product);
     reset();
@@ -102,7 +102,8 @@ export function ProductModal({ open, onClose, onSubmit, product = null }) {
             value={product.description || "Não definida"}
             disabled
             fullWidth
-            rows={3}
+            multiline
+            rows={2}
           />
           <Divider sx={{ my: 1 }} />
         </Box>

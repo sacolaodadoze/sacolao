@@ -188,7 +188,7 @@ export const LANG = {
     NAME: "Nome",
     SLUG: "Slug",
     ORDER: "Ordem",
-    ACTIVE: "Categoria ativa",
+    ACTIVE: "Ativa",
     IMAGE: "Imagem (URL)",
     ACTIONS: "Ações",
     WADD: "Adicionar categoria",

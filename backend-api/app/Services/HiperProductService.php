@@ -26,14 +26,14 @@ class HiperProductService
     public function getProducts()
     {
 
-        $token =trim($this->getToken());      
+        $token = trim($this->getToken());
         $response = Http::withToken($token)
             ->get(config('services.hiper.products_url'));
 
         $products = $response->json();
 
 
-/*         file_put_contents(
+        /*         file_put_contents(
     storage_path('app/hiper_key.json'),
     $response->body()
 ); 
@@ -41,7 +41,7 @@ class HiperProductService
 dd('guardado');*/
 
 
-/*        $apiCodes = collect($products['produtos'])
+        /*        $apiCodes = collect($products['produtos'])
         ->pluck('codigo')
         ->map(fn($c) => (string) $c);
 
@@ -57,10 +57,14 @@ dd('guardado');*/
             'unicos' => $codes->unique()->count(),
         ]); */
         foreach ($products['produtos'] as $item) {
-         
-            //try {
-
-
+            $description = ($item['unidade'] == "KG")
+                ?  "Produto vendido por "
+                . number_format($item['preco'], 2, ',', '.')
+                . "/Kg. O preço abaixo considera uma unidade média de "
+                . $item['peso']
+                . "g do produto. O preço final será definido após a pesagem do produto."
+                : "";
+            //try {f
             Product::updateOrCreate(
                 [
                     'code' => $item['codigo']
@@ -69,7 +73,7 @@ dd('guardado');*/
                     'name' => $item['nome'],
                     'slug' => Str::slug($item['nome']),
                     'image' => $item['imagem']   ?? '',
-                    'description' => $item['descricao'] ?? '',
+                    'description' => $description,
                     'stock' => $item['quantidadeEmEstoque'] ?? 0,
                     'unit' => $item['unidade'] ?? '',
                     'average_weight' => $item['peso'] ?? 0,
@@ -90,7 +94,6 @@ dd('guardado');*/
             ->map(fn($c) => (string) $c);
 
         dd($apiCodes->diff($dbCodes)->values()); */
-          
     }
 
 

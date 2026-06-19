@@ -10,7 +10,7 @@ export function Header() {
   const { user, logoutUser } = useContext(AuthContext);
 
   return (
-    <>
+    <main className="sticky">
       <header className="main-header">
         <div className="logo-container">
           <img src={logo} alt="Logo" className="logo-img" />
@@ -76,6 +76,6 @@ export function Header() {
           <Import />
         </div>
       </nav>
-    </>
+    </main>
   );
 }

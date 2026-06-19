@@ -55,6 +55,13 @@ body {
 }
 
 /* Header / Banner */
+ .sticky {
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    padding-bottom: 20px;
+  }
+
 .main-header {
   background-color: var(--surface);
   border-bottom: 2px solid var(--accent-yellow);
@@ -64,6 +71,7 @@ body {
   align-items: center;
   justify-content: space-between;
   box-shadow: var(--shadow-sm);
+  
 }
 
 .logo-container {

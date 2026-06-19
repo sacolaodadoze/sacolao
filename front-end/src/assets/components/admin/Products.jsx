@@ -33,6 +33,7 @@ import { ProductModal } from "./EditProduct";
 export function Products() {
   const { showNotification } = useNotification();
   const [products, setProducts] = useState(productsData);
+  const [categories, setCategories] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [loadingSync, setLoadingSync] = useState(false);
@@ -40,20 +41,14 @@ export function Products() {
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
   const [categoryId, setCategoryId] = useState("");
+  const [unit, setUnit] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
 
   //Paginado
   const [currentPage, setCurrentPage] = useState(1);
   // const [lastPage, setLastPage] = useState(1); //
   const [perPage, setPerPage] = useState(20);
   const [total, setTotal] = useState(0);
-
-  const categories = [
-    { id: 1, name: "Frutas" },
-    { id: 2, name: "Legumes" },
-    { id: 3, name: "Verduras" },
-  ];
-
-  const units = ["kg", "un", "maço", "bandeja", "caixa"];
 
   const handleChange = (id, field, value) => {
     setProducts((prev) =>
@@ -64,9 +59,11 @@ export function Products() {
   };
 
   const isConfigured = (product) => {
-    return (
-      product.category_id && (product.price_per_kg || product.price_per_unit)
-    );
+    if (product.unit === "KG") {
+      return !!product.category_id && product.average_weight > 0;
+    }
+
+    return !!product.category_id;
   };
 
   const loadProducts = async (
@@ -74,11 +71,13 @@ export function Products() {
     currentPage,
     searchValue = search,
     categoryValue = categoryId,
+    unitValue = unit,
+    statusValue = statusFilter,
   ) => {
     setLoading(true);
     try {
       const res = await apiFetch(
-        `/api/products?page=${currentPage}&per_page=${perPage}&search=${searchValue}&category_id=${categoryValue}`,
+        `/api/products?page=${currentPage}&per_page=${perPage}&search=${searchValue}&category_id=${categoryValue}&unit=${unitValue}&status=${statusValue}`,
       );
 
       const data = await res.json();
@@ -94,9 +93,29 @@ export function Products() {
     }
   };
 
+  const loadCategories = async () => {
+    try {
+      const res = await apiFetch("/api/categories");
+
+      const data = await res.json();
+      //console.log("Categories", data);
+      if (data) {
+        setCategories(data);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      // setLoading(false);
+    }
+  };
+
   useEffect(() => {
     loadProducts(perPage, currentPage);
   }, [currentPage, perPage]);
+
+  useEffect(() => {
+    loadCategories();
+  }, []);
 
   const handleSaveProduct = async (product) => {
     console.log(product);
@@ -145,20 +164,22 @@ export function Products() {
   const handleSearch = async () => {
     setCurrentPage(1);
 
-    await loadProducts(perPage, 1, search, categoryId);
+    await loadProducts(perPage, 1, search, categoryId, unit);
   };
 
   const handleClear = async () => {
     setSearch("");
     setCategoryId("");
     setCurrentPage(1);
-    await loadProducts(perPage, 1, "", "");
+    setUnit("");
+    setStatusFilter("");
+    await loadProducts(perPage, 1, "", "", "", "");
   };
 
-  /*  if (loading || loadingSync || loadingSave) {
+  if (loadingSync /*  || loadingSave */) {
     return <Loader />;
-  } */
-
+  }
+  // console.log(categories);
   return (
     <>
       <Box>
@@ -196,6 +217,7 @@ export function Products() {
         </Box>
 
         <Box
+          className="filters"
           sx={{
             display: "flex",
             gap: 2,
@@ -208,7 +230,7 @@ export function Products() {
             placeholder={LANG.PRODUCTS.PLACEHOLDERSEARCH}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            sx={{ width: 350 }}
+            sx={{ width: 300 }}
           />
 
           <Select
@@ -216,9 +238,9 @@ export function Products() {
             value={categoryId}
             onChange={(e) => setCategoryId(e.target.value)}
             displayEmpty
-            sx={{ minWidth: 220 }}
+            /*  sx={{ minWidth: 220 }} */
           >
-            <MenuItem value="">Todas as categorias</MenuItem>
+            <MenuItem value="">Categorias</MenuItem>
 
             {categories.map((category) => (
               <MenuItem key={category.id} value={category.id}>
@@ -227,15 +249,42 @@ export function Products() {
             ))}
           </Select>
 
+          <Select
+            size="small"
+            value={unit}
+            onChange={(e) => setUnit(e.target.value)}
+            displayEmpty
+            sx={{ textAlign: "center" }}
+          >
+            <MenuItem value="">Unidade</MenuItem>
+            <MenuItem value="UN">UN</MenuItem>
+            <MenuItem value="KG">KG</MenuItem>
+          </Select>
+
+          <Select
+            size="small"
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            textAlign="center"
+            displayEmpty
+          >
+            <MenuItem value="">Estado</MenuItem>
+            <MenuItem value="configured">
+              <Chip label="✓" color="success" size="small" />
+            </MenuItem>
+            <MenuItem value="pending">
+              <Chip label="⚠" color="warning" size="small" />
+            </MenuItem>
+          </Select>
+
           <Button
             variant="contained"
             size="small"
             startIcon={<SearchIcon />}
+            sx={{
+              borderRadius: "12px",
+            }}
             onClick={handleSearch}
-            /* onClick={() => {
-              setCurrentPage(1);
-              loadProducts(perPage, 1);
-            }} */
           >
             {LANG.PRODUCTS.SEARCH}
           </Button>
@@ -243,15 +292,18 @@ export function Products() {
             variant="outlined"
             size="small"
             startIcon={<ClearIcon />}
+            sx={{
+              borderRadius: "12px",
+            }}
             onClick={handleClear}
           >
             {LANG.PRODUCTS.CLEAN}
           </Button>
         </Box>
-        
+
         {/* Table */}
         <Box sx={{ position: "relative" }}>
-          {loading && (
+          {(loading || loadingSave) && (
             <Box
               sx={{
                 position: "absolute",
@@ -275,13 +327,13 @@ export function Products() {
                   <th style={{ width: "93px" }}>Imagen</th>
                   <th>Produto</th>
                   <th style={{ width: "190px" }}>Categoria</th>
-                  {/*   <th style={{ width: "120px" }}>Unidade</th> */}
+                  <th style={{ width: "105px" }}>Unidade</th>
                   <th style={{ width: "90px" }}>Preço</th>
-                  <th style={{ width: "125px" }}>Preço Kg</th>
-                  <th style={{ width: "125px" }}>Preço Un</th>
-                  <th style={{ width: "80px" }}>Ativo</th>
+                  <th style={{ width: "100px" }}>Peso medio</th>
+                  <th style={{ width: "107px" }}>Estoque</th>
+                  {/*  <th style={{ width: "80px" }}>Ativo</th> */}
                   <th style={{ width: "90px" }}>Ações</th>
-                  <th style={{ width: "91px" }}>Status</th>
+                  <th style={{ width: "94px" }}>Estado</th>
                 </tr>
               </thead>
 
@@ -296,7 +348,7 @@ export function Products() {
                       }}
                     >
                       <img
-                        // loading="lazy"
+                        loading="lazy"
                         src={product.image || "/no-image.png"}
                         /*   onError={(e) => {                       
                         e.target.src = "/no-image.png";
@@ -342,7 +394,20 @@ export function Products() {
                         </Select>
                       </Tooltip>
                     </td>
+                    <td style={{ textAlign: "center" }}>{product.unit}</td>
                     <td style={{ textAlign: "center" }}>{product.price}</td>
+                    <td style={{ textAlign: "center" }}>
+                      {product.average_weight}
+                    </td>
+                    <td
+                      style={{
+                        textAlign: "center",
+                        color: product.stock <= 0 ? "red" : "inherit",
+                        fontWeight: product.stock <= 0 ? "bold" : "normal",
+                      }}
+                    >
+                      {product.stock}
+                    </td>
                     {/*     <td>
                   <Select
                     size="small"
@@ -362,7 +427,7 @@ export function Products() {
                   </Select>
                 </td> */}
 
-                    <td>
+                    {/*  <td>
                       <TextField
                         size="small"
                         type="number"
@@ -375,9 +440,9 @@ export function Products() {
                           )
                         }
                       />
-                    </td>
+                    </td> */}
 
-                    <td>
+                    {/*   <td>
                       <TextField
                         size="small"
                         type="number"
@@ -399,7 +464,7 @@ export function Products() {
                           handleChange(product.id, "active", e.target.checked)
                         }
                       />
-                    </td>
+                    </td> */}
 
                     <td>
                       <IconButton
@@ -442,11 +507,15 @@ export function Products() {
                       <DeleteIcon />
                     </IconButton> */}
                     </td>
-                    <td>
+                    <td style={{ textAlign: "center" }}>
                       {isConfigured(product) ? (
-                        <Chip label="✓" color="success" size="small" />
+                        <Tooltip title="Configurado" arrow>
+                          <Chip label="✓" color="success" size="small" />
+                        </Tooltip>
                       ) : (
-                        <Chip label="…" color="warning" size="small" />
+                         <Tooltip title="Pendente" arrow>
+                        <Chip label="⚠" color="warning" size="small" />
+                        </Tooltip>
                       )}
                     </td>
                     {/* ⚠ */}

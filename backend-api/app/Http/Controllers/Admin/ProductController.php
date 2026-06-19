@@ -19,7 +19,10 @@ class ProductController extends Controller
         $page = $request->integer('page', 1);
         $search = $request->search;
         $categoryId = $request->input('category_id');
-        
+        $unit = $request->unit;
+        $status = $request->status;
+
+
         $query = Product::query();
 
         // Buscar por nombre o código
@@ -33,6 +36,36 @@ class ProductController extends Controller
         // Filtrar por categoría
         if ($categoryId) {
             $query->where('category_id', $categoryId);
+        }
+
+        // Filtrar por unit
+        if ($unit) {
+            $query->where('unit', $unit);
+        }
+
+        //Status
+        if ($status === 'configured') {
+            $query->whereNotNull('category_id')
+                ->where(function ($q) {
+                    $q->where('unit', '!=', 'KG')
+                        ->orWhere(function ($q) {
+                            $q->where('unit', 'KG')
+                                ->where('average_weight', '>', 0);
+                        });
+                });
+        }
+
+        if ($status === 'pending') {
+            $query->where(function ($q) {
+                $q->whereNull('category_id')
+                    ->orWhere(function ($q) {
+                        $q->where('unit', 'KG')
+                            ->where(function ($q) {
+                                $q->whereNull('average_weight')
+                                    ->orWhere('average_weight', '<=', 0);
+                            });
+                    });
+            });
         }
 
         $products = $query

@@ -23,3 +23,6 @@
   display: "block";
   margin: 1px 7px;
 }
+.filters .MuiOutlinedInput-root{
+  border-radius: 12px;
+}
