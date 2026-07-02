@@ -47,6 +47,7 @@ export default function CreateOrder({
     register,
     watch,
     setValue,
+    getValues,
     reason,
     reset,
     formState: { errors, isValid }, //disabled save
