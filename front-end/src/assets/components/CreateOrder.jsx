@@ -340,12 +340,24 @@ export default function CreateOrder({
                       }}
                       //TODO carga dos veces la peticion de buscar cliente
                       onChange={(event, customer) => {
-                        if (!customer) {
+                          if (!customer) {
                           setcustomerSelected(null);
-                          reset();
+                          //TODO cambiar en el main
+                          //reset();
+                          const currentItems = getValues("items") || [];
+                          const currentPayment =
+                            getValues("payment_types_id") || "";
+                          const currentEntry = getValues("entry_id") || "";
+                          const currentDetails = getValues("details") || "";
+                          reset({
+                            items: currentItems,
+                            payment_types_id: currentPayment,
+                            entry_id: currentEntry,
+                            details: currentDetails,
+                          });
                           setValue("observations", "");
                           return;
-                        }                        
+                        }                       
                         setcustomerSelected(customer);
                         setLoading(false);
 
