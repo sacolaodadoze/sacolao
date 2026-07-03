@@ -9,9 +9,9 @@ export function SettingsProvider({ children }) {
   useEffect(() => {
     const loadSettings = async () => {     
       try {
-        const res = await apiFetch("/api/settings");
+        const res = await apiFetch("/api/store/settings");
         const data = await res.json();
-        console.log(data);
+       // console.log(data);
         if (data) {
           setSettings(data[0]);
         }

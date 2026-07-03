@@ -47,6 +47,7 @@ export default function CreateOrder({
     register,
     watch,
     setValue,
+    getValues,
     reason,
     reset,
     formState: { errors, isValid }, //disabled save
@@ -197,7 +198,7 @@ export default function CreateOrder({
         method: "POST",
         body: JSON.stringify(data),
       });
-     
+
       if (!res.ok) {
         const errorData = await res.json();
         throw new Error(errorData.message || "Erro ao criar pedido");
@@ -257,7 +258,7 @@ export default function CreateOrder({
       console.log("Guardado:", result);
     } catch (error) {
       setLoadingSave(false);
-      showNotification(error.message || "Erro ao criar pedido", "error");      
+      showNotification(error.message || "Erro ao criar pedido", "error");
     } finally {
       setIsInsertingVuupt(false);
     }
@@ -342,10 +343,22 @@ export default function CreateOrder({
                       onChange={(event, customer) => {
                         if (!customer) {
                           setcustomerSelected(null);
-                          reset();
+                          //TODO cambiar en el main
+                          //reset();
+                          const currentItems = getValues("items") || [];
+                          const currentPayment =
+                            getValues("payment_types_id") || "";
+                          const currentEntry = getValues("entry_id") || "";
+                          const currentDetails = getValues("details") || "";
+                          reset({
+                            items: currentItems,
+                            payment_types_id: currentPayment,
+                            entry_id: currentEntry,
+                            details: currentDetails,
+                          });
                           setValue("observations", "");
                           return;
-                        }                        
+                        }
                         setcustomerSelected(customer);
                         setLoading(false);
 
@@ -417,11 +430,10 @@ export default function CreateOrder({
                 />
               </Box>
               <Box sx={{ width: { xs: "100%", md: "calc(10% - 8px)" } }}>
-                <button 
+                <button
                   sx={{ width: "100%" }}
                   className="btn-add"
-                  onClick={handleAddCustomer}   
-                            
+                  onClick={handleAddCustomer}
                 >
                   + Cliente
                 </button>

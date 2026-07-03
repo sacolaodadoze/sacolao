@@ -1,0 +1,211 @@
+.component-section {
+  padding: 1.5rem;
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.section-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--primary);
+  border-bottom: 2px solid var(--accent-yellow);
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.product-card {
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  transition: var(--transition);
+  border: 1px solid var(--border);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+
+  width: 100%;
+  /* max-width: 190px; */
+  height: 280px;
+  /*   max-width: 280px;
+  height: 380px; */
+
+ /*  margin: 0 auto; */
+
+  /*  width: 100%;
+  max-width: 220px;
+  overflow: hidden; */
+}
+
+.product-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(21, 128, 61, 0.1);
+  border-color: var(--primary-light);
+}
+
+.product-image-container {
+  height: 155px;
+   flex-shrink: 0; /*  evita que se comprima o expanda */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding-top: 23px;
+  padding-left: 8px;
+  padding-right: 8px;
+  padding-bottom: 0px;
+
+  background: #f8fafc;
+   overflow: hidden;
+}
+
+.product-image-container img {
+  /* max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  transition: transform 0.3s ease; */
+  border-radius: var(--radius);
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  object-position: center;
+  display: block;
+}
+
+.product-card:hover .product-image-container img {
+  transform: scale(1.05);
+}
+
+.product-info {
+  flex: 1;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+}
+
+.product-category {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--accent-orange);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+   display: none;
+}
+
+.product-title {
+  /* font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-main);
+  line-height: 1.2; */
+
+  color: var(--text-main);
+  line-height: 1.2;
+  margin-top: 3px;
+  margin-bottom: 5px;
+
+  font-size: 0.90rem;
+  font-weight: 700;
+
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+   height: 2rem; /* exactamente 2 líneas (line-height 1.2 x 2) */
+ 
+}
+
+.product-description {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  height: 48px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.product-price-row {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.product-price {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.qty-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px; /* espacio entre - cantidad + */
+}
+
+.qty-controls button {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid #ccc;
+  background: white;
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.qty-controls span {
+  font-weight: 600;
+  min-width: 16px;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.benefit-tag {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background: var(--primary);
+  color: white;
+  padding: 0.4rem 0.8rem;
+  border-radius: 30px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  box-shadow: var(--shadow-sm);
+  z-index: 2;
+}
+
+.btn-add-cart {
+  background: var(--accent-yellow);
+  color: var(--text-main);
+  border: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition);
+  font-size: 1.2rem;
+}
+
+.btn-add-cart:hover {
+  background: var(--accent-orange);
+  color: white;
+}
+
+.product-chip {
+  position: absolute !important;
+  top: 3px;
+  right: 10px;
+  z-index: 10;
+}

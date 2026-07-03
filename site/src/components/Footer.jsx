@@ -9,6 +9,8 @@ import {
   NoteAltOutlined,
   LocalPhoneOutlined,
 } from "@mui/icons-material";
+
+import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import { apiFetch } from "../api/apiFetch.js";
 
 export default function Footer() {
@@ -19,7 +21,7 @@ export default function Footer() {
   const fetchSettings = async () => {
     //setLoading(true);
     try {
-      const res = await apiFetch("/api/settings");
+      const res = await apiFetch("/api/store/settings");
       const data = await res.json();     
 
       if (data) {
@@ -34,7 +36,7 @@ export default function Footer() {
 
   const fetchDeliverySettings = async () => {   
     try {
-      const res = await apiFetch("/api/delivery-settings");
+      const res = await apiFetch("/api/store/delivery-settings");
 
       const data = await res.json();
       //console.log(data[0]);
@@ -67,14 +69,14 @@ export default function Footer() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          <FmdGoodOutlined fontSize="large" className="location-icon" />
+          <FmdGoodOutlined fontSize="medium" className="location-icon" />
           {settings.address}
         </a>
 
         <p className="icone-tittle">
           {/* 📞 */}
-          <LocalPhoneOutlined /> {settings.phone} <br />{" "}
-          {settings.secondary_phone}
+          <LocalPhoneOutlined fontSize="medium"/>+ {settings.phone} <br />{" "}
+          + {settings.secondary_phone}
         </p>
 
         {/* 💬 */}
@@ -84,12 +86,9 @@ export default function Footer() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          <img
-            className="location-icon"
-            src="/img/whatsApp.png"
-            alt="WhatsApp"
-          />
-          {settings.whatsapp}
+          < WhatsAppIcon fontSize="medium" className="location-icon" />
+       
+          + {settings.whatsapp}
           {/*  +(14) 9982 - 42254 */}
         </a>
       </div>

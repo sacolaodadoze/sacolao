@@ -2,16 +2,33 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use  Illuminate\Database\Eloquent\Relations\HasOne;
 
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Sanctum\HasApiTokens;
+
 
 //tiene varios pedidos
-class Customer extends Model
+class Customer extends Authenticatable
 {
-    protected $guarded = [];
+    use HasApiTokens;
+    //  protected $guarded = [];
+
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'phone',
+        'street',
+        'number',
+        'district',
+        'city',
+    ];
+
+   protected $hidden = ['password', 'remember_token'];
     /**
      * Obtener todos los pedidos del cliente.
      */
@@ -26,7 +43,7 @@ class Customer extends Model
      */
     public function phones(): HasMany
     {
-        return $this->hasMany(Phone::class) ->orderBy('type', 'asc');
+        return $this->hasMany(Phone::class)->orderBy('type', 'asc');//->where('type', 1);
     }
 
     /**
@@ -34,10 +51,10 @@ class Customer extends Model
      */
     public function addresses(): HasMany
     {
-        return $this->hasMany(Address::class) ->orderBy('is_primary', 'asc');
+        return $this->hasMany(Address::class)->orderBy('is_primary', 'asc');//->where('is_primary', 1);
     }
 
-      /**
+    /**
      * Obtener as observaçoes do pedido.
      */
     public function observation()

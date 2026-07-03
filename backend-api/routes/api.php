@@ -10,6 +10,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentTypeController;
 use App\Http\Controllers\StatusController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\CustomerAuthController;
 use App\Http\Controllers\External\ExtCustomerController;
 use App\Http\Controllers\RateController;
 use App\Http\Controllers\External\GeocodingController;
@@ -21,6 +22,7 @@ use App\Http\Controllers\Admin\DeliveryRateController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\StoreController;
+
 
 /* Route::get('/user', function (Request $request) {
     return $request->user();
@@ -115,7 +117,7 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
     Route::get('/products', [ProductController::class, 'index']);
     Route::put('/products/sync', [ProductController::class, 'sync']);
     Route::put('/products/{product}', [ProductController::class, 'update']);
-    
+
 
     //Test Sync
     Route::get('/test-sync', [OrderController::class, 'testSync']);
@@ -123,11 +125,25 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
 
 //Site
 Route::prefix('store')->group(function () {
-
     //Route::get('/home', [StoreController::class, 'home']);
     Route::get('/products', [StoreController::class, 'products']);
     Route::get('/categories', [StoreController::class, 'categories']);
     Route::get('/settings', [StoreController::class, 'settings']);
     Route::get('/delivery-settings', [StoreController::class, 'deliverySettings']);
     Route::get('/delivery-rates', [StoreController::class, 'deliveryRates']);
+    Route::get('/payments', [StoreController::class, 'paymentsTypes']);
+    Route::post('/order', [StoreController::class, 'storeOrder']);
+});
+
+
+// rutas públicas de customers
+Route::prefix('customer')->group(function () {
+    Route::post('/login',    [CustomerAuthController::class, 'login']);
+    Route::post('/register', [CustomerAuthController::class, 'register']);
+});
+
+// rutas protegidas de customers
+Route::middleware('auth:sanctum')->prefix('customer')->group(function () {
+    Route::post('/logout', [CustomerAuthController::class, 'logout']);
+    Route::get('/me',      [CustomerAuthController::class, 'me']);
 });

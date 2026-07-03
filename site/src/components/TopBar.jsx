@@ -6,7 +6,7 @@ import { SettingsContext } from "../context/SettingsContext";
 import "./TopBar.css";
 export default function TopBar(/* {settings} */) {
   const settings = useContext(SettingsContext);
-  console.log(settings);
+ // console.log(settings);
   if (!settings) return null;
   return (
     <div className="topbar">

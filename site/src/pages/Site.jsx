@@ -4,6 +4,7 @@ import SideBar from "../components/SideBar.jsx";
 import Header from "../components/Header.jsx";
 import Categories from "../components/Categories.jsx";
 import Carrusel from "../components/Carrusel.jsx";
+import { Products } from "./Products.jsx";
 import WhatsAppButton from "../components/WhatsAppButton.jsx";
 import Us from "../components/Us.jsx";
 import { apiFetch } from "../api/apiFetch.js";
@@ -54,6 +55,7 @@ export default function Site({ children }) {
         {children || (
           <>
             <Carrusel />
+            <Products/>
             <Us />
           </>
         )}
