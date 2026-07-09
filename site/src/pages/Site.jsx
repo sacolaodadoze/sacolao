@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Footer from "../components/Footer.jsx";
 import SideBar from "../components/SideBar.jsx";
 import Header from "../components/Header.jsx";
@@ -9,14 +9,48 @@ import WhatsAppButton from "../components/WhatsAppButton.jsx";
 import Us from "../components/Us.jsx";
 import { apiFetch } from "../api/apiFetch.js";
 import { Loader } from "../components/Loader.jsx";
+import { useQuery } from "@tanstack/react-query";
 /* import Banner from "./Banner.jsx"; */
 
 export default function Site({ children }) {
-  const [menuOpen, setMenuOpen] = useState(false);
- // const [settings, setSettings] = useState([]);
- // const [loading, setLoading] = useState(false);
+  const stickyHeaderRef = useRef(null);
+  const [headerHeight, setHeaderHeight] = useState(0);
 
-/*   useEffect(() => {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+
+  // const [settings, setSettings] = useState([]);
+  // const [loading, setLoading] = useState(false);
+
+  //Altura del Header para ajustar el scroll de las categorias
+  useEffect(() => {
+    const updateHeaderHeight = () => {
+      if (stickyHeaderRef.current) {
+        setHeaderHeight(stickyHeaderRef.current.offsetHeight);
+      }
+    };
+
+    updateHeaderHeight(); // al cargar
+
+    window.addEventListener("resize", updateHeaderHeight);
+
+    return () => window.removeEventListener("resize", updateHeaderHeight);
+  }, []);
+
+  const fetchCategories = async () => {
+    const res = await apiFetch("/api/store/categories");
+    const data = await res.json();
+    return data.data ?? data;
+  };
+
+  const { data: categories = [], isLoading } = useQuery({
+    queryKey: ["categories"],
+    queryFn: fetchCategories,
+    staleTime: Infinity,
+  });
+  //console.log("categories",categories)
+
+  /*   useEffect(() => {
     const fetchSettings = async () => {
       setLoading(true);
       try {
@@ -35,27 +69,38 @@ export default function Site({ children }) {
     fetchSettings();
   }, []); */
 
- /*  if (!loading) {
+  /*  if (!loading) {
     return <Loader />;
   } */
 
   return (
     <div className="site-container">
-      <div className="sticky-header">
+      <div className="sticky-header" ref={stickyHeaderRef}>
         {/* HEADER */}
-        <Header /* settings={settings} */ />
+        <Header />
 
         {/* SIDEBAR */}
-        <SideBar menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
+        <SideBar
+          menuOpen={menuOpen}
+          setMenuOpen={setMenuOpen}
+          categories={categories}
+        />
 
-        <Categories setMenuOpen={setMenuOpen} />
+        <Categories
+          setMenuOpen={setMenuOpen}
+          categories={categories}
+          onSelectCategory={setSelectedCategory}
+        />
       </div>
       {/* MAIN */}
       <main className="main">
         {children || (
           <>
             <Carrusel />
-            <Products/>
+            <Products
+              selectedCategory={selectedCategory}
+              headerHeight={headerHeight}
+            />
             <Us />
           </>
         )}

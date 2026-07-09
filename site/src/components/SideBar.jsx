@@ -1,5 +1,5 @@
 import "./SideBar.css";
-export default function SideBar({ menuOpen, setMenuOpen }) {
+export default function SideBar({ menuOpen, setMenuOpen, categories }) {
   return (
     <>
       <aside className={`sidebar ${menuOpen ? "open" : ""}`}>
@@ -8,26 +8,16 @@ export default function SideBar({ menuOpen, setMenuOpen }) {
           <button onClick={() => setMenuOpen(false)}>✕</button>
         </div>
 
-        <nav>
-          <p> Prontos para consumo</p>
-          <p> Legumes y ovos</p>
-          <p> Lácteos</p>
-          <p> Hortaliças</p>
-          <p> Frutas</p>
-          <p> Hortaliças</p>
-          <p> Massas artesanais</p>
-          <p> Bebidas</p>
-          <p> Ofertas</p>
+        <nav>        
+          {categories.map((categoria) => (
+            <p key={categoria.id}>{categoria.name}</p>
+          ))}
         </nav>
-
-        {/*  <div className="sidebar-footer">
-          <p>📞 Contacto</p>
-          <p>ℹ️ Sobre nosotros</p>
-        </div> */}
       </aside>
       {/* OVERLAY-- fondo oscuro/transparente que cubre la pantalla*/}
-      {menuOpen && <div className="overlay" onClick={() => setMenuOpen(false)} />}
-      
+      {menuOpen && (
+        <div className="overlay" onClick={() => setMenuOpen(false)} />
+      )}
     </>
   );
 }

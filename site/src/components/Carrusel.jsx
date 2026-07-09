@@ -9,12 +9,12 @@ export default function Carrusel() {
     "/img/food/2.jpg",
     /* "/img/food/3.jpg",
      "/img/food/4.jpg", */
-    "/img/food/5.jpeg",
+   /*  "/img/food/5.jpeg", */
     "/img/food/6.JPG",
-    "/img/food/7.JPG",
-    "/img/food/8.jpg",
+    /* "/img/food/7.JPG", */
+     "/img/food/8.jpg", 
   /*   "/img/food/9.jpg", */
-    "/img/food/10.JPG",
+  /*   "/img/food/10.JPG", */
   /*   "/img/food/11.jpeg", */
    /*  "/img/food/13.jpeg", */
     

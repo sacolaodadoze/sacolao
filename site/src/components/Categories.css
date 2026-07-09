@@ -10,9 +10,15 @@
   box-shadow: var(--shadow);
   align-items: center;
 }
+.category-item {
+    cursor: pointer ;
+  }
+
+  .category-item:hover {
+    color: var(--primary-hover);
+  }
 
 @media (max-width: 768px) {
-
   .categories {
     display: flex;
 
@@ -44,6 +50,8 @@
 
     line-height: 1;
   }
+
+  
 
   .menu-btn {
     height: 30px;

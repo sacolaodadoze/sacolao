@@ -4,9 +4,7 @@
   gap: 12px;
   padding: 0px 0px 17px 0px;
   background: var(--primary); /* #1b5e20 */ /* #2e7d32 */
-  color: var(--background);
-  /*  position: sticky;
-  z-index: 1000; */
+  color: var(--background); 
   flex-wrap: wrap; /* Permite que los elementos salten de línea */
   justify-content: space-between;
   align-items: center;
@@ -56,8 +54,11 @@
 }
 
 .cart {
-  cursor: pointer; 
-  margin-right: 25px;
+  cursor: pointer;
+  margin-right: 55px;
+  display: flex;
+  align-items: center;
+  gap: 12px; /* 👈 espacio entre el carrito y el nombre */
 }
 
 .whatsapp-notice {
@@ -116,13 +117,6 @@
     margin-left: -2px;
     height: 38px;
      font-size: 10px;
-  }
-
-  .header {
-    position: sticky;
-    top: 0;
-    z-index: 9999;
-    padding-bottom: 27px;
   }
 
   .whatsapp-notice {

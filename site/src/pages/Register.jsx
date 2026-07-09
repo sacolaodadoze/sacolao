@@ -17,27 +17,28 @@ import { apiFetch } from "../api/apiFetch";
 
 const registerSchema = z
   .object({
-    name:                  z.string().min(1, "Nome requerido"),
-    email:                 z.string().email("Email inválido"),
-    password:              z.string().min(6, "Mínimo 6 caracteres"),
+    name: z.string().min(1, "Nome requerido"),
+    document: z.string().min(11, "Mínimo 11 caracteres"),
+    email: z.string().email("Email inválido"),
+    password: z.string().min(6, "Mínimo 6 caracteres"),
     password_confirmation: z.string().min(1, "Confirmá la contraseña"),
-    phone:                 z.string().min(8, "Teléfono inválido"),
+    phone: z.string().min(8, "Teléfono inválido"),
     // dirección — opcional en el registro, se puede completar después
-    street:                z.string().optional(),
-    number:                z.string().optional(),
-    neighborhood:          z.string().optional(),
-    city:                  z.string().optional(),
-    state:                 z.string().optional(),
-    cep:                   z.string().optional(),
+    street: z.string().optional(),
+    number: z.string().optional(),
+    neighborhood: z.string().optional(),
+    city: z.string().optional(),
+    state: z.string().optional(),
+    cep: z.string().optional(),
   })
   .refine((data) => data.password === data.password_confirmation, {
     message: "Las contraseñas no coinciden",
-    path:    ["password_confirmation"],
+    path: ["password_confirmation"],
   });
 
 export default function Register() {
-  const { login }  = useAuth();
-  const navigate   = useNavigate();
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
   const {
     register,
@@ -50,9 +51,9 @@ export default function Register() {
 
   const onSubmit = async (data) => {
     try {
-      const res  = await apiFetch("/api/customer/register", {
+      const res = await apiFetch("/api/customer/register", {
         method: "POST",
-        body:   JSON.stringify(data),
+        body: JSON.stringify(data),
       });
 
       const json = await res.json();
@@ -79,12 +80,12 @@ export default function Register() {
   return (
     <Box
       sx={{
-        minHeight:      "100vh",
-        display:        "flex",
-        alignItems:     "center",
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
         justifyContent: "center",
-        background:     "var(--background, #f8fafc)",
-        py:             4,
+        background: "var(--background, #f8fafc)",
+        py: 4,
       }}
     >
       <Paper
@@ -106,6 +107,13 @@ export default function Register() {
             {...register("name")}
             error={!!errors.name}
             helperText={errors.name?.message}
+            fullWidth
+          />
+          <TextField
+            label="CPF"
+            {...register("document")}
+            error={!!errors.document}
+            helperText={errors.document?.message}
             fullWidth
           />
 

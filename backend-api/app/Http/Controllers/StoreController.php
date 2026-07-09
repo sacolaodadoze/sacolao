@@ -193,7 +193,7 @@ class StoreController extends Controller
                         'description' => $data['details'],
                     ]
                 ); */
-                 Detail::create([
+                Detail::create([
                     'order_id' => $order->id,
                     'description' => $data['details']
                 ]);

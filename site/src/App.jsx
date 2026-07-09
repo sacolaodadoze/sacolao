@@ -7,7 +7,7 @@ import AboutUs from "./pages/AboutUs.jsx";
 import Checkout from "./pages/Checkout.jsx";
 import { ProtectedRoute } from "./components/ProtectedRoute.jsx";
 import Login from "./pages/Login.jsx";
- import Register from "./pages/Register.jsx"; 
+import Register from "./pages/Register.jsx";
 
 if ("scrollRestoration" in window.history) {
   window.history.scrollRestoration = "manual";
@@ -25,22 +25,8 @@ function App() {
           {/*  <Route path="/" element={<Site />} />
           <Route path="/about" element={<AboutUs />} />
           <Route path="/checkout" element={<Checkout />} /> */}
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <Site />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/about"
-            element={
-              <ProtectedRoute>
-                <AboutUs />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/" element={<Site />} />
+          <Route path="/about" element={<AboutUs />} />
           <Route
             path="/checkout"
             element={
