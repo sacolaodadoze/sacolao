@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef,useContext } from "react";
 import Footer from "../components/Footer.jsx";
 import SideBar from "../components/SideBar.jsx";
 import Header from "../components/Header.jsx";
@@ -10,32 +10,56 @@ import Us from "../components/Us.jsx";
 import { apiFetch } from "../api/apiFetch.js";
 import { Loader } from "../components/Loader.jsx";
 import { useQuery } from "@tanstack/react-query";
+import { SettingsContext } from "../context/SettingsContext.jsx";
 /* import Banner from "./Banner.jsx"; */
 
 export default function Site({ children }) {
   const stickyHeaderRef = useRef(null);
   const [headerHeight, setHeaderHeight] = useState(0);
+  const settings = useContext(SettingsContext);
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
+
+  const [selectedParentCategory, setSelectedParentCategory] = useState(null);
+
+  const handleSelectParent = (category) => {
+    setSelectedCategory(null);
+  setSelectedParentCategory(category); // { id: 3, name: "Merceria", children: [...] }
+  
+};
+
+const handleSelectCategory = (categoryId) => {
+  setSelectedParentCategory(null);
+  setSelectedCategory(categoryId);
+};
 
   // const [settings, setSettings] = useState([]);
   // const [loading, setLoading] = useState(false);
 
   //Altura del Header para ajustar el scroll de las categorias
   useEffect(() => {
-    const updateHeaderHeight = () => {
-      if (stickyHeaderRef.current) {
-        setHeaderHeight(stickyHeaderRef.current.offsetHeight);
-      }
-    };
+  const updateHeaderHeight = () => {
+    if (stickyHeaderRef.current) {
+      setHeaderHeight(stickyHeaderRef.current.offsetHeight);
+    }
+  };
 
-    updateHeaderHeight(); // al cargar
+  window.addEventListener("resize", updateHeaderHeight);
+  return () => window.removeEventListener("resize", updateHeaderHeight);
+}, []);
 
-    window.addEventListener("resize", updateHeaderHeight);
+// recalcula cuando settings carga
+useEffect(() => {
+  if (!settings || !stickyHeaderRef.current) return;
 
-    return () => window.removeEventListener("resize", updateHeaderHeight);
-  }, []);
+  const timer = setTimeout(() => {
+    setHeaderHeight(stickyHeaderRef.current.offsetHeight);
+  //  console.log("headerHeight actualizado:", stickyHeaderRef.current.offsetHeight);
+  }, 300);
+
+  return () => clearTimeout(timer);
+}, [settings]);
 
   const fetchCategories = async () => {
     const res = await apiFetch("/api/store/categories");
@@ -84,12 +108,15 @@ export default function Site({ children }) {
           menuOpen={menuOpen}
           setMenuOpen={setMenuOpen}
           categories={categories}
+           headerHeight={headerHeight}
+           onSelectCategory={handleSelectCategory}
         />
 
         <Categories
           setMenuOpen={setMenuOpen}
           categories={categories}
-          onSelectCategory={setSelectedCategory}
+          onSelectCategory={handleSelectCategory}
+           onSelectParent={handleSelectParent}
         />
       </div>
       {/* MAIN */}
@@ -99,6 +126,7 @@ export default function Site({ children }) {
             <Carrusel />
             <Products
               selectedCategory={selectedCategory}
+              selectedParentCategory={selectedParentCategory}
               headerHeight={headerHeight}
             />
             <Us />

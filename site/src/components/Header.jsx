@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext,useEffect } from "react";
 import logo from "/img/logo/logo.png";
 import SearchIcon from "@mui/icons-material/Search";
 import "./Header.css";
@@ -27,6 +27,7 @@ export default function Header(/* {settings} */) {
 
   if (!settings) return null;
   const totalItems = cartItems.reduce((acc, item) => acc + item.quantity, 0);
+
   const handleLogout = () => {
     logout(); // limpia el token y los datos del cliente del AuthContext y localStorage
     navigate("/login");

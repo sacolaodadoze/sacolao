@@ -2,13 +2,12 @@ import { useEffect, useState, useRef } from "react";
 import "./Product.css";
 import { Grid, Box, Typography } from "@mui/material";
 
-import { ProductCard } from "../components/ProductCard";
-import { ProductC } from "../components/ProductC";
+import { ProductCard } from "../components/ProductCard.jsx";
 import { apiFetch } from "../api/apiFetch.js";
 
 import { useQuery } from "@tanstack/react-query";
 
-export function Products({ selectedCategory, headerHeight }) {
+export function Products({ selectedCategory,selectedParentCategory, headerHeight }) {
   const categoryRefs = useRef({});
 
   const loadProducts = async () => {
@@ -28,31 +27,19 @@ export function Products({ selectedCategory, headerHeight }) {
     staleTime: 1000 * 60 * 15, // considera los datos frescos por 15 minutos
   });
 
-  useEffect(() => {
-    if (!selectedCategory) return;
-    //  console.log("selectedCategory:", selectedCategory);
-    //console.log("refs:", categoryRefs.current);
-
-    const element = categoryRefs.current[selectedCategory];
-    // console.log("element:", element);
-
-    /*  if (element) {
-      const y = element.getBoundingClientRect().top + window.scrollY - 140; // altura del header
-
-      window.scrollTo({
-        top: y,
-        behavior: "smooth",
-      });
-    } */
-    element.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  }, [selectedCategory]);
-
   //console.log("selectedCategory", selectedCategory);
 
-  const groupedProducts = products.reduce((acc, product) => {
+
+    // filtrar productos si hay categoría padre seleccionada
+  const visibleProducts = selectedParentCategory
+    ? products.filter((product) =>
+        selectedParentCategory.children.some(
+          (child) => child.id === product.category?.id
+        )
+      )
+    : products;
+
+  const groupedProducts = visibleProducts.reduce((acc, product) => {
     const id = product.category?.id || 0;
     const categoryName = product.category?.name || "Sem categoria";
 
@@ -63,34 +50,37 @@ export function Products({ selectedCategory, headerHeight }) {
       };
     }
 
-    acc[id].products.push(product);
-
-    /*     if (!acc[categoryName]) {
-      acc[categoryName] = [];
-    }
-    acc[categoryName].push(product); */
+    acc[id].products.push(product); 
 
     return acc;
   }, {});
 
+  //Scroll
+  const getOffsetTop = (element) => {
+    let top = 0;
+    while (element) {
+      top += element.offsetTop;
+      element = element.offsetParent;
+    }
+    return top;
+  };
 
-useEffect(() => {
-  if (!selectedCategory) return;
+  useEffect(() => {
+    if (!selectedCategory) return;
+    const timer = setTimeout(() => {
+      const element = categoryRefs.current[selectedCategory];
+      if (!element) return;
 
-  const timer = setTimeout(() => {
-    const element = categoryRefs.current[selectedCategory];
+      const elementTop = getOffsetTop(element);
+      
+      document.body.scrollTo({
+        top: elementTop - headerHeight - 16,
+        behavior: "smooth",
+      });
+    }, 100);
 
-    if (!element) return;
-
-    element.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  }, 500);
-
-  return () => clearTimeout(timer);
-}, [selectedCategory]);
-
+    return () => clearTimeout(timer);
+  }, [selectedCategory, headerHeight]);
 
   if (isLoading) return <p>Cargando productos...</p>;
   if (isError) return <p>Error al cargar productos</p>;
@@ -105,9 +95,10 @@ useEffect(() => {
         <Box
           key={categoryId}
           ref={(el) => (categoryRefs.current[categoryId] = el)}
-          sx={{ mb: 6,
-             scrollMarginTop: `${headerHeight}px` //  20px de margen
-            }}
+          sx={{
+            mb: 6 /* 
+             scrollMarginTop: `${headerHeight}px` */, //  20px de margen
+          }}
         >
           <Typography
             variant="h5"
@@ -122,7 +113,7 @@ useEffect(() => {
 
           <Box className="products-grid">
             {group.products.map((product) => (
-              <ProductC key={product.code} product={product} />
+              <ProductCard key={product.code} product={product} />
             ))}
           </Box>
         </Box>

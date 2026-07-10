@@ -82,7 +82,9 @@ class StoreController extends Controller
     }
     public function categories()
     {
-        $categories = Category::orderBy('position')
+        $categories = Category::whereNull('parent_id')
+            ->with('children')
+            ->orderBy('position')
             ->get();
         return response()->json($categories);
     }
