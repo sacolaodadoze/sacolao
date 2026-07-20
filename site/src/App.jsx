@@ -5,6 +5,7 @@ import Site from "./pages/Site.jsx";
 import ScrollToTop from "./components/ScrollToTop";
 import AboutUs from "./pages/AboutUs.jsx";
 import Checkout from "./pages/Checkout.jsx";
+import OrderConfirmation from "./pages/OrderConfirmation.jsx";
 import { ProtectedRoute } from "./components/ProtectedRoute.jsx";
 import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
@@ -35,6 +36,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="/order-confirmation" element={<OrderConfirmation />} />
         </Routes>
       </HashRouter>
     </>

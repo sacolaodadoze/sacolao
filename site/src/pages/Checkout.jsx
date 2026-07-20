@@ -1,21 +1,33 @@
-import { useEffect, useState } from "react";
+import React from "react";
+import { useEffect, useState, useContext } from "react";
+
 import { useForm, Controller, FormProvider } from "react-hook-form";
 import { CheckoutProducts } from "../components/CheckoutProducts.jsx";
 import { CheckoutForm } from "../components/CheckoutForm.jsx";
 import { CheckoutSummary } from "../components/CheckoutSummary.jsx";
 import { Grid, Box, Typography } from "@mui/material";
+import { Link, useNavigate } from "react-router-dom";
+import { SettingsContext } from "../context/SettingsContext.jsx";
+import { useDeliverySlots } from "../hooks/useDeliverySlots";
 import logo from "../../../front-end/src/assets/img/logo.png";
 
-import { apiFetch } from "../../../front-end/src/api/apiFetch";
+import { apiFetch } from "../api/apiFetch.js";
 
 import { zodResolver } from "@hookform/resolvers/zod"; //validaciones
 import { checkoutSchema } from "../forms/checkoutForm.js";
 import { useCart } from "../context/CartContext.jsx";
-import React from "react";
+import { useAuth } from "../context/AuthContext.jsx";
 
 export default function Checkout() {
-  const { cartItems } = useCart();
+  const { customer } = useAuth();
+  const navigate = useNavigate();
+  const primaryAddress = customer?.addresses?.find((a) => a.is_primary === 1);
+  const primaryPhone = customer?.phones?.find((p) => p.type === 1);
+
+  const { cartItems, clearCart } = useCart();
   const [paymentTypes, setPaymentTypes] = useState([]);
+  const settings = useContext(SettingsContext);
+  const { settingsDelivery } = useDeliverySlots();
 
   const loadPaymentTypes = () => {
     apiFetch("/api/store/payments")
@@ -26,11 +38,11 @@ export default function Checkout() {
         }
       })
       .then((data) => {
-        console.info(data);
+        //console.info(data);
         setPaymentTypes(data);
       })
       .catch((error) => {
-        console.error(error.message || "Error al traer los payments");
+        console.error(error.message || "Error ao trazer os payments");
       });
   };
 
@@ -50,19 +62,28 @@ export default function Checkout() {
       paid: false,
 
       //Endereço
-      cep: "",
+      /*  cep: "",
       street: "",
       number: "",
       complement: "",
       neighborhood: "",
       city: "",
-      state: "",
+      state: "", */
+      name: customer?.name ?? "",
+      phone: primaryPhone?.number ?? "",
+      street: primaryAddress?.street ?? "",
+      number: primaryAddress?.number ?? "",
+      neighborhood: primaryAddress?.neighborhood ?? "",
+      city: primaryAddress?.city ?? "",
+      state: primaryAddress?.state ?? "",
+      cep: primaryAddress?.cep ?? "",
+      complement: primaryAddress?.complement ?? "",
+
+      payment_types_id: "",
 
       scheduled: false,
       delivery_date: "",
       delivery_hour: "",
-
-      payment_types_id: "",
 
       observations: "",
     },
@@ -83,29 +104,85 @@ export default function Checkout() {
   };
 
   const onSubmit = async (data) => {
-    const pickup = data.deliveryType == "delivery" ? false : true;
-    const order = {
-      ...data,
-      pickup,
-    };
-    /*    const order = {
-    ...data,
-    items: cartItems
-      .map(item => `${item.quantity} ${item.name}`)
-      .join("\n"),
-  }; */
-    console.log("All", order);
-    const res = await apiFetch("/api/store/order", {
-      method: "POST",
-      body: JSON.stringify(order),
-    });
+    try {
+      const pickup = data.deliveryType === "delivery" ? false : true;
 
-    if (!res.ok) {
-      const errorData = await res.json();
-      throw new Error(errorData.message || "Erro ao criar pedido");
+      const orderData = {
+        ...data,
+        pickup,
+      };
+      const now = new Date();
+
+      const res = await apiFetch("/api/store/order", {
+        method: "POST",
+        body: JSON.stringify(orderData),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "Erro ao criar pedido");
+      }
+
+      // respuesta del backend
+      const order = await res.json();
+
+      // si no es un pedido agendado
+      if (!data.scheduled) {
+        const deliveryTime = settings.delivery_time;
+        const minutes =
+          typeof deliveryTime === "string"
+            ? parseInt(deliveryTime.split(":")[0], 10)
+            : Number(deliveryTime);
+      
+        const estimated = new Date(now.getTime() + minutes * 60000);
+
+        const hh = String(estimated.getHours()).padStart(2, "0");
+        const mm = String(estimated.getMinutes()).padStart(2, "0");
+
+        order.estimated_hour = `${hh}:${mm}`;
+      }
+
+      if (data.scheduled) {
+        // hora de inicio elegida + window = hora estimada fin
+        const [h, m] = data.delivery_hour.split(":").map(Number);
+  
+        const endMins = h * 60 + m + settingsDelivery.delivery_window_minutes;
+          console.log(endMins);
+        const eh = String(Math.floor(endMins / 60)).padStart(2, "0");
+        const em = String(endMins % 60).padStart(2, "0");
+
+        order.confirmation = {
+          scheduled: true,
+          date: data.delivery_date,
+          hourStart: data.delivery_hour,
+          hourEnd: `${eh}:${em}`,
+        };
+      } else {
+        // ahora + minimum_schedule_minutes
+        const deliveryTime = settings.delivery_time;
+        const minutes =
+          typeof deliveryTime === "string"
+            ? parseInt(deliveryTime.split(":")[0], 10)
+            : Number(deliveryTime);
+      
+        const estimated = new Date(now.getTime() + minutes * 60000);
+
+        const hh = String(estimated.getHours()).padStart(2, "0");
+        const mm = String(estimated.getMinutes()).padStart(2, "0");
+
+        order.confirmation = {
+          scheduled: false,
+          estimatedAt: `${hh}:${mm}`,
+        };
+      }
+      clearCart();
+
+      navigate("/order-confirmation", {
+        state: { order },
+      });
+    } catch (error) {
+      console.error(error);
     }
-    const result = await res.json();
-    console.log("Respuesta al crear pedido:", result);
   };
 
   return (
@@ -129,24 +206,26 @@ export default function Checkout() {
             gap: 3,
           }}
         >
-          <Box
-            component="img"
-            src={logo}
-            alt="logo"
-            sx={{
-              width: 75,
-              height: 75,
-              objectFit: "contain",
-            }}
-          />
+          <Link to="/">
+            <Box
+              component="img"
+              src={logo}
+              alt="logo"
+              sx={{
+                width: 75,
+                height: 75,
+                objectFit: "contain",
+              }}
+            />
+          </Link>
 
           <Box>
             <Typography
-              variant="h3"
-              fontWeight={200}
+              variant="h4"
+              fontWeight={350}
               sx={{ color: "var(--primary)" }}
             >
-              Sacolão
+              Sacolão da Doze
             </Typography>
 
             {/*  <Typography color="text.secondary">
@@ -169,7 +248,7 @@ export default function Checkout() {
           fontWeight={700}
           mb={10} /* sx={{color: "var(--text-muted)"}} */
         >
-          Seu carrinho ou  Confira seu pedido
+          Confira seu pedido
         </Typography>
 
         {/* Contenido */}

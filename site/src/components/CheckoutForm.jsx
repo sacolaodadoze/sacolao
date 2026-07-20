@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   Paper,
   Typography,
@@ -16,6 +16,216 @@ import {
 import { useWatch, useFormContext, Controller } from "react-hook-form";
 /*  import { LANG } from "../../../front-end/src/assets/constants/languages";  */
 
+import { useDeliverySlots } from "../hooks/useDeliverySlots";
+import { Switch, MenuItem, Select, InputLabel } from "@mui/material";
+import { apiFetch } from "../api/apiFetch";
+
+/* function ScheduleSection({ control, errors }) {
+  const { availableDates, slotsByDate, isLoading } = useDeliverySlots();
+
+  const scheduled    = useWatch({ control, name: "scheduled" });
+  const selectedDate = useWatch({ control, name: "delivery_date" });
+
+  return (
+    <Paper sx={{ p: 3, borderRadius: 3, mb: 3 }}>
+      <Typography variant="h5" fontWeight={700} mb={2}>
+        📅 Agendamento
+      </Typography>
+
+      {/* toggle conectado al form 
+      <Controller
+        name="scheduled"
+        control={control}
+        render={({ field }) => (
+          <FormControlLabel
+            control={
+              <Switch
+                checked={!!field.value}
+                onChange={(e) => {
+                  field.onChange(e.target.checked);
+                }}
+              />
+            }
+            label="Quero agendar meu pedido"
+          />
+        )}
+      />
+
+      {scheduled && !isLoading && (
+        <Grid container spacing={2} mt={1}>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Controller
+              name="delivery_date"
+              control={control}
+              render={({ field }) => (
+                <FormControl fullWidth error={!!errors.delivery_date}>
+                  <InputLabel>Data</InputLabel>
+                  <Select {...field} label="Data" value={field.value ?? ""}>
+                    {availableDates.map(({ date, dateKey }) => (
+                      <MenuItem key={dateKey} value={dateKey}>
+                        {date.toLocaleDateString("pt-BR", {
+                          weekday: "long",
+                          day:     "2-digit",
+                          month:   "2-digit",
+                        })}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  <FormHelperText>{errors.delivery_date?.message}</FormHelperText>
+                </FormControl>
+              )}
+            />
+          </Grid>
+
+          {selectedDate && slotsByDate[selectedDate] && (
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Controller
+                name="delivery_hour"
+                control={control}
+                render={({ field }) => (
+                  <FormControl fullWidth error={!!errors.delivery_hour}>
+                    <InputLabel>Horário</InputLabel>
+                    <Select {...field} label="Horário" value={field.value ?? ""}>
+                      {slotsByDate[selectedDate].map((slot) => (
+                        <MenuItem key={slot.value} value={slot.value}>
+                          {slot.label}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                    <FormHelperText>{errors.delivery_hour?.message}</FormHelperText>
+                  </FormControl>
+                )}
+              />
+            </Grid>
+          )}
+        </Grid>
+      )}
+    </Paper>
+  );
+} */
+function ScheduleSection() {
+  const {
+    control,
+    resetField,
+    formState: { errors },
+    setError,
+    clearErrors,
+  } = useFormContext();
+  const { isValidHour, availableDates, slotsByDate } =
+    useDeliverySlots();
+
+  const scheduled = useWatch({ control, name: "scheduled" });
+  const deliveryDate = useWatch({ control, name: "delivery_date" });
+  const deliveryHour = useWatch({ control, name: "delivery_hour" });
+
+  return (
+    <Paper sx={{ p: 3, borderRadius: 3, mb: 3 }}>
+      <Typography variant="h5" fontWeight={700} mb={2}>
+        📅 Agendamento
+      </Typography>
+
+      <Controller
+        name="scheduled"
+        control={control}
+        render={({ field }) => (
+          <FormControlLabel
+            control={
+              <Switch
+                checked={!!field.value}
+                onChange={(e) => {
+                  const checked = e.target.checked;
+                  field.onChange(e.target.checked);
+
+                  if (!checked) {
+                    resetField("delivery_date");
+                    resetField("delivery_hour");
+                  }
+                }}
+              />
+            }
+            label="Quero agendar meu pedido"
+          />
+        )}
+      />
+
+      {scheduled && (
+        <Grid container spacing={2} mt={1}>
+          {/* fecha */}
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Controller
+              name="delivery_date"
+              control={control}
+              render={({ field }) => (
+                <FormControl fullWidth error={!!errors.delivery_date}>
+                  <InputLabel>Data</InputLabel>
+                  <Select {...field} label="Data" value={field.value ?? ""}>
+                    {availableDates.map(({ dateKey, label }) => (
+                      <MenuItem key={dateKey} value={dateKey}>
+                        {label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  <FormHelperText>
+                    {errors.delivery_date?.message}
+                  </FormHelperText>
+                </FormControl>
+              )}
+            />
+          </Grid>
+
+          {/* hora libre */}
+          {/* hora por slots */}
+          {deliveryDate && slotsByDate[deliveryDate] && (
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Controller
+                name="delivery_hour"
+                control={control}
+                render={({ field }) => (
+                  <FormControl fullWidth error={!!errors.delivery_hour}>
+                    <InputLabel>Horário</InputLabel>
+                    <Select
+                      {...field}
+                      label="Horário"
+                      value={field.value ?? ""}
+                    >
+                      {slotsByDate[deliveryDate].map((slot) => (
+                        <MenuItem key={slot.value} value={slot.value}>
+                          {slot.label}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                    <FormHelperText>
+                      {errors.delivery_hour?.message}
+                    </FormHelperText>
+                  </FormControl>
+                )}
+              />
+            </Grid>
+          )}
+
+          {/* estimado — solo si hay hora seleccionada */}
+          {/* {estimatedHour && (
+            <Grid size={{ xs: 12 }}>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{
+                  p: 1.5,
+                  bgcolor: "success.50",
+                  borderRadius: 2,
+                  border: "1px solid",
+                  borderColor: "success.200",
+                }}
+              >
+                🕐 Previsão de entrega: até às <strong>{estimatedHour}</strong>
+              </Typography>
+            </Grid>
+          )} */}
+        </Grid>
+      )}
+    </Paper>
+  );
+}
 export function CheckoutForm({ paymentTypes }) {
   const {
     control,
@@ -234,6 +444,53 @@ export function CheckoutForm({ paymentTypes }) {
           sx={{ mt: 2 }}
         /> */}
       </Paper>
+      {/*       <Paper sx={{ p: 3, borderRadius: 3, mb: 3 }}>
+        <Typography variant="h5" fontWeight={700} mb={3}>
+          Agendamento
+        </Typography>
+        <Grid container spacing={2}>
+         
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Controller
+              name="delivery_date"
+              //disabled={!agendado}
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Data" 
+                  type="date"
+                  fullWidth
+                  InputLabelProps={{ shrink: true }} // para que la etiqueta no se superponga
+                  error={!!errors?.delivery_date}
+                  helperText={errors?.delivery_date?.message}
+                />
+              )}
+            />
+          </Grid>
+
+        
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Controller
+              name="delivery_hour"
+              // disabled={!agendado}
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  type="time"
+                  label="Hora" 
+                  fullWidth
+                  InputLabelProps={{ shrink: true }}
+                  error={!!errors?.delivery_hour}
+                  helperText={errors?.delivery_hour?.message}
+                />
+              )}
+            />
+          </Grid>
+        </Grid>
+      </Paper> */}
+      <ScheduleSection control={control} errors={errors} />
 
       {/* Observaciones */}
       <Paper sx={{ p: 3, borderRadius: 3 }}>

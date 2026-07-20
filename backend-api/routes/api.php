@@ -131,8 +131,8 @@ Route::prefix('store')->group(function () {
     Route::get('/settings', [StoreController::class, 'settings']);
     Route::get('/delivery-settings', [StoreController::class, 'deliverySettings']);
     Route::get('/delivery-rates', [StoreController::class, 'deliveryRates']);
-    Route::get('/payments', [StoreController::class, 'paymentsTypes']);
-    Route::post('/order', [StoreController::class, 'storeOrder']);
+     Route::get('/payments', [StoreController::class, 'paymentsTypes']); 
+     Route::post('/order', [StoreController::class, 'storeOrder']) ->middleware('auth:sanctum');
 });
 
 
@@ -146,4 +146,5 @@ Route::prefix('customer')->group(function () {
 Route::middleware('auth:sanctum')->prefix('customer')->group(function () {
     Route::post('/logout', [CustomerAuthController::class, 'logout']);
     Route::get('/me',      [CustomerAuthController::class, 'me']);
+     
 });

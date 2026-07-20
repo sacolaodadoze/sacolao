@@ -55,10 +55,10 @@
 
 .cart {
   cursor: pointer;
-  margin-right: 55px;
+  margin-right:80px;
   display: flex;
   align-items: center;
-  gap: 12px; /* 👈 espacio entre el carrito y el nombre */
+  gap: 20px; /* 👈 espacio entre el carrito y el nombre */
 }
 
 .whatsapp-notice {

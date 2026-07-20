@@ -114,7 +114,7 @@ export default function Header(/* {settings} */) {
             to="/login"
             sx={{ ml: 2, whiteSpace: "nowrap", color: "#f5f5f5 !important" }}
           >
-            Entre com seu login <br /> ou registre-se
+            Entre {/* com seu login <br /> ou registre-se */}
           </Button>
         )}
       </div>

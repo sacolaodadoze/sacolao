@@ -15,6 +15,7 @@ use App\Models\Phone;
 use App\Models\Address;
 use App\Models\Detail;
 use App\Models\Observation;
+use Illuminate\Support\Facades\Auth;
 
 class StoreController extends Controller
 {
@@ -24,9 +25,10 @@ class StoreController extends Controller
         $settings = Setting::all();
         return response()->json($settings);
     }
+
     public function deliverySettings()
     {
-        $deliverySettings = DeliverySetting::all();
+        $deliverySettings = DeliverySetting::first();
         return response()->json($deliverySettings);
     }
 
@@ -97,21 +99,27 @@ class StoreController extends Controller
 
     public function storeOrder(Request $request, Order $order)
     {
+/*   dd([
+    'web' => Auth::guard('web')->check(),
+    'customer' => Auth::guard('customer')->check(),
+    'user' => Auth::guard('web')->user(),
+    'customerUser' => Auth::guard('customer')->user(),
+]); */
         $rules = [
             //'id' => 'nullable|numeric',
-            // 'customer_id' => 'required|exists:customers,id',
+          //  'customer_id' => 'required|exists:customers,id',
             'items' => 'required|string',
             'payment_types_id' => 'required|exists:payment_types,id',
             'pickup' => 'nullable|boolean',
             //'paid' => 'nullable|boolean',
             // 'rate_id' => 'nullable|exists:rates,id',
-            /* 'delivery_date' => 'nullable|date|required_if:scheduled,true',
+            'delivery_date' => 'nullable|date|required_if:scheduled,true',
             'delivery_hour' => 'nullable|date_format:H:i|required_if:scheduled,true',
-            'order_id' => 'nullable|exists:orders,id',*/
+            //'order_id' => 'nullable|exists:orders,id',
             // 'observations' => 'nullable|string',
             'details' => 'nullable|string',
             //'customerChanged' => 'required|boolean',
-            'phone' => 'nullable|string',
+            'phone' => 'required|string',
             'street'      => 'required_unless:pickup,true|string',
             'cep'      => 'nullable|string',
             'number' => 'nullable|string',
@@ -120,12 +128,36 @@ class StoreController extends Controller
             'city' => 'required|string',
             'state' => 'required|string',
         ];
+
         $data = $request->validate($rules);
+        //dd($data);
+
+        $customer = $request->user();
+       // dd($customer);
 
 
-        $order = DB::transaction(function () use ($data) {
+        $order = DB::transaction(function () use ($data, $customer) {
 
             //Dados do cliente
+
+            Phone::updateOrCreate(
+                ['customer_id' => $customer->id, 'type' => 1],
+                ['number'      => $data['phone']]
+            );
+            if (empty($data['pickup'])) {
+                Address::updateOrCreate(
+                    ['customer_id' => $customer->id, 'is_primary' => 1],
+                    [
+                        'street'       => $data['street'],
+                        'number'       => $data['number']       ?? null,
+                        'neighborhood' => $data['neighborhood'] ?? null,
+                        'complement'   => $data['complement']   ?? null,
+                        'city'         => $data['city'],
+                        'state'        => $data['state'],
+                        'cep'          => $data['cep']          ?? null,
+                    ]
+                );
+            }
             /*    if (($data['customerChanged']) == true) {
                 Phone::updateOrCreate(
                     ['customer_id' => $data['customer_id']],
@@ -165,7 +197,7 @@ class StoreController extends Controller
 
             //Dados do pedido
             $orderData = [
-                'customer_id'      => 23, //teste
+                'customer_id'      => $customer->id,
                 'payment_types_id' => $data['payment_types_id'],
                 'entry_id'         => 3, //site
                 'items'            => $data['items'],
@@ -176,14 +208,6 @@ class StoreController extends Controller
                 'delivery_hour'         => $data['delivery_hour'] ?? null,
                 'created_by' => 8 //user Site
             ];
-
-            /*   if (!empty($data['id'])) {
-                //  Log::info('order');
-                $order = Order::findOrFail($data['id']);
-                $order->update($orderData);
-            } else {
-                $order = Order::create($orderData);
-            } */
 
             $order = Order::create($orderData);
 

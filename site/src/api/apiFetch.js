@@ -11,14 +11,13 @@ export const apiFetch = async (endpoint, options = {}) => {
   console.log("TOKEN EXTRAÍDO DE COOKIE:", token);
    */
   //const baseUrl = "http://192.168.1.116/server"; // Cambia esto por la URL de tu backend
- const baseUrl=import.meta.env.VITE_API_URL; // toma la IP de .env del frontend
- //console.log("BASE URL:", baseUrl);
- // const baseUrl = "http://localhost:8000"; // Cambia esto por la URL de tu backend
+  const baseUrl = import.meta.env.VITE_API_URL; // toma la IP de .env del frontend
+
+  const token = localStorage.getItem("token");
 
   let headers = {
     Accept: "application/json",
     "X-Requested-With": "XMLHttpRequest",
-    // ...options.headers,
     ...(options.headers || {}),
   };
 
@@ -27,23 +26,27 @@ export const apiFetch = async (endpoint, options = {}) => {
     headers["Content-Type"] = "application/json";
   }
 
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
   const fetchOptions = {
     ...options,
-   // credentials: "include",
     headers,
-    cache: 'no-store'
+    cache: "no-store",
   };
 
   //return fetch(`${baseUrl}${endpoint}`, fetchOptions);
   const response = await fetch(`${baseUrl}${endpoint}`, fetchOptions);
 
   // sesión expirada
- /*  if (response.status === 401) {
+  if (response.status === 401) {
+    localStorage.removeItem("token");
+    localStorage.removeItem("customer");
+
     if (window.location.pathname !== "/login") {
       window.location.href = "/login";
     }
-    return;
-  } */
+  }
   return response;
 };
-

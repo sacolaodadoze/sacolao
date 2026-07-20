@@ -96,6 +96,19 @@ export default function Register() {
           Criar conta
         </Typography>
 
+        <Typography
+          variant="caption"
+          fontWeight={500}
+          textAlign="center"
+          display="block" // Garante que o texto se comporte como bloco para as margens funcionarem perfeitamente
+          sx={{
+            pb: "42px", // Aumenta o espaço inferior (32px) para desgrudar do formulário abaixo
+            color: "text.secondary", // Opcional: deixa a cor um pouco mais suave (cinza) para combinar com avisos
+          }}
+        >
+          Os campos marcados com (*) são obrigatórios
+        </Typography>
+
         <Box
           component="form"
           onSubmit={handleSubmit(onSubmit)}
@@ -105,6 +118,7 @@ export default function Register() {
           <TextField
             label="Nome completo"
             {...register("name")}
+            required
             error={!!errors.name}
             helperText={errors.name?.message}
             fullWidth
@@ -112,6 +126,7 @@ export default function Register() {
           <TextField
             label="CPF"
             {...register("document")}
+            required
             error={!!errors.document}
             helperText={errors.document?.message}
             fullWidth
@@ -121,6 +136,7 @@ export default function Register() {
             label="Email"
             type="email"
             {...register("email")}
+            required
             error={!!errors.email}
             helperText={errors.email?.message}
             fullWidth
@@ -129,6 +145,7 @@ export default function Register() {
           <TextField
             label="Telefone"
             {...register("phone")}
+            required
             error={!!errors.phone}
             helperText={errors.phone?.message}
             fullWidth
@@ -138,6 +155,7 @@ export default function Register() {
             label="Senha"
             type="password"
             {...register("password")}
+            required
             error={!!errors.password}
             helperText={errors.password?.message}
             fullWidth
@@ -147,6 +165,7 @@ export default function Register() {
             label="Confirmar senha"
             type="password"
             {...register("password_confirmation")}
+            required
             error={!!errors.password_confirmation}
             helperText={errors.password_confirmation?.message}
             fullWidth

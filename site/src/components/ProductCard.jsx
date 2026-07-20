@@ -10,14 +10,14 @@ export function ProductCard({ product }) {
 
   const cartItem = cartItems.find((item) => item.id === product.id);
   const quantity = cartItem?.quantity ?? 0;
- 
+
   //console.log(product);
   // console.log(product.category);
   return (
     <section /* className="component-section" */>
       {/*  <h2 className="section-title">{product.name}</h2>  */}
       <div className="product-card">
-      {/*   {product.new_product && <span className="benefit-tag">+ Vendido</span>} */}
+        {/*   {product.new_product && <span className="benefit-tag">+ Vendido</span>} */}
 
         {product.new_product && (
           <Chip
@@ -33,15 +33,16 @@ export function ProductCard({ product }) {
           <img src={product.image || "/no-image.png"} />
         </div>
         <div className="product-info">
-         {/*  <span className="product-category">
+          {/*  <span className="product-category">
             {" "}
             {product.category != null ? product.category.name : ""}
           </span> */}
-         {/*  <h3 className="product-title"></h3> */}
-          {/*  <p className="product-description">
-           {product.name}
-          </p> */}
+          {/*  <h3 className="product-title"></h3> */}
           <h3 className="product-title">{product.name}</h3>
+          
+          <p className="product-description">
+            {product.description != null ? product.description : ""}
+          </p>
 
           <div className="product-price-row">
             <span className="product-price">R$ {product.price}</span>

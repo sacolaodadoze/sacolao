@@ -110,6 +110,7 @@ class CustomerAuthController extends Controller
 
     public function me(Request $request)
     {
+        dd($request->user()->load(['addresses', 'phones']));
         return response()->json($request->user()->load(['addresses', 'phones']));
     }
 }

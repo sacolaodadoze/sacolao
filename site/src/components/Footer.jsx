@@ -10,7 +10,7 @@ import {
   LocalPhoneOutlined,
 } from "@mui/icons-material";
 
-import WhatsAppIcon from '@mui/icons-material/WhatsApp';
+import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import { apiFetch } from "../api/apiFetch.js";
 
 export default function Footer() {
@@ -22,7 +22,7 @@ export default function Footer() {
     //setLoading(true);
     try {
       const res = await apiFetch("/api/store/settings");
-      const data = await res.json();     
+      const data = await res.json();
 
       if (data) {
         setSettings(data[0]);
@@ -34,20 +34,18 @@ export default function Footer() {
     }
   };
 
-  const fetchDeliverySettings = async () => {   
+  const fetchDeliverySettings = async () => {
     try {
       const res = await apiFetch("/api/store/delivery-settings");
 
       const data = await res.json();
-      //console.log(data[0]);
-
+      // console.log(data);
       if (data) {
-        setDeliverySettings(data[0]);
+        setDeliverySettings(data);
       }
     } catch (error) {
       console.error(error);
     } finally {
-      
     }
   };
 
@@ -75,8 +73,8 @@ export default function Footer() {
 
         <p className="icone-tittle">
           {/* 📞 */}
-          <LocalPhoneOutlined fontSize="medium"/>+ {settings.phone} <br />{" "}
-          + {settings.secondary_phone}
+          <LocalPhoneOutlined fontSize="medium" />+ {settings.phone} <br /> +{" "}
+          {settings.secondary_phone}
         </p>
 
         {/* 💬 */}
@@ -86,9 +84,8 @@ export default function Footer() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          < WhatsAppIcon fontSize="medium" className="location-icon" />
-       
-          + {settings.whatsapp}
+          <WhatsAppIcon fontSize="medium" className="location-icon" />+{" "}
+          {settings.whatsapp}
           {/*  +(14) 9982 - 42254 */}
         </a>
       </div>
@@ -126,14 +123,21 @@ export default function Footer() {
 
       <div>
         <h4>
-        {/* Agendamento */}
+          {/* Agendamento */}
           <NoteAltOutlined /> Agendamento de entrega
         </h4>
         <p style={{ textDecoration: "solid" }}>Segunda-feira a Sexta-feira</p>
-        <p>{deliverySettings.weekday_delivery_open_morning} às {deliverySettings.weekday_delivery_close_morning} 
-          - {deliverySettings.weekday_delivery_open_afternoon} às {deliverySettings.weekday_delivery_close_afternoon}</p>
+        <p>
+          {deliverySettings.weekday_delivery_open_morning} às{" "}
+          {deliverySettings.weekday_delivery_close_morning}-{" "}
+          {deliverySettings.weekday_delivery_open_afternoon} às{" "}
+          {deliverySettings.weekday_delivery_close_afternoon}
+        </p>
         <p style={{ textDecoration: "solid" }}>Sábado</p>
-        <p>{deliverySettings.saturday_open_delivery} às {deliverySettings.saturday_close_delivery}</p>
+        <p>
+          {deliverySettings.saturday_open_delivery} às{" "}
+          {deliverySettings.saturday_close_delivery}
+        </p>
       </div>
 
       <div>

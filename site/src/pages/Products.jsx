@@ -25,10 +25,8 @@ export function Products({ selectedCategory,selectedParentCategory, headerHeight
     queryKey: ["products"],
     queryFn: loadProducts, // función que llama a la API
     staleTime: 1000 * 60 * 15, // considera los datos frescos por 15 minutos
+    refetchOnMount: false, //  no refetchea cuando el componente se monta si los datos están frescos
   });
-
-  //console.log("selectedCategory", selectedCategory);
-
 
     // filtrar productos si hay categoría padre seleccionada
   const visibleProducts = selectedParentCategory
