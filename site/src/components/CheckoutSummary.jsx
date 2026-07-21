@@ -1,12 +1,21 @@
 import { Paper, Typography, Divider, Box, Button } from "@mui/material";
 import { useFormContext } from "react-hook-form";
+import { useContext } from "react";
 
 import { useCart } from "../context/CartContext.jsx";
+import { calculateEstimatedDelivery,CalculateScheduleDelivery } from "../utils/deliveryUtils";
+import { SettingsContext } from "../context/SettingsContext.jsx";
+import { useDeliverySlots } from "../hooks/useDeliverySlots";
 
 export function CheckoutSummary() {
+  const settings = useContext(SettingsContext);
+   const { settingsDelivery } = useDeliverySlots();
+
   const {
+    watch,
     formState: { isSubmitting },
   } = useFormContext();
+
   const { cartItems } = useCart();
 
   const items = cartItems.reduce((sum, item) => sum + item.quantity, 0);
@@ -19,6 +28,10 @@ export function CheckoutSummary() {
   const delivery = 5; // luego vendrá de la BD
 
   const total = subtotal + delivery;
+
+  const scheduled = watch("scheduled");
+  const deliveryDate = watch("delivery_date");
+  const deliveryHour = watch("delivery_hour");
 
   return (
     <Paper
@@ -90,6 +103,35 @@ export function CheckoutSummary() {
 
         <Typography variant="h6" fontWeight={700} color="success.main">
           R$ {total.toFixed(2)}
+        </Typography>
+      </Box>
+      <Divider sx={{ mb: 2 }} />
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: "1fr auto",
+          mb: 1,
+          alignItems: "center",
+        }}
+      >
+        <Typography color="text.secondary"> Previsão de entrega: </Typography>
+        <Typography>
+          {" "}
+          {/*  Até as: */}
+          {scheduled ? (
+            <strong>
+              {" "}
+              {new Date(
+                    deliveryDate + "T00:00:00",
+                  ).toLocaleDateString("pt-BR", {
+                    weekday: "long",
+                    day: "2-digit",
+                    month: "2-digit",
+                  })} até às {CalculateScheduleDelivery(deliveryHour,settingsDelivery)}
+            </strong>
+          ) : (
+            <strong>{calculateEstimatedDelivery(settings)}</strong>
+          )}
         </Typography>
       </Box>
 

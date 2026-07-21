@@ -17,6 +17,10 @@ import { zodResolver } from "@hookform/resolvers/zod"; //validaciones
 import { checkoutSchema } from "../forms/checkoutForm.js";
 import { useCart } from "../context/CartContext.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
+import {
+  calculateEstimatedDelivery,
+  CalculateScheduleDelivery,
+} from "../utils/deliveryUtils";
 
 export default function Checkout() {
   const { customer } = useAuth();
@@ -128,51 +132,25 @@ export default function Checkout() {
 
       // si no es un pedido agendado
       if (!data.scheduled) {
-        const deliveryTime = settings.delivery_time;
-        const minutes =
-          typeof deliveryTime === "string"
-            ? parseInt(deliveryTime.split(":")[0], 10)
-            : Number(deliveryTime);
-      
-        const estimated = new Date(now.getTime() + minutes * 60000);
+        const estimatedAt = calculateEstimatedDelivery(settings);
 
-        const hh = String(estimated.getHours()).padStart(2, "0");
-        const mm = String(estimated.getMinutes()).padStart(2, "0");
-
-        order.estimated_hour = `${hh}:${mm}`;
+        order.confirmation = {
+          scheduled: false,
+          estimatedAt: estimatedAt ?? "",
+        };
       }
 
       if (data.scheduled) {
-        // hora de inicio elegida + window = hora estimada fin
-        const [h, m] = data.delivery_hour.split(":").map(Number);
-  
-        const endMins = h * 60 + m + settingsDelivery.delivery_window_minutes;
-          console.log(endMins);
-        const eh = String(Math.floor(endMins / 60)).padStart(2, "0");
-        const em = String(endMins % 60).padStart(2, "0");
+        const estimatedAt = CalculateScheduleDelivery(
+          data.delivery_hour,
+          settingsDelivery,
+        );
 
         order.confirmation = {
           scheduled: true,
           date: data.delivery_date,
           hourStart: data.delivery_hour,
-          hourEnd: `${eh}:${em}`,
-        };
-      } else {
-        // ahora + minimum_schedule_minutes
-        const deliveryTime = settings.delivery_time;
-        const minutes =
-          typeof deliveryTime === "string"
-            ? parseInt(deliveryTime.split(":")[0], 10)
-            : Number(deliveryTime);
-      
-        const estimated = new Date(now.getTime() + minutes * 60000);
-
-        const hh = String(estimated.getHours()).padStart(2, "0");
-        const mm = String(estimated.getMinutes()).padStart(2, "0");
-
-        order.confirmation = {
-          scheduled: false,
-          estimatedAt: `${hh}:${mm}`,
+          hourEnd: estimatedAt /*  `${eh}:${em}`, */,
         };
       }
       clearCart();

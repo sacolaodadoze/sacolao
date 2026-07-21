@@ -49,7 +49,7 @@ export function useDeliverySlots() {
         }),
       });
     }
-  console.log("availableDates generados:", dates); 
+
     return dates;
   }, [settings]);
 
@@ -66,7 +66,7 @@ const isValidHour = useCallback((dateStr, hourStr) => {
 
   const [h, m]   = hourStr.split(":").map(Number);
   const hourMins = h * 60 + m;
-  const endMins  = hourMins + settings.delivery_window_minutes; // 👈 hora fin del delivery
+  const endMins  = hourMins + settings.delivery_window_minutes; //  hora fin del delivery
 
   // verificar hora límite para mismo día
   if (isToday) {
@@ -88,7 +88,7 @@ const isValidHour = useCallback((dateStr, hourStr) => {
     const openMins  = oh * 60 + om;
     const closeMins = ch * 60 + cm;
 
-    // 👈 la hora de inicio tiene que ser >= apertura
+    //  la hora de inicio tiene que ser >= apertura
     // Y la hora de fin (hora + window) tiene que ser <= cierre
     return hourMins >= openMins && endMins <= closeMins;
   };

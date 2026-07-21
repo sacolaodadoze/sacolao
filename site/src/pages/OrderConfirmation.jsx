@@ -14,6 +14,7 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import HomeIcon from "@mui/icons-material/Home";
 
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import { LineWeight } from "@mui/icons-material";
 
 export default function OrderConfirmation() {
   const { state } = useLocation();
@@ -90,7 +91,7 @@ export default function OrderConfirmation() {
             </Box>
           ) : (
             <>
-              <Box display="flex" gap={1} alignItems="center" mb={1}>
+              <Box sx={{ display: "flex", gap: 1, alignItems: "center"}}>
                 <HomeIcon color="success" />
                 <Typography>
                   {order.customer?.addresses?.[0]?.street},{" "}
@@ -115,13 +116,14 @@ export default function OrderConfirmation() {
           <Typography variant="h6" gutterBottom>
             Horário
           </Typography>
+          {/* Agendado */}
           {order.confirmation.scheduled ? (
             <>
               <Box
                 sx={{ display: "flex", gap: 1, alignItems: "center", mb: 1 }}
               >
                 <EventIcon color="success" />
-                <Typography>
+                <Typography /* sx={{fontStyle:strong}} */>
                   {new Date(
                     order.confirmation.date + "T00:00:00",
                   ).toLocaleDateString("pt-BR", {
@@ -134,7 +136,7 @@ export default function OrderConfirmation() {
               <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
                 <AccessTimeIcon color="success" />
                 <Typography>
-                  {order.confirmation.hourStart} - {order.confirmation.hourEnd}
+                 Seu pedido chegará até as: {/* {order.confirmation.hourStart} -  */}<strong>{order.confirmation.hourEnd}</strong>
                 </Typography>
               </Box>
             </>
@@ -143,7 +145,7 @@ export default function OrderConfirmation() {
               <LocalShippingIcon color="success" />
               <Typography>
                 Previsão de entrega:{" "}
-                <strong>{order.confirmation.estimatedAt}</strong>
+                Até ás <strong>{order.confirmation.estimatedAt}</strong>
               </Typography>
             </Box>
           )}
