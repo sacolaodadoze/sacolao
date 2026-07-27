@@ -91,7 +91,7 @@ export default function OrderConfirmation() {
             </Box>
           ) : (
             <>
-              <Box sx={{ display: "flex", gap: 1, alignItems: "center"}}>
+              <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
                 <HomeIcon color="success" />
                 <Typography>
                   {order.customer?.addresses?.[0]?.street},{" "}
@@ -136,7 +136,8 @@ export default function OrderConfirmation() {
               <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
                 <AccessTimeIcon color="success" />
                 <Typography>
-                 Seu pedido chegará até as: {/* {order.confirmation.hourStart} -  */}<strong>{order.confirmation.hourEnd}</strong>
+                  Previsão de entrega:
+                  <strong>{order.confirmation.hourEnd}</strong>
                 </Typography>
               </Box>
             </>
@@ -145,7 +146,7 @@ export default function OrderConfirmation() {
               <LocalShippingIcon color="success" />
               <Typography>
                 Previsão de entrega:{" "}
-                Até ás <strong>{order.confirmation.estimatedAt}</strong>
+                <strong>{order.confirmation.estimatedAt}</strong>
               </Typography>
             </Box>
           )}

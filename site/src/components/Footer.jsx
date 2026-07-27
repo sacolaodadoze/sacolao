@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useContext } from "react";
 import { Link } from "react-router-dom";
 import "./Footer.css";
 import {
@@ -12,27 +12,29 @@ import {
 
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import { apiFetch } from "../api/apiFetch.js";
+import { SettingsContext } from "../context/SettingsContext.jsx";
 
 export default function Footer() {
-  const [settings, setSettings] = useState([]);
+    const settings = useContext(SettingsContext);
+  //const [settings, setSettings] = useState([]);
   const [deliverySettings, setDeliverySettings] = useState([]);
   //const [loading, setLoading] = useState(false);
 
-  const fetchSettings = async () => {
+/*   const fetchSettings = async () => {
     //setLoading(true);
     try {
       const res = await apiFetch("/api/store/settings");
       const data = await res.json();
 
       if (data) {
-        setSettings(data[0]);
+        setSettings(data);
       }
     } catch (error) {
       console.error(error);
     } finally {
       //setLoading(false);
     }
-  };
+  }; */
 
   const fetchDeliverySettings = async () => {
     try {
@@ -50,7 +52,7 @@ export default function Footer() {
   };
 
   useEffect(() => {
-    fetchSettings();
+    //fetchSettings();
     fetchDeliverySettings();
   }, []);
 

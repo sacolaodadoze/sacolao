@@ -22,7 +22,7 @@ class StoreController extends Controller
 
     public function settings()
     {
-        $settings = Setting::all();
+        $settings = Setting::first();
         return response()->json($settings);
     }
 
@@ -115,8 +115,7 @@ class StoreController extends Controller
             // 'rate_id' => 'nullable|exists:rates,id',
             'delivery_date' => 'nullable|date|required_if:scheduled,true',
             'delivery_hour' => 'nullable|date_format:H:i|required_if:scheduled,true',
-            //'order_id' => 'nullable|exists:orders,id',
-            // 'observations' => 'nullable|string',
+            //'order_id' => 'nullable|exists:orders,id',          
             'details' => 'nullable|string',
             //'customerChanged' => 'required|boolean',
             'phone' => 'required|string',

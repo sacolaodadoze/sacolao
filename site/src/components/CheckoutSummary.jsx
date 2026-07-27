@@ -3,13 +3,17 @@ import { useFormContext } from "react-hook-form";
 import { useContext } from "react";
 
 import { useCart } from "../context/CartContext.jsx";
-import { calculateEstimatedDelivery,CalculateScheduleDelivery } from "../utils/deliveryUtils";
+import {
+  calculateEstimatedDelivery,
+  CalculateScheduleDelivery,
+} from "../utils/deliveryUtils";
 import { SettingsContext } from "../context/SettingsContext.jsx";
 import { useDeliverySlots } from "../hooks/useDeliverySlots";
 
 export function CheckoutSummary() {
   const settings = useContext(SettingsContext);
-   const { settingsDelivery } = useDeliverySlots();
+  const { settingsDelivery } = useDeliverySlots();
+ // console.log("Sumary",settingsDelivery);
 
   const {
     watch,
@@ -119,16 +123,18 @@ export function CheckoutSummary() {
           {" "}
           {/*  Até as: */}
           {scheduled ? (
-            <strong>
-              {" "}
-              {new Date(
-                    deliveryDate + "T00:00:00",
-                  ).toLocaleDateString("pt-BR", {
-                    weekday: "long",
-                    day: "2-digit",
-                    month: "2-digit",
-                  })} até às {CalculateScheduleDelivery(deliveryHour,settingsDelivery)}
-            </strong>
+            deliveryDate && deliveryHour ? (
+              <strong>               
+                {CalculateScheduleDelivery(
+                  deliveryHour,
+                  deliveryDate,
+                  settingsDelivery,
+                  settings.is_closed,
+                )}
+              </strong>
+            ) : (
+              <strong></strong>
+            )
           ) : (
             <strong>{calculateEstimatedDelivery(settings)}</strong>
           )}

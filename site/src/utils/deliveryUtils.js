@@ -2,7 +2,8 @@ export function calculateEstimatedDelivery(settings) {
   if (!settings || !settings.delivery_time) return null;
 
   const now = new Date();
-  now.setHours(12, 0, 0, 0);
+
+  // now.setHours(12, 0, 0, 0); //Probar las horas de delivery pasadolas manual
 
   const nowMins = now.getHours() * 60 + now.getMinutes();
   const deliveryTime = parseInt(settings.delivery_time.split(":")[0], 10);
@@ -26,6 +27,11 @@ export function calculateEstimatedDelivery(settings) {
 
   let openMorning, closeMorning, openAfternoon, closeAfternoon;
 
+  if (settings.is_closed) {
+    openMorning = toMins(settings.weekday_open_morning);
+    return `Amanhã até as ${toTime(openMorning + deliveryTime)}`;
+  }
+
   if (isSaturday) {
     openMorning = toMins(settings.saturday_open);
     closeMorning = toMins(settings.saturday_close);
@@ -45,7 +51,9 @@ export function calculateEstimatedDelivery(settings) {
 
   // 1. antes de la apertura de mañana → apertura mañana + delivery_time
   if (openMorning && nowMins < openMorning) {
-    return toTime(openMorning + deliveryTime);
+    return toTime(
+      `Fechado por hoje amanhã até as ${toTime(openMorning + deliveryTime)}`,
+    );
   }
 
   // 2. dentro del horario de mañana → hora actual + delivery_time
@@ -70,7 +78,7 @@ export function calculateEstimatedDelivery(settings) {
     nowMins >= closeMorning &&
     nowMins < openAfternoon
   ) {
-    return toTime(openAfternoon + deliveryTime);
+    return `Até as ${toTime(openAfternoon + deliveryTime)}`;
   }
 
   // 4. dentro del horario de tarde → hora actual + delivery_time
@@ -87,7 +95,7 @@ export function calculateEstimatedDelivery(settings) {
         : null;
     } // pasa el cierre
 
-    return toTime(estimated);
+    return `Até as ${toTime(estimated)}`;
     //return toTime(openMorning + deliveryTime);
   }
   // 5. después del cierre de tarde (o después del cierre único) → mañana apertura + delivery_time
@@ -98,14 +106,36 @@ export function calculateEstimatedDelivery(settings) {
   return null;
 }
 
-  // hora de inicio elegida + delivery_window_minutes = hora estimada fin
-export function CalculateScheduleDelivery(deliveryHour,settingsDelivery) { 
-  const [h, m] = deliveryHour.split(":").map(Number);
+// hora de inicio elegida + delivery_window_minutes = hora estimada fin
+export function CalculateScheduleDelivery(
+  deliveryHour,
+  deliveryDate,
+  settingsDelivery,
+  isClosed,
+) {
+  const now = new Date();
 
-  const endMins = h * 60 + m + settingsDelivery.delivery_window_minutes;
+  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+
+  if (isClosed && deliveryDate === today) {
+    return "Fechado hoje";
+  }
+
+  const dateText = new Date(deliveryDate + "T00:00:00").toLocaleDateString(
+    "pt-BR",
+    {
+      weekday: "long",
+      day: "2-digit",
+      month: "2-digit",
+    },
+  );
+
+  const [h, m] = deliveryHour.split(":").map(Number);
+  const deliveryWindow = Number(settingsDelivery.delivery_window_minutes);  
+  const endMins = h * 60 + m + deliveryWindow;
 
   const eh = String(Math.floor(endMins / 60)).padStart(2, "0");
   const em = String(endMins % 60).padStart(2, "0");
-  console.log(eh , em);
-  return `${eh}:${em}`;
+
+  return `Até às ${eh}:${em}`;
 }

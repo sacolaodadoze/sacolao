@@ -143,6 +143,7 @@ export default function Checkout() {
       if (data.scheduled) {
         const estimatedAt = CalculateScheduleDelivery(
           data.delivery_hour,
+          data.delivery_date,
           settingsDelivery,
         );
 
@@ -150,9 +151,10 @@ export default function Checkout() {
           scheduled: true,
           date: data.delivery_date,
           hourStart: data.delivery_hour,
-          hourEnd: estimatedAt /*  `${eh}:${em}`, */,
+          hourEnd: estimatedAt ,
         };
       }
+      
       clearCart();
 
       navigate("/order-confirmation", {

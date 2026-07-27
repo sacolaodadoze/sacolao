@@ -20,89 +20,6 @@ import { useDeliverySlots } from "../hooks/useDeliverySlots";
 import { Switch, MenuItem, Select, InputLabel } from "@mui/material";
 import { apiFetch } from "../api/apiFetch";
 
-/* function ScheduleSection({ control, errors }) {
-  const { availableDates, slotsByDate, isLoading } = useDeliverySlots();
-
-  const scheduled    = useWatch({ control, name: "scheduled" });
-  const selectedDate = useWatch({ control, name: "delivery_date" });
-
-  return (
-    <Paper sx={{ p: 3, borderRadius: 3, mb: 3 }}>
-      <Typography variant="h5" fontWeight={700} mb={2}>
-        📅 Agendamento
-      </Typography>
-
-      {/* toggle conectado al form 
-      <Controller
-        name="scheduled"
-        control={control}
-        render={({ field }) => (
-          <FormControlLabel
-            control={
-              <Switch
-                checked={!!field.value}
-                onChange={(e) => {
-                  field.onChange(e.target.checked);
-                }}
-              />
-            }
-            label="Quero agendar meu pedido"
-          />
-        )}
-      />
-
-      {scheduled && !isLoading && (
-        <Grid container spacing={2} mt={1}>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Controller
-              name="delivery_date"
-              control={control}
-              render={({ field }) => (
-                <FormControl fullWidth error={!!errors.delivery_date}>
-                  <InputLabel>Data</InputLabel>
-                  <Select {...field} label="Data" value={field.value ?? ""}>
-                    {availableDates.map(({ date, dateKey }) => (
-                      <MenuItem key={dateKey} value={dateKey}>
-                        {date.toLocaleDateString("pt-BR", {
-                          weekday: "long",
-                          day:     "2-digit",
-                          month:   "2-digit",
-                        })}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                  <FormHelperText>{errors.delivery_date?.message}</FormHelperText>
-                </FormControl>
-              )}
-            />
-          </Grid>
-
-          {selectedDate && slotsByDate[selectedDate] && (
-            <Grid size={{ xs: 12, md: 6 }}>
-              <Controller
-                name="delivery_hour"
-                control={control}
-                render={({ field }) => (
-                  <FormControl fullWidth error={!!errors.delivery_hour}>
-                    <InputLabel>Horário</InputLabel>
-                    <Select {...field} label="Horário" value={field.value ?? ""}>
-                      {slotsByDate[selectedDate].map((slot) => (
-                        <MenuItem key={slot.value} value={slot.value}>
-                          {slot.label}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                    <FormHelperText>{errors.delivery_hour?.message}</FormHelperText>
-                  </FormControl>
-                )}
-              />
-            </Grid>
-          )}
-        </Grid>
-      )}
-    </Paper>
-  );
-} */
 function ScheduleSection() {
   const {
     control,
@@ -118,7 +35,8 @@ function ScheduleSection() {
   const deliveryDate = useWatch({ control, name: "delivery_date" });
   const deliveryHour = useWatch({ control, name: "delivery_hour" });
 
-  return (
+
+   return (
     <Paper sx={{ p: 3, borderRadius: 3, mb: 3 }}>
       <Typography variant="h5" fontWeight={700} mb={2}>
         📅 Agendamento
