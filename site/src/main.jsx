@@ -3,22 +3,22 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App.jsx";
 import { SettingsProvider } from "./context/SettingsContext.jsx";
-import {CartProvider} from "./context/CartContext.jsx";
-import { AuthProvider } from "./context/AuthContext.jsx"
+import { CartProvider } from "./context/CartContext.jsx";
+import { AuthProvider } from "./context/AuthContext.jsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const queryClient = new QueryClient();
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <SettingsProvider>
-      <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={queryClient}>
+      <SettingsProvider>
         <AuthProvider>
-      <CartProvider>
-        <App />
-      </CartProvider>
-      </AuthProvider>
-      </QueryClientProvider>
-    </SettingsProvider>
+          <CartProvider>
+            <App />
+          </CartProvider>
+        </AuthProvider>
+      </SettingsProvider>
+    </QueryClientProvider>
   </StrictMode>,
 );

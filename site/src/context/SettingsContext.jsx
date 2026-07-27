@@ -1,31 +1,49 @@
 import { apiFetch } from "../api/apiFetch.js";
-import { createContext, useState, useEffect } from "react";
+import { createContext } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { Loader } from "../components/Loader.jsx";
 
 export const SettingsContext = createContext();
-
-export function SettingsProvider({ children }) {
-  const [settings, setSettings] = useState(null);
-
-  useEffect(() => {
+/*useEffect(() => {
     const loadSettings = async () => {     
       try {
         const res = await apiFetch("/api/store/settings");
         const data = await res.json();
        // console.log(data);
         if (data) {
-          setSettings(data[0]);
+          setSettings(data);
         }
       } catch (error) {
         console.error(error);
       } finally {
        
       }
-    };
+    }/* ;
     loadSettings();
-  }, []);
+  }, []); */
 
+const fetchSettings = async () => {
+  const res = await apiFetch("/api/store/settings");
+  const data = await res.json();
+
+  return data;
+};
+
+export function SettingsProvider({ children }) {
+  const {
+    data: settings,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["store-settings"],
+    queryFn: fetchSettings,
+    staleTime: Infinity,
+  });
+  if (isLoading) {
+    return <Loader />;
+  }
   return (
-    <SettingsContext.Provider value={settings}>
+    <SettingsContext.Provider value={{ settings, isLoading, error }}>
       {children}
     </SettingsContext.Provider>
   );

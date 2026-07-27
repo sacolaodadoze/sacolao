@@ -1,4 +1,4 @@
-import React, { useEffect, useState,useContext } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { Link } from "react-router-dom";
 import "./Footer.css";
 import {
@@ -15,26 +15,9 @@ import { apiFetch } from "../api/apiFetch.js";
 import { SettingsContext } from "../context/SettingsContext.jsx";
 
 export default function Footer() {
-    const settings = useContext(SettingsContext);
-  //const [settings, setSettings] = useState([]);
-  const [deliverySettings, setDeliverySettings] = useState([]);
-  //const [loading, setLoading] = useState(false);
-
-/*   const fetchSettings = async () => {
-    //setLoading(true);
-    try {
-      const res = await apiFetch("/api/store/settings");
-      const data = await res.json();
-
-      if (data) {
-        setSettings(data);
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      //setLoading(false);
-    }
-  }; */
+  const settings = useContext(SettingsContext);
+  
+  const [deliverySettings, setDeliverySettings] = useState([]); 
 
   const fetchDeliverySettings = async () => {
     try {
