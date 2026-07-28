@@ -1,12 +1,13 @@
 import "./ProductCard.css";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { Chip } from "@mui/material";
 import { useCart } from "../context/CartContext.jsx";
+import { ProductModal } from "./ProductModal";
 
 export function ProductCard({ product }) {
+  const [openModal, setOpenModal] = useState(false);
+
   const { cartItems, addToCart, updateQuantity } = useCart();
-  // const cartContext = useCart();
-  //const { cartItems, addToCart, updateQuantity } = cartContext;
 
   const cartItem = cartItems.find((item) => item.id === product.id);
   const quantity = cartItem?.quantity ?? 0;
@@ -16,7 +17,7 @@ export function ProductCard({ product }) {
   return (
     <section /* className="component-section" */>
       {/*  <h2 className="section-title">{product.name}</h2>  */}
-      <div className="product-card">
+      <div className="product-card" onClick={()=>setOpenModal(true)}>
         {/*   {product.new_product && <span className="benefit-tag">+ Vendido</span>} */}
 
         {product.new_product && (
@@ -39,7 +40,7 @@ export function ProductCard({ product }) {
           </span> */}
           {/*  <h3 className="product-title"></h3> */}
           <h3 className="product-title">{product.name}</h3>
-          
+
           <p className="product-description">
             {product.description != null ? product.description : ""}
           </p>
@@ -57,7 +58,10 @@ export function ProductCard({ product }) {
             ) : (
               <button
                 className="btn-add-cart"
-                onClick={() => addToCart(product)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  addToCart(product);
+                }}
               >
                 +
               </button>
@@ -65,6 +69,13 @@ export function ProductCard({ product }) {
           </div>
         </div>
       </div>
+
+       <ProductModal
+        product={product}
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+      />
+    
     </section>
   );
 }

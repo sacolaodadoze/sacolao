@@ -6,6 +6,7 @@ import { ProductCard } from "../components/ProductCard.jsx";
 import { apiFetch } from "../api/apiFetch.js";
 
 import { useQuery } from "@tanstack/react-query";
+import { Loader } from "../components/Loader.jsx";
 
 export function Products({ selectedCategory,selectedParentCategory, headerHeight }) {
   const categoryRefs = useRef({});
@@ -27,7 +28,7 @@ export function Products({ selectedCategory,selectedParentCategory, headerHeight
     staleTime: 1000 * 60 * 15, // considera los datos frescos por 15 minutos
     refetchOnMount: false, //  no refetchea cuando el componente se monta si los datos están frescos
   });
-
+//console.log(products)
     // filtrar productos si hay categoría padre seleccionada
   const visibleProducts = selectedParentCategory
     ? products.filter((product) =>
@@ -80,7 +81,7 @@ export function Products({ selectedCategory,selectedParentCategory, headerHeight
     return () => clearTimeout(timer);
   }, [selectedCategory, headerHeight]);
 
-  if (isLoading) return <p>Cargando productos...</p>;
+  if (isLoading) return <Loader/>;
   if (isError) return <p>Error al cargar productos</p>;
 
   return (

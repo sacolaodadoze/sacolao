@@ -46,6 +46,7 @@
   transform: translateY(-8px);
   box-shadow: 0 20px 40px rgba(21, 128, 61, 0.1);
   border-color: var(--primary-light);
+  cursor: pointer;
 }
 
 .product-image-container {

@@ -1,0 +1,24 @@
+.product-title {
+  color: var(--title-card);
+  font-weight: 700;
+  /*  margin-bottom: 0.5; */
+  /*  font-size: 0.91rem;
+  font-weight: 600;
+
+  line-height: 1.05;
+  margin: 0;
+  padding: 0;
+
+  overflow: hidden;
+  display: -webkit-box;
+
+  -webkit-box-orient: vertical;
+
+  min-height: calc(1.05em * 2); */
+}
+
+.product-price {
+  color: var(--title-card);
+  font-weight: 700;
+  
+}

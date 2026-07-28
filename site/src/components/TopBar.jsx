@@ -19,7 +19,7 @@ export default function TopBar() {
 
       <div className="topbar-item">
         <span className="topbar-emoji">🛒</span>
-        <span>fre{settings.free_rate}</span>
+        <span>{settings.free_rate}</span>
       </div>
 
       {/*  <div className="topbar-item">
