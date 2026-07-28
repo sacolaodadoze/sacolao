@@ -28,15 +28,13 @@ function ScheduleSection() {
     setError,
     clearErrors,
   } = useFormContext();
-  const { isValidHour, availableDates, slotsByDate } =
-    useDeliverySlots();
+  const { isValidHour, availableDates, slotsByDate } = useDeliverySlots();
 
   const scheduled = useWatch({ control, name: "scheduled" });
   const deliveryDate = useWatch({ control, name: "delivery_date" });
   const deliveryHour = useWatch({ control, name: "delivery_hour" });
 
-
-   return (
+  return (
     <Paper sx={{ p: 3, borderRadius: 3, mb: 3 }}>
       <Typography variant="h5" fontWeight={700} mb={2}>
         📅 Agendamento
@@ -158,7 +156,6 @@ export function CheckoutForm({ paymentTypes }) {
     multiline = false,
     rows = 1,
     required = false,
-
     xs = 12,
     md = 6,
   }) => (
@@ -188,7 +185,7 @@ export function CheckoutForm({ paymentTypes }) {
     <>
       {/* Datos del cliente */}
       <Paper sx={{ p: 3, borderRadius: 3, mb: 3 }}>
-        <Typography variant="h5" fontWeight={700} mb={3}>
+        <Typography variant="h5" fontWeight={700} sx={{ mb: 2 }} p>
           👤 Dados do Cliente
         </Typography>
 
@@ -429,14 +426,6 @@ export function CheckoutForm({ paymentTypes }) {
             />
           )}
         />
-
-        {/*  <TextField
-          name: "state",
-          fullWidth
-          multiline
-          rows={4}
-          placeholder="Alguma observação sobre seu pedido..."
-        /> */}
       </Paper>
     </>
   );

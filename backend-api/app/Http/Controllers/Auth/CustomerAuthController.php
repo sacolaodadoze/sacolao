@@ -17,15 +17,15 @@ class CustomerAuthController extends Controller
             'email'    => 'required|email',
             'password' => 'required',
         ]);
-
+    
         $customer = Customer::where('email', $request->email)->with(['addresses', 'phones'])->first();
-
+       
         if (!$customer || !Hash::check($request->password, $customer->password)) {
             return response()->json(['message' => 'Credenciales incorrectas'], 401);
         }
 
         $token = $customer->createToken('customer_token')->plainTextToken;
-
+     
         return response()->json([
             'token'    => $token,
             'customer' => $customer,
@@ -74,7 +74,7 @@ class CustomerAuthController extends Controller
         if ($request->phone) {
             Phone::updateOrCreate(
                 ['customer_id' => $customer->id, 'type' => 1],
-                ['number'      => $request->phone]                
+                ['number'      => $request->phone]
             );
         }
 

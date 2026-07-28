@@ -176,6 +176,7 @@ export function useDeliverySlots() {
 }, [settings]); */
 
   const slotsByDate = useMemo(() => {
+    //console.log("Hook",settings)
     if (!settings) return {};
 
     const result = {};

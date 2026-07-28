@@ -1,4 +1,4 @@
-import { Paper, Typography, Divider, Box, Button } from "@mui/material";
+import { Paper, Typography, Divider, Box, Button, Alert } from "@mui/material";
 import { useFormContext } from "react-hook-form";
 import { useContext } from "react";
 
@@ -10,13 +10,15 @@ import {
 import { SettingsContext } from "../context/SettingsContext.jsx";
 import { useDeliverySlots } from "../hooks/useDeliverySlots";
 
-export function CheckoutSummary() {
-  const settings = useContext(SettingsContext);
+export function CheckoutSummary({ checkoutError }) {
+  const { settings } = useContext(SettingsContext);
+  //console.log( settings.is_closed,checkoutError);
   const { settingsDelivery } = useDeliverySlots();
- // console.log("Sumary",settingsDelivery);
+  // console.log("Sumary",settingsDelivery);
 
   const {
     watch,
+    setValue,
     formState: { isSubmitting },
   } = useFormContext();
 
@@ -36,6 +38,17 @@ export function CheckoutSummary() {
   const scheduled = watch("scheduled");
   const deliveryDate = watch("delivery_date");
   const deliveryHour = watch("delivery_hour");
+
+  const prevision = checkoutError
+    ? ""
+    : scheduled && deliveryDate && deliveryHour
+      ? CalculateScheduleDelivery(
+          deliveryHour,
+          deliveryDate,
+          settingsDelivery,
+          settings.is_closed,
+        )
+      : calculateEstimatedDelivery(settings);
 
   return (
     <Paper
@@ -121,10 +134,10 @@ export function CheckoutSummary() {
         <Typography color="text.secondary"> Previsão de entrega: </Typography>
         <Typography>
           {" "}
-          {/*  Até as: */}
-          {scheduled ? (
+          <strong>{prevision}</strong>
+          {/*   {scheduled ? (
             deliveryDate && deliveryHour ? (
-              <strong>               
+              <strong>
                 {CalculateScheduleDelivery(
                   deliveryHour,
                   deliveryDate,
@@ -132,14 +145,20 @@ export function CheckoutSummary() {
                   settings.is_closed,
                 )}
               </strong>
-            ) : (
-              <strong></strong>
-            )
+            ) : ( */}
+          {/*     <strong></strong>
+           )
           ) : (
-            <strong>{calculateEstimatedDelivery(settings)}</strong>
-          )}
+            <strong>{calculateEstimatedDelivery(settings)}</strong> 
+          )} */}
         </Typography>
       </Box>
+
+      {checkoutError && (
+        <Alert severity="warning" sx={{ mb: 2 }}>
+          {checkoutError}
+        </Alert>
+      )}
 
       <Button
         type="submit"

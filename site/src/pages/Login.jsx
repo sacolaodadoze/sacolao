@@ -32,7 +32,7 @@ export default function Login() {
       });
 
       const json = await res.json();
-
+     
       if (!res.ok) {
         setError("root", { message: json.message ?? "Credenciales incorrectas" });
         return;

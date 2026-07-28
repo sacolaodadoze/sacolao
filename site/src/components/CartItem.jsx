@@ -8,7 +8,7 @@ import {
   Stack,
   Badge,
   Drawer,
-  Tooltip
+  Tooltip,
 } from "@mui/material";
 //import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import DeleteOutlineIcon from "@mui/icons-material/Delete";
@@ -23,31 +23,38 @@ export default function CartItem({ item, checkout = false }) {
     <Box
       sx={{
         display: "flex",
-        gap: 2,
-        py: 2,
+        gap: 1,
+        py: 0.8,
         alignItems: "flex-start",
       }}
     >
       {/* Imagen */}
       <Tooltip
-        title="jgfkj"/* {item.name || ""} */
+        title={item.name || ""}
         arrow
+        slotProps={{
+          popper: {
+            sx: {
+              zIndex: (theme) => theme.zIndex.drawer + 99999999,
+            },
+          },
+        }}
       >
         <Box
           component="img"
           src={item.image || "/images/no-image.png"}
-        /*   alt={item.name} */
+          /*   alt={item.name} */
           sx={{
             /*  width: 72,
           height: 90, */
-            width: checkout ? 90 : 72,
-            height: checkout ? 90 : 70,
+            width: checkout ? 70 : 62,
+            height: checkout ? 70 : 60,
             objectFit: "cover",
             borderRadius: 1,
             flexShrink: 0,
           }}
         />
-        </Tooltip>
+      </Tooltip>
       {/* Info */}
       <Box sx={{ flex: 1, minWidth: 0 }}>
         <Typography
@@ -66,7 +73,6 @@ export default function CartItem({ item, checkout = false }) {
         >
           {item.variant}
         </Typography>
-      
 
         {/* Qty controls */}
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>

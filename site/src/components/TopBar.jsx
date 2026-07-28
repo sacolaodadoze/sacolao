@@ -4,8 +4,8 @@ import SupportAgentIcon from "@mui/icons-material/SupportAgent"; */
 import { useContext } from "react";
 import { SettingsContext } from "../context/SettingsContext";
 import "./TopBar.css";
-export default function TopBar(/* {settings} */) {
-  const settings = useContext(SettingsContext);
+export default function TopBar() {
+  const {settings} = useContext(SettingsContext);
  // console.log(settings);
   if (!settings) return null;
   return (

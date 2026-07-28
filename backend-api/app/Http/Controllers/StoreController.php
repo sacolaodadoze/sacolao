@@ -99,7 +99,7 @@ class StoreController extends Controller
 
     public function storeOrder(Request $request, Order $order)
     {
-/*   dd([
+        /*   dd([
     'web' => Auth::guard('web')->check(),
     'customer' => Auth::guard('customer')->check(),
     'user' => Auth::guard('web')->user(),
@@ -107,7 +107,7 @@ class StoreController extends Controller
 ]); */
         $rules = [
             //'id' => 'nullable|numeric',
-          //  'customer_id' => 'required|exists:customers,id',
+            //  'customer_id' => 'required|exists:customers,id',
             'items' => 'required|string',
             'payment_types_id' => 'required|exists:payment_types,id',
             'pickup' => 'nullable|boolean',
@@ -119,6 +119,7 @@ class StoreController extends Controller
             'details' => 'nullable|string',
             //'customerChanged' => 'required|boolean',
             'phone' => 'required|string',
+            'phoneS' => 'nullable|string',
             'street'      => 'required_unless:pickup,true|string',
             'cep'      => 'nullable|string',
             'number' => 'nullable|string',
@@ -129,11 +130,20 @@ class StoreController extends Controller
         ];
 
         $data = $request->validate($rules);
-        //dd($data);
 
         $customer = $request->user();
-       // dd($customer);
 
+        $settings =  Setting::first();
+        //dd($settings->is_closed,$request->delivery_date);
+        // Pedido para hoy
+        if (
+            ($settings->is_closed &&  $request->delivery_date === now()->toDateString()) || ($settings->is_closed &&  $request->delivery_date === null)
+
+        ) {
+            return response()->json([
+                'message' => 'Não é possível realizar entregas para hoje.'
+            ], 422);
+        }
 
         $order = DB::transaction(function () use ($data, $customer) {
 
@@ -143,6 +153,15 @@ class StoreController extends Controller
                 ['customer_id' => $customer->id, 'type' => 1],
                 ['number'      => $data['phone']]
             );
+
+            if (!empty($data['phoneS'])) {
+                Phone::updateOrCreate(
+                    ['customer_id' => $customer->id, 'type' => 2],
+                    ['number' => $data['phoneS']]
+                );
+            }
+
+
             if (empty($data['pickup'])) {
                 Address::updateOrCreate(
                     ['customer_id' => $customer->id, 'is_primary' => 1],
@@ -157,42 +176,6 @@ class StoreController extends Controller
                     ]
                 );
             }
-            /*    if (($data['customerChanged']) == true) {
-                Phone::updateOrCreate(
-                    ['customer_id' => $data['customer_id']],
-                    [
-                        'number' => $data['phone'] ?? null
-                    ]
-                ); */
-
-            //Address::updateOrCreate(
-            /*      Address::created(
-                   
-                    [
-                        'cep' => $data['cep'],
-                        'street' => $data['street'],
-                        'number' => $data['number'],
-                        'neighborhood' => $data['neighborhood'],
-                        'complement' => $data['complement'],
-                        'city' => $data['city'],
-                        'state' => $data['state'],
-                    ]
-                ); */
-            // }
-
-            //  Observaçoes del cliente
-            //  if (!empty($data['observations'])) {
-            /* Observation::updateOrCreate(
-                    ['customer_id' => $data['customer_id']],
-                    [
-                        'content' => $data['observations'],
-                    ]
-                ); */
-            /*   Observation::created([
-                     'content' => $data['observations']
-                ]);
-            } */
-
 
             //Dados do pedido
             $orderData = [

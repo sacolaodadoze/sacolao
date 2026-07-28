@@ -4,8 +4,7 @@ import CartItem from "./CartItem.jsx";
 
 export  function CheckoutProducts() {
   const { cartItems } = useCart();
-  //console.log(cartItems);
-
+  
   return (
     <Paper
       sx={{

@@ -1,4 +1,5 @@
 export function calculateEstimatedDelivery(settings) {
+  
   if (!settings || !settings.delivery_time) return null;
 
   const now = new Date();
@@ -7,7 +8,6 @@ export function calculateEstimatedDelivery(settings) {
 
   const nowMins = now.getHours() * 60 + now.getMinutes();
   const deliveryTime = parseInt(settings.delivery_time.split(":")[0], 10);
-  // console.log("Delivery time",deliveryTime);
 
   const toTime = (mins) => {
     const hh = String(Math.floor(mins / 60)).padStart(2, "0");
@@ -118,7 +118,7 @@ export function CalculateScheduleDelivery(
   const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 
   if (isClosed && deliveryDate === today) {
-    return "Fechado hoje";
+    return "Não é possível realizar entregas para hoje";
   }
 
   const dateText = new Date(deliveryDate + "T00:00:00").toLocaleDateString(
@@ -131,7 +131,7 @@ export function CalculateScheduleDelivery(
   );
 
   const [h, m] = deliveryHour.split(":").map(Number);
-  const deliveryWindow = Number(settingsDelivery.delivery_window_minutes);  
+  const deliveryWindow = Number(settingsDelivery.delivery_window_minutes);
   const endMins = h * 60 + m + deliveryWindow;
 
   const eh = String(Math.floor(endMins / 60)).padStart(2, "0");

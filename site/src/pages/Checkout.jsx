@@ -10,6 +10,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { SettingsContext } from "../context/SettingsContext.jsx";
 import { useDeliverySlots } from "../hooks/useDeliverySlots";
 import logo from "../../../front-end/src/assets/img/logo.png";
+//import Swal from "sweetalert2";
+//import { LANG } from "../constants/languages.js";
 
 import { apiFetch } from "../api/apiFetch.js";
 
@@ -24,14 +26,18 @@ import {
 
 export default function Checkout() {
   const { customer } = useAuth();
+  
   const navigate = useNavigate();
   const primaryAddress = customer?.addresses?.find((a) => a.is_primary === 1);
   const primaryPhone = customer?.phones?.find((p) => p.type === 1);
+  const secundaryPhone = customer?.phones?.find((p) => p.type === 2);
 
   const { cartItems, clearCart } = useCart();
   const [paymentTypes, setPaymentTypes] = useState([]);
   const settings = useContext(SettingsContext);
   const { settingsDelivery } = useDeliverySlots();
+
+  const [checkoutError, setCheckoutError] = useState("");
 
   const loadPaymentTypes = () => {
     apiFetch("/api/store/payments")
@@ -59,9 +65,9 @@ export default function Checkout() {
     mode: "onBlur",
     defaultValues: {
       items: "",
-      name: "",
-      phoneP: "",
-      phoneS: "",
+      // name: "",
+      // phone: "",
+     // phoneS: "",
       deliveryType: "delivery",
       paid: false,
 
@@ -75,6 +81,7 @@ export default function Checkout() {
       state: "", */
       name: customer?.name ?? "",
       phone: primaryPhone?.number ?? "",
+      phoneS: secundaryPhone?.number ?? "",
       street: primaryAddress?.street ?? "",
       number: primaryAddress?.number ?? "",
       neighborhood: primaryAddress?.neighborhood ?? "",
@@ -124,6 +131,7 @@ export default function Checkout() {
 
       if (!res.ok) {
         const errorData = await res.json();
+        console.log(errorData.message);
         throw new Error(errorData.message || "Erro ao criar pedido");
       }
 
@@ -151,10 +159,10 @@ export default function Checkout() {
           scheduled: true,
           date: data.delivery_date,
           hourStart: data.delivery_hour,
-          hourEnd: estimatedAt ,
+          hourEnd: estimatedAt,
         };
       }
-      
+
       clearCart();
 
       navigate("/order-confirmation", {
@@ -162,6 +170,7 @@ export default function Checkout() {
       });
     } catch (error) {
       console.error(error);
+      setCheckoutError(error.message);
     }
   };
 
@@ -241,7 +250,7 @@ export default function Checkout() {
               </Grid>
 
               <Grid size={{ xs: 12, md: 5 }}>
-                <CheckoutSummary />
+                <CheckoutSummary checkoutError={checkoutError} />
               </Grid>
             </Grid>
           </form>
