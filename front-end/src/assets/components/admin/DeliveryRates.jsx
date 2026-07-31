@@ -33,6 +33,7 @@ export function DeliveryRatesForm() {
           max_distance: 1.5,
           minimum_order: 60,
           delivery_fee: 0,
+          delivery_fee_after_minimum:0,
         },
       ],
     },
@@ -119,6 +120,7 @@ export function DeliveryRatesForm() {
               max_distance: "",
               minimum_order: 0,
               delivery_fee: 0,
+              delivery_fee_after_minimum:0,
             })
           }
         >
@@ -148,7 +150,7 @@ export function DeliveryRatesForm() {
                 sx={{
                   width: {
                     xs: "100%",
-                    md: "calc(25% - 8px)",
+                    md: "calc(15% - 8px)",
                   },
                 }}
               >
@@ -172,7 +174,7 @@ export function DeliveryRatesForm() {
                 sx={{
                   width: {
                     xs: "100%",
-                    md: "calc(25% - 8px)",
+                    md: "calc(15% - 8px)",
                   },
                 }}
               >
@@ -196,7 +198,7 @@ export function DeliveryRatesForm() {
                 sx={{
                   width: {
                     xs: "100%",
-                    md: "calc(25% - 8px)",
+                    md: "calc(20% - 8px)",
                   },
                 }}
               >
@@ -214,7 +216,7 @@ export function DeliveryRatesForm() {
                 />
               </Box>
 
-              {/* TAXA */}
+              {/* TAXA  SI NO LLEGA AL PEDIDO MIN*/}
 
               <Box
                 sx={{
@@ -230,7 +232,30 @@ export function DeliveryRatesForm() {
                   render={({ field }) => (
                     <TextField
                       {...field}
-                      label={LANG.RATES.TAXA}
+                      label={LANG.RATES.TAXAMIN}
+                      type="number"
+                      fullWidth
+                    />
+                  )}
+                />
+              </Box>
+
+              {/* TAXA */}
+              <Box
+                sx={{
+                  width: {
+                    xs: "100%",
+                    md: "calc(20% - 8px)",
+                  },
+                }}
+              >
+                <Controller
+                  name={`rates.${index}.delivery_fee_after_minimum`}
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label={LANG.RATES.TAXAAFTERMIN}
                       type="number"
                       fullWidth
                     />

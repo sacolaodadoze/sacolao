@@ -52,6 +52,7 @@ class DeliveryRateController extends Controller
                 'max_distance' => $rate['max_distance'],
                 'minimum_order' => $rate['minimum_order'],
                 'delivery_fee' => $rate['delivery_fee'],
+                'delivery_fee_after_minimum'=>$rate['delivery_fee_after_minimum'],
             ]);
         }
 

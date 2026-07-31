@@ -13,7 +13,7 @@ import RemoveIcon from "@mui/icons-material/Remove";
 import { useCart } from "../context/CartContext";
 
 export function ProductModal({ product, open, onClose }) {
-    console.log(product);
+  // console.log(product);
   const { cartItems, addToCart, updateQuantity } = useCart();
 
   if (!product) return null;
@@ -64,7 +64,9 @@ export function ProductModal({ product, open, onClose }) {
         />
       </Box>
 
-      <DialogContent sx={{ overflowY: "auto" }}> {/* scroll si el contenido es largo */}
+      <DialogContent sx={{ overflowY: "auto" }}>
+        {" "}
+        {/* scroll si el contenido es largo */}
         {/* chips */}
         <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mb: 1 }}>
           {product.featured && <Chip size="small" label="⭐ Destaque" />}
@@ -81,12 +83,10 @@ export function ProductModal({ product, open, onClose }) {
             <Chip size="small" color="default" label="Indisponível" />
           )}
         </Box>
-
         {/* nombre */}
         <Typography variant="h5" className="product-title">
           {product.name}
         </Typography>
-
         {/* categoría */}
         {product.category?.name && (
           <Typography
@@ -97,35 +97,34 @@ export function ProductModal({ product, open, onClose }) {
             {product.category.name}
           </Typography>
         )}
-
         <Divider sx={{ my: 2 }} />
-
         {/* precio */}
         <Box sx={{ display: "flex", alignItems: "baseline", gap: 1, mb: 1 }}>
           <Typography variant="h5" className="product-price">
-            R$ {Number(product.price).toFixed(2)}
+            R${" "}
+            {new Intl.NumberFormat("pt-BR", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            }).format(product.price)}
+            {/* {Number(product.price).toFixed(2)} */}
           </Typography>
           <Typography variant="body2" color="text.secondary">
             {product.unit === "KG" ? "/ kg" : "/ unidade"}
           </Typography>
         </Box>
-
         {/* precio por unidad si existe */}
         {product.price_per_unit && (
           <Typography variant="body2" color="text.secondary" mb={1}>
             R$ {Number(product.price_per_unit).toFixed(2)} / unidade
           </Typography>
         )}
-
         {/* descripción */}
         {product.description && (
           <Typography variant="body2" color="text.secondary" mb={2}>
             {product.description}
           </Typography>
         )}
-
         <Divider sx={{ my: 2 }} />
-
         {/* controles */}
         <Box
           sx={{

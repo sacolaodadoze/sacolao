@@ -359,56 +359,10 @@ export function CheckoutForm({ paymentTypes }) {
           sx={{ mt: 2 }}
         /> */}
       </Paper>
-      {/*       <Paper sx={{ p: 3, borderRadius: 3, mb: 3 }}>
-        <Typography variant="h5" fontWeight={700} mb={3}>
-          Agendamento
-        </Typography>
-        <Grid container spacing={2}>
-         
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Controller
-              name="delivery_date"
-              //disabled={!agendado}
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Data" 
-                  type="date"
-                  fullWidth
-                  InputLabelProps={{ shrink: true }} // para que la etiqueta no se superponga
-                  error={!!errors?.delivery_date}
-                  helperText={errors?.delivery_date?.message}
-                />
-              )}
-            />
-          </Grid>
-
-        
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Controller
-              name="delivery_hour"
-              // disabled={!agendado}
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  type="time"
-                  label="Hora" 
-                  fullWidth
-                  InputLabelProps={{ shrink: true }}
-                  error={!!errors?.delivery_hour}
-                  helperText={errors?.delivery_hour?.message}
-                />
-              )}
-            />
-          </Grid>
-        </Grid>
-      </Paper> */}
       <ScheduleSection control={control} errors={errors} />
 
-      {/* Observaciones */}
-      <Paper sx={{ p: 3, borderRadius: 3 }}>
+      {/* Detalhes */}
+      <Paper sx={{ p: 3, borderRadius: 3, mb: 3 }}>
         <Typography variant="h5" fontWeight={700} mb={3}>
           📝 Detalhes
         </Typography>
@@ -424,6 +378,45 @@ export function CheckoutForm({ paymentTypes }) {
               rows={2}
               fullWidth
             />
+          )}
+        />
+      </Paper>
+
+      {/* Substituiciones */}
+      <Paper sx={{ p: 3, borderRadius: 3, mb: 3 }}>
+        <Typography variant="h5" fontWeight={700} mb={3}>
+          Caso algum produto esteja indisponível, como você prefere que
+          procedamos?
+        </Typography>
+
+        <Controller
+          name="substitution_preference"
+          control={control}
+          defaultValue="contact"
+          render={({ field, fieldState }) => (
+            <FormControl error={!!fieldState.error}>
+              <RadioGroup {...field}>
+                <FormControlLabel
+                  value="similar"
+                  control={<Radio />}
+                  label="Substituir por um similar."
+                />
+
+                <FormControlLabel
+                  value="contact"
+                  control={<Radio />}
+                  label="Entrar em contato antes de substituir."
+                />
+
+                <FormControlLabel
+                  value="remove"
+                  control={<Radio />}
+                  label="Remover o produto do pedido."
+                />
+              </RadioGroup>
+
+              <FormHelperText>{fieldState.error?.message}</FormHelperText>
+            </FormControl>
           )}
         />
       </Paper>

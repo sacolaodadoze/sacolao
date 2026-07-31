@@ -1,10 +1,9 @@
 export function calculateEstimatedDelivery(settings) {
-  
   if (!settings || !settings.delivery_time) return null;
 
   const now = new Date();
 
-  // now.setHours(12, 0, 0, 0); //Probar las horas de delivery pasadolas manual
+  //now.setHours(8, 0, 0, 0); //Probar las horas de delivery pasadolas manual
 
   const nowMins = now.getHours() * 60 + now.getMinutes();
   const deliveryTime = parseInt(settings.delivery_time.split(":")[0], 10);
@@ -51,9 +50,8 @@ export function calculateEstimatedDelivery(settings) {
 
   // 1. antes de la apertura de mañana → apertura mañana + delivery_time
   if (openMorning && nowMins < openMorning) {
-    return toTime(
-      `Fechado por hoje amanhã até as ${toTime(openMorning + deliveryTime)}`,
-    );
+    return;
+    `Fechado por hoje amanhã até as ${toTime(openMorning + deliveryTime)}`;
   }
 
   // 2. dentro del horario de mañana → hora actual + delivery_time
@@ -90,9 +88,17 @@ export function calculateEstimatedDelivery(settings) {
   ) {
     const estimated = nowMins + deliveryTime;
     if (estimated > closeAfternoon) {
-      return openMorning
-        ? `Amanhã até as ${toTime(openMorning + deliveryTime)}`
-        : null;
+      /*  console.log("Late");
+      console.log({
+        openMorning,
+        deliveryTime,
+        result: openMorning + deliveryTime,
+        formatted: toTime(openMorning + deliveryTime),
+      }); */
+      //const text = `Amanhã até as ${toTime(openMorning + deliveryTime)}`;
+      //console.log(text);
+
+      return `Amanhã até as ${toTime(openMorning + deliveryTime)}`;
     } // pasa el cierre
 
     return `Até as ${toTime(estimated)}`;

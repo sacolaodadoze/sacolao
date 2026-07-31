@@ -1,6 +1,6 @@
 import "./ProductCard.css";
 import { useContext, useState } from "react";
-import { Chip } from "@mui/material";
+import { Chip, Typography, Box } from "@mui/material";
 import { useCart } from "../context/CartContext.jsx";
 import { ProductModal } from "./ProductModal";
 
@@ -17,19 +17,51 @@ export function ProductCard({ product }) {
   return (
     <section /* className="component-section" */>
       {/*  <h2 className="section-title">{product.name}</h2>  */}
-      <div className="product-card" onClick={()=>setOpenModal(true)}>
+      <div className="product-card" onClick={() => setOpenModal(true)}>
         {/*   {product.new_product && <span className="benefit-tag">+ Vendido</span>} */}
+        {/*  <div className="product-badges"> */}
+        {/*   {product.new_product && (
+            <Chip
+              size="small"
+             
+              className="product-chip"
+              label="🆕 Novidade"
+            />
+          )} */}
 
-        {product.new_product && (
-          <Chip
-            size="small"
-            color="success"
-            className="product-chip"
-            label="🆕"
-          />
+        {product.promotion && (
+          <Box
+            // size="small"
+            className="product-badge"
+            /*  // label="🔥"
+              sx={{
+                boxShadow: "none",
+                border: "none",
+              }} */
+          >
+            🔥Promoção
+          </Box>
         )}
 
-        {/*   <Chip size="small" color="error" label="🔥 Promoção" /> */}
+        {/*   {product.feature && (
+            <div           
+              className="product-badge"             
+            >
+            "Destaque ⭐"
+            </div>
+          )}
+
+          
+          {product.week_offer && (
+            <Chip
+              size="small"
+             
+              className="product-chip"
+              label="Oferta"
+            />
+          )} */}
+        {/* </div> */}
+
         <div className="product-image-container">
           <img src={product.image || "/no-image.png"} />
         </div>
@@ -40,20 +72,43 @@ export function ProductCard({ product }) {
           </span> */}
           {/*  <h3 className="product-title"></h3> */}
           <h3 className="product-title">{product.name}</h3>
+          <Box className="product-tags">
+            {product.featured && <span>⭐ Destaque</span>}
+            {product.featured && product.new_product && <span>•</span>}
+            {product.new_product && <span>🆕 Novidade</span>}
+          </Box>
 
           <p className="product-description">
             {product.description != null ? product.description : ""}
           </p>
 
           <div className="product-price-row">
-            <span className="product-price">R$ {product.price}</span>
+            <span className="product-price">
+              R${" "}
+              {new Intl.NumberFormat("pt-BR", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              }).format(product.price)}
+            </span>
             {quantity > 0 ? (
               <div className="qty-controls">
-                <button onClick={() => updateQuantity(product.id, -1)}>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation;
+                    updateQuantity(product.id, -1);
+                  }}
+                >
                   -
                 </button>
                 <span>{quantity}</span>
-                <button onClick={() => updateQuantity(product.id, 1)}>+</button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation;
+                    updateQuantity(product.id, 1);
+                  }}
+                >
+                  +
+                </button>
               </div>
             ) : (
               <button
@@ -70,12 +125,11 @@ export function ProductCard({ product }) {
         </div>
       </div>
 
-       <ProductModal
+      <ProductModal
         product={product}
         open={openModal}
         onClose={() => setOpenModal(false)}
       />
-    
     </section>
   );
 }

@@ -101,7 +101,7 @@ export function CheckoutSummary({ checkoutError }) {
         }}
       >
         <Typography color="text.secondary">Entrega</Typography>
-        <Typography>R$ {delivery.toFixed(2)}</Typography>
+        <Typography>{/* R$ {delivery.toFixed(2)} */}</Typography>
       </Box>
 
       <Divider sx={{ mb: 2 }} />

@@ -24,6 +24,7 @@ export default function OrderConfirmation() {
 
   const order = state.order;
   const itemsList = order.items?.split("\n") ?? [];
+  console.log("COnfitmation",order.confirmation);
 
   return (
     <Box sx={{ maxWidth: 700, mx: "auto", mt: 4, px: 2 }}>

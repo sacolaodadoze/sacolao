@@ -127,6 +127,7 @@ class StoreController extends Controller
             'complement' => 'nullable|string',
             'city' => 'required|string',
             'state' => 'required|string',
+            'substitution_preference' => 'required|in:similar,contact,remove',
         ];
 
         $data = $request->validate($rules);
@@ -188,6 +189,7 @@ class StoreController extends Controller
                 'rate_id'         => $data['rate_id'] ?? null,
                 'delivery_date'         => $data['delivery_date'] ?? null,
                 'delivery_hour'         => $data['delivery_hour'] ?? null,
+                'substitution_preference'=>$data['substitution_preference'],
                 'created_by' => 8 //user Site
             ];
 

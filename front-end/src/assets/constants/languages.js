@@ -207,8 +207,12 @@ export const LANG = {
   },
   RATES:{
     TAXA:"Taxa",
+    TAXAMIN:"Taxa (< mínimo)",
+    TAXAAFTERMIN:"Taxa (> mínimo)",
     INITIALDISTANCE:"Distância inicial",
     FINALDISTANCE:"Distância final",
     MINORDER:"Pedido mínimo",
+   
+
   }
 };

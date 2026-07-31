@@ -34,7 +34,7 @@ export default function Checkout() {
 
   const { cartItems, clearCart } = useCart();
   const [paymentTypes, setPaymentTypes] = useState([]);
-  const settings = useContext(SettingsContext);
+  const {settings} = useContext(SettingsContext);
   const { settingsDelivery } = useDeliverySlots();
 
   const [checkoutError, setCheckoutError] = useState("");
@@ -97,6 +97,7 @@ export default function Checkout() {
       delivery_hour: "",
 
       observations: "",
+      substitution_preference:"",
     },
   });
 
@@ -136,11 +137,13 @@ export default function Checkout() {
       }
 
       // respuesta del backend
-      const order = await res.json();
+      const order = await res.json();     
 
       // si no es un pedido agendado
       if (!data.scheduled) {
         const estimatedAt = calculateEstimatedDelivery(settings);
+       
+       // console.log(estimatedAt);
 
         order.confirmation = {
           scheduled: false,
