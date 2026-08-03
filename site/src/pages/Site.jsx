@@ -16,7 +16,7 @@ import { SettingsContext } from "../context/SettingsContext.jsx";
 export default function Site({ children }) {
   const stickyHeaderRef = useRef(null);
   const [headerHeight, setHeaderHeight] = useState(0);
-  const settings = useContext(SettingsContext);
+  const {settings} = useContext(SettingsContext);
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);

@@ -165,6 +165,9 @@ export const LANG = {
     DELIVERYTIME: "Tempo de entrega em minutos",
     FREE_RATE: "Valor mínimo para entrega grátis",
     CLOSED: "Fechado",
+    MORNING_DELIVERY:"Entregas pela manhã",
+    AFTERNOON_DELIVERY:"Entregas pela tarde",
+    PICKUP_TIME:"Tempo de retirada em minutos",
   },
 
   DELIVERYSETTINGS: {

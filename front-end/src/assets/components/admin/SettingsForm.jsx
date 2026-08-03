@@ -72,6 +72,10 @@ export function SettingsForm() {
       free_rate: "",
       is_closed: false,
 
+      delivery_morning: 0,
+      delivery_afternoon: 0,
+      pickup_time: "",
+
       whatsapp_default_message: "",
     },
   });
@@ -82,7 +86,7 @@ export function SettingsForm() {
     const fetchSettings = async () => {
       setLoading(true);
       try {
-        const res = await apiFetch("/api/settings");       
+        const res = await apiFetch("/api/settings");
         const response = await res.json();
         //console.log(response);
         if (response) {
@@ -124,8 +128,9 @@ export function SettingsForm() {
   }, [reset]);
 
   // SAVE
-
+console.log(errors)
   const onSubmit = async (data) => {
+    console.log("entro");
     console.info(data);
     setLoadingSave(true);
 
@@ -185,7 +190,9 @@ export function SettingsForm() {
         {/* NEGÓCIO */}
 
         <Box>
-          <Typography variant="h5"className="page-title">{LANG.SETTINGS.BUSINESS}</Typography>
+          <Typography variant="h5" className="page-title">
+            {LANG.SETTINGS.BUSINESS}
+          </Typography>
 
           <Box
             sx={{
@@ -317,7 +324,22 @@ export function SettingsForm() {
               mt: 2,
             }}
           >
-            {renderTextField("info", LANG.SETTINGS.INFOSEARCH, "text", true, 1)}
+            {renderTextField(
+              "delivery_morning",
+              LANG.SETTINGS.MORNING_DELIVERY,
+              "number",
+            )}
+
+            {renderTextField(
+              "delivery_afternoon",
+              LANG.SETTINGS.AFTERNOON_DELIVERY,
+              "number",
+            )}
+            {renderTextField(
+              "pickup_time",
+              LANG.SETTINGS.PICKUP_TIME,
+             "text"
+            )}
 
             {renderTextField(
               "delivery_time",
@@ -326,6 +348,8 @@ export function SettingsForm() {
               true,
               1,
             )}
+            {renderTextField("info", LANG.SETTINGS.INFOSEARCH, "text", true, 1)}
+
             {renderTextField(
               "free_rate",
               LANG.SETTINGS.FREE_RATE,

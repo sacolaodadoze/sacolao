@@ -8,7 +8,7 @@ export const settingsSchema = z.object({
   address: z.string().min(7, "Endereço obrigatório"),
 
   instagram: z.string().optional(),
-  facebook:z.string().optional().nullable(),
+  facebook: z.string().optional().nullable(),
 
   google_maps_url: z.string().optional(),
   weekday_open_morning: z.string().optional(),
@@ -24,6 +24,10 @@ export const settingsSchema = z.object({
   delivery_time: z.string().optional(),
   free_rate: z.string().optional(),
   is_closed: z.boolean().optional(),
+
+  delivery_morning: z.coerce.number().min(1, "Campo obrigatório"),
+  delivery_afternoon: z.coerce.number().min(1, "Campo obrigatório"),
+  pickup_time: z.string().min(1, "Campo obrigatório"),
 
   whatsapp_default_message: z.string().optional(),
 });

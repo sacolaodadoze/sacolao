@@ -4,7 +4,6 @@ import { Grid, Box, Typography } from "@mui/material";
 
 import { ProductCard } from "../components/ProductCard.jsx";
 import { apiFetch } from "../api/apiFetch.js";
-
 import { useQuery } from "@tanstack/react-query";
 import { Loader } from "../components/Loader.jsx";
 

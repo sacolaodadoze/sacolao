@@ -15,7 +15,7 @@ import { apiFetch } from "../api/apiFetch.js";
 import { SettingsContext } from "../context/SettingsContext.jsx";
 
 export default function Footer() {
-  const settings = useContext(SettingsContext);
+  const {settings} = useContext(SettingsContext);
   
   const [deliverySettings, setDeliverySettings] = useState([]); 
 

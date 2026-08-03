@@ -10,6 +10,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { SettingsContext } from "../context/SettingsContext.jsx";
 import { useDeliverySlots } from "../hooks/useDeliverySlots";
 import logo from "../../../front-end/src/assets/img/logo.png";
+import Footer from "../components/Footer.jsx";
 //import Swal from "sweetalert2";
 //import { LANG } from "../constants/languages.js";
 
@@ -26,7 +27,7 @@ import {
 
 export default function Checkout() {
   const { customer } = useAuth();
-  
+
   const navigate = useNavigate();
   const primaryAddress = customer?.addresses?.find((a) => a.is_primary === 1);
   const primaryPhone = customer?.phones?.find((p) => p.type === 1);
@@ -34,7 +35,7 @@ export default function Checkout() {
 
   const { cartItems, clearCart } = useCart();
   const [paymentTypes, setPaymentTypes] = useState([]);
-  const {settings} = useContext(SettingsContext);
+  const { settings } = useContext(SettingsContext);
   const { settingsDelivery } = useDeliverySlots();
 
   const [checkoutError, setCheckoutError] = useState("");
@@ -67,7 +68,7 @@ export default function Checkout() {
       items: "",
       // name: "",
       // phone: "",
-     // phoneS: "",
+      // phoneS: "",
       deliveryType: "delivery",
       paid: false,
 
@@ -97,7 +98,7 @@ export default function Checkout() {
       delivery_hour: "",
 
       observations: "",
-      substitution_preference:"",
+      substitution_preference: "",
     },
   });
 
@@ -137,13 +138,13 @@ export default function Checkout() {
       }
 
       // respuesta del backend
-      const order = await res.json();     
+      const order = await res.json();
 
       // si no es un pedido agendado
       if (!data.scheduled) {
         const estimatedAt = calculateEstimatedDelivery(settings);
-       
-       // console.log(estimatedAt);
+
+        // console.log(estimatedAt);
 
         order.confirmation = {
           scheduled: false,
@@ -163,6 +164,17 @@ export default function Checkout() {
           date: data.delivery_date,
           hourStart: data.delivery_hour,
           hourEnd: estimatedAt,
+        };
+      }
+      if (data.deliveryType === "pickup") {
+        const estimatedAt = calculateEstimatedDelivery(
+          settings,
+          data.deliveryType,
+        );
+
+        order.confirmation = {
+          deliveryType:"pickup",
+          estimatedAt: estimatedAt ?? "",
         };
       }
 
@@ -259,6 +271,7 @@ export default function Checkout() {
           </form>
         </FormProvider>
       </Box>
+      <Footer />
     </>
   );
 }

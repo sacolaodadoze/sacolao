@@ -24,7 +24,7 @@ export default function OrderConfirmation() {
 
   const order = state.order;
   const itemsList = order.items?.split("\n") ?? [];
-  console.log("COnfitmation",order.confirmation);
+  // console.log("COnfitmation",order.confirmation);
 
   return (
     <Box sx={{ maxWidth: 700, mx: "auto", mt: 4, px: 2 }}>
@@ -144,11 +144,24 @@ export default function OrderConfirmation() {
             </>
           ) : (
             <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+            {order.confirmation.deliveryType ? (               
+              <>
+             
+              <Typography>
+                Pode ser retirado a partir das :{" "}
+               
+                <strong>{order.confirmation.estimatedAt.split(" ").pop()}</strong>
+              </Typography>
+              </>
+              ):(
+                <>
               <LocalShippingIcon color="success" />
               <Typography>
                 Previsão de entrega:{" "}
                 <strong>{order.confirmation.estimatedAt}</strong>
               </Typography>
+              </>
+              )}
             </Box>
           )}
 

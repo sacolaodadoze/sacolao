@@ -36,7 +36,7 @@ export const apiFetch = async (endpoint, options = {}) => {
 
   //return fetch(`${baseUrl}${endpoint}`, fetchOptions);
   const response = await fetch(`${baseUrl}${endpoint}`, fetchOptions);
-  console.log(response.status);
+  //console.log(response.status);
 
   // sesión expirada
   if (response.status === 401) {

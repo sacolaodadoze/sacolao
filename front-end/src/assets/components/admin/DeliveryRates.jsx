@@ -53,7 +53,7 @@ export function DeliveryRatesForm() {
         const res = await apiFetch("/api/delivery-rates");
 
         const data = await res.json();
-        // console.log(data);
+         console.log(data);
 
         if (data) {
           replace(data);

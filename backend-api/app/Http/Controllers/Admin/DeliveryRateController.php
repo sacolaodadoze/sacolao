@@ -12,6 +12,7 @@ class DeliveryRateController extends Controller
     public function index()
     {
         $rates = DeliveryRate::all();
+        //dd($rates);
         return response()->json($rates);
     }
 
