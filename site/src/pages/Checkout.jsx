@@ -113,7 +113,7 @@ export default function Checkout() {
   //console.log(methods.watch("items"));
 
   const onError = (errors) => {
-    console.log(errors);
+    //console.log(errors);
   };
 
   const onSubmit = async (data) => {

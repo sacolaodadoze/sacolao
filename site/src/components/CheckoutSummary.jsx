@@ -41,7 +41,7 @@ export function CheckoutSummary({ checkoutError }) {
   const deliveryDate = watch("delivery_date");
   const deliveryHour = watch("delivery_hour");
   const deliveryType = useWatch({ control, name: "deliveryType" });
-  console.log(deliveryType);
+  //console.log(deliveryType);
 
   /* const prevision = checkoutError
     ? ""
@@ -66,7 +66,7 @@ export function CheckoutSummary({ checkoutError }) {
         )
       : calculateEstimatedDelivery(settings, deliveryType === "pickup");
 
-     // console.log("previson",prevision)
+  // console.log("previson",prevision)
 
   return (
     <>
@@ -150,26 +150,18 @@ export function CheckoutSummary({ checkoutError }) {
             alignItems: "center",
           }}
         >
-          <Typography color="text.secondary"> Previsão de entrega: </Typography>
+          <Typography color="text.secondary">
+            {deliveryType === "pickup"
+              ? "Retirada a partir das"
+              : "Previsão de entrega"}
+          </Typography>
           <Typography>
             {" "}
-            <strong>{prevision}</strong>
-            {/*   {scheduled ? (
-            deliveryDate && deliveryHour ? (
-              <strong>
-                {CalculateScheduleDelivery(
-                  deliveryHour,
-                  deliveryDate,
-                  settingsDelivery,
-                  settings.is_closed,
-                )}
-              </strong>
-            ) : ( */}
-            {/*     <strong></strong>
-           )
-          ) : (
-            <strong>{calculateEstimatedDelivery(settings)}</strong> 
-          )} */}
+            <strong>
+              {deliveryType === "pickup"
+                ? prevision.split(" ").pop()
+                : prevision}
+            </strong>
           </Typography>
         </Box>
 

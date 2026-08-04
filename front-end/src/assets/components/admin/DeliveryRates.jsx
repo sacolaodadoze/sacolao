@@ -53,7 +53,7 @@ export function DeliveryRatesForm() {
         const res = await apiFetch("/api/delivery-rates");
 
         const data = await res.json();
-         console.log(data);
+        // console.log(data);
 
         if (data) {
           replace(data);
@@ -117,7 +117,7 @@ export function DeliveryRatesForm() {
           onClick={() =>
             append({
               min_distance: 0,
-              max_distance: "",
+              max_distance: 0,
               minimum_order: 0,
               delivery_fee: 0,
               delivery_fee_after_minimum:0,

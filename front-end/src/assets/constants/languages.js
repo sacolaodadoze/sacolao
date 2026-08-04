@@ -162,12 +162,12 @@ export const LANG = {
     SUNDAY_OPEN: "Domingo abertura",
     SUNDAY_CLOSE: "Domingo fechamento",
     INFOSEARCH: "Informações embaixo do search",
-    DELIVERYTIME: "Tempo de entrega em minutos",
+    DELIVERYTIME: "Tempo de entrega ( minutos)",
     FREE_RATE: "Valor mínimo para entrega grátis",
     CLOSED: "Fechado",
     MORNING_DELIVERY:"Entregas pela manhã",
     AFTERNOON_DELIVERY:"Entregas pela tarde",
-    PICKUP_TIME:"Tempo de retirada em minutos",
+    PICKUP_TIME:"Tempo de retirada na loja ( minutos )",
   },
 
   DELIVERYSETTINGS: {
@@ -210,8 +210,8 @@ export const LANG = {
   },
   RATES:{
     TAXA:"Taxa",
-    TAXAMIN:"Taxa (< mínimo)",
-    TAXAAFTERMIN:"Taxa (> mínimo)",
+    TAXAMIN:"Taxa (< pedido mínimo)",
+    TAXAAFTERMIN:"Taxa (> pedido mínimo)",
     INITIALDISTANCE:"Distância inicial",
     FINALDISTANCE:"Distância final",
     MINORDER:"Pedido mínimo",

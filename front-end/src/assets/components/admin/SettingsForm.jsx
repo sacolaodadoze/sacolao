@@ -127,8 +127,9 @@ export function SettingsForm() {
     fetchSettings();
   }, [reset]);
 
+  //console.log(errors)
+
   // SAVE
-console.log(errors)
   const onSubmit = async (data) => {
     console.log("entro");
     console.info(data);
@@ -139,7 +140,6 @@ console.log(errors)
 
       await apiFetch("/api/settings", {
         method: "PUT",
-
         body: JSON.stringify(data),
       });
       showNotification(LANG.GLOBAL.CONF, "success");

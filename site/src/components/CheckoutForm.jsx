@@ -12,6 +12,11 @@ import {
   FormHelperText,
   Box,
 } from "@mui/material";
+import PersonIcon from "@mui/icons-material/Person";
+import LocalShippingIcon from "@mui/icons-material/LocalShipping";
+import PaymentIcon from "@mui/icons-material/Payment";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import NoteAltIcon from "@mui/icons-material/NoteAlt";
 
 import { useWatch, useFormContext, Controller } from "react-hook-form";
 /*  import { LANG } from "../../../front-end/src/assets/constants/languages";  */
@@ -36,10 +41,19 @@ function ScheduleSection() {
 
   return (
     <Paper sx={{ p: 3, borderRadius: 3, mb: 3 }}>
-      <Typography variant="h5" fontWeight={700} mb={2}>
-        📅 Agendamento
-      </Typography>
-
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: 1,
+          mb: 2,
+        }}
+      >
+        <CalendarMonthIcon sx={{ color: "var(--primary)" }} fontSize="large" />
+        <Typography variant="h5" fontWeight={700} mb={2}>
+          {/*  📅 */} Agendamento
+        </Typography>
+      </Box>
       <Controller
         name="scheduled"
         control={control}
@@ -185,9 +199,20 @@ export function CheckoutForm({ paymentTypes }) {
     <>
       {/* Datos del cliente */}
       <Paper sx={{ p: 3, borderRadius: 3, mb: 3 }}>
-        <Typography variant="h5" fontWeight={700} sx={{ mb: 2 }} p>
-          👤 Dados do Cliente
-        </Typography>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+            mb: 2,
+          }}
+        >
+          <PersonIcon sx={{ color: "var(--primary)" }} fontSize="large" />
+
+          <Typography variant="h5" fontWeight={700}>
+            Dados do Cliente
+          </Typography>
+        </Box>
 
         <Grid container spacing={2}>
           {renderTextField({
@@ -214,9 +239,22 @@ export function CheckoutForm({ paymentTypes }) {
 
       {/* Entrega */}
       <Paper sx={{ p: 3, borderRadius: 3, mb: 3 }}>
-        <Typography variant="h5" fontWeight={700} mb={3}>
-          🚚 Entrega
-        </Typography>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+            mb: 2,
+          }}
+        >
+          <LocalShippingIcon
+            /* color="primary" */ fontSize="large"
+            sx={{ color: "var(--primary)" }}
+          />
+          <Typography variant="h5" fontWeight={700} mb={3}>
+            {/* 🚚 */} Entrega
+          </Typography>
+        </Box>
 
         <Controller
           name="deliveryType"
@@ -293,18 +331,28 @@ export function CheckoutForm({ paymentTypes }) {
 
       {/* Pago */}
       <Paper sx={{ p: 3, borderRadius: 3, mb: 3 }}>
-        <Typography variant="h5" fontWeight={700} mb={3}>
-          💳 Forma de Pagamento
-          <Box
-            component="span"
-            sx={{
-              color: "error.main",
-              fontWeight: 700,
-            }}
-          >
-            {"*"}
-          </Box>
-        </Typography>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+            mb: 2,
+          }}
+        >
+          <PaymentIcon sx={{ color: "var(--primary)" }} fontSize="large" />
+          <Typography variant="h5" fontWeight={700} mb={3}>
+            {/*  💳  */}Forma de Pagamento
+            <Box
+              component="span"
+              sx={{
+                color: "error.main",
+                fontWeight: 700,
+              }}
+            >
+              {"*"}
+            </Box>
+          </Typography>
+        </Box>
 
         <Controller
           name="payment_types_id"
@@ -363,10 +411,19 @@ export function CheckoutForm({ paymentTypes }) {
 
       {/* Detalhes */}
       <Paper sx={{ p: 3, borderRadius: 3, mb: 3 }}>
-        <Typography variant="h5" fontWeight={700} mb={3}>
-          📝 Detalhes
-        </Typography>
-
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+            mb: 2,
+          }}
+        >
+          <NoteAltIcon sx={{ color: "var(--primary)" }} fontSize="large" />
+          <Typography variant="h5" fontWeight={700} mb={3}>
+            {/*  📝 */} Detalhes
+          </Typography>
+        </Box>
         <Controller
           name="details"
           control={control}
@@ -386,7 +443,16 @@ export function CheckoutForm({ paymentTypes }) {
       <Paper sx={{ p: 3, borderRadius: 3, mb: 3 }}>
         <Typography variant="h5" fontWeight={700} mb={3}>
           Caso algum produto esteja indisponível, como você prefere que
-          procedamos?
+          procedamos
+          <Box
+            component="span"
+            sx={{
+              color: "error.main",
+              fontWeight: 700,
+            }}
+          >
+            {"*"}
+          </Box>
         </Typography>
 
         <Controller

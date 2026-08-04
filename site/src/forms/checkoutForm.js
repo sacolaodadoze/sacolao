@@ -31,7 +31,9 @@ export const checkoutSchema = z
     scheduled: z.boolean().default(false),
     delivery_date: z.string().optional(),
     delivery_hour: z.string().optional(),
-    substitution_preference: z.enum(["similar", "contact", "remove"]),
+    substitution_preference: z.enum(["similar", "contact", "remove"], {
+      message: "Selecione uma opção",
+    }),
   })
   .superRefine((data, ctx) => {
     if (data.scheduled) {
