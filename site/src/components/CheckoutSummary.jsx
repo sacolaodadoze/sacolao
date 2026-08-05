@@ -1,6 +1,8 @@
 import { Paper, Typography, Divider, Box, Button, Alert } from "@mui/material";
 import { useFormContext } from "react-hook-form";
 import { useContext } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { apiFetch } from "../api/apiFetch.js";
 
 import { useCart } from "../context/CartContext.jsx";
 import {
@@ -33,28 +35,53 @@ export function CheckoutSummary({ checkoutError }) {
     0,
   );
 
-  const delivery = 5; // luego vendrá de la BD
+  //const delivery = 5; // luego vendrá de la BD
 
-  const total = subtotal + delivery;
+ 
 
   const scheduled = watch("scheduled");
   const deliveryDate = watch("delivery_date");
   const deliveryHour = watch("delivery_hour");
   const deliveryType = useWatch({ control, name: "deliveryType" });
-  //console.log(deliveryType);
 
-  /* const prevision = checkoutError
-    ? ""
-    : deliveryType === "pickup"
-      ? calculateEstimatedPickup(settings)
-      : scheduled && deliveryDate && deliveryHour
-        ? CalculateScheduleDelivery(
-            deliveryHour,
-            deliveryDate,
-            settingsDelivery,
-            settings.is_closed,
-          )
-        : calculateEstimatedDelivery(settings); */
+  const street = useWatch({ control, name: "street" });
+  const number = useWatch({ control, name: "number" });
+  const city = useWatch({ control, name: "city" });
+  const state = useWatch({ control, name: "state" });
+  const cep = useWatch({ control, name: "cep" });
+
+/*   const totalOrder = cartItems.reduce(
+    (acc, item) => acc + item.unitPrice * item.quantity,
+    0,
+  ); */
+
+  const { data: rateData, isLoading: isLoadingRate } = useQuery({
+    queryKey: ["rate", cep, street, number, city, state, subtotal],
+    queryFn: async () => {
+      if (!street || !city || !state) return null;
+      const res = await apiFetch("/api/store/calculate-rate", {
+        method: "POST",
+        body: JSON.stringify({
+          cep,
+          street,
+          number,
+          city,
+          state,
+          order_total: subtotal,
+        }),
+      });
+      return res.json();
+    },
+    enabled: deliveryType !== "pickup" && !!street && !!city && !!state, //  solo si es delivery y hay dirección
+    staleTime: 0, // 0 porque el total puede cambiar si el cliente modifica el carrito
+  });
+
+  const deliveryFee =parseFloat(rateData?.delivery_fee ?? 0);
+   const total = subtotal + deliveryFee;
+ 
+
+ // console.log(rateData);
+
   const prevision = checkoutError
     ? ""
     : scheduled && deliveryDate && deliveryHour
@@ -119,8 +146,40 @@ export function CheckoutSummary({ checkoutError }) {
             alignItems: "center",
           }}
         >
-          <Typography color="text.secondary">Entrega</Typography>
+          {/* <Typography color="text.secondary">Entrega</Typography> */}
           <Typography>{/* R$ {delivery.toFixed(2)} */}</Typography>
+          {deliveryType !== "pickup" && (
+  <>
+    <Divider sx={{ my: 2 }} />
+    <Typography variant="h6">Taxa de entrega</Typography>
+
+    {isLoadingRate && (
+      <Typography variant="body2">Calculando...</Typography>
+    )}
+
+    {rateData?.out_of_range && (
+      <Typography color="error">
+        Endereço fora da área de entrega
+      </Typography>
+    )}
+
+    {rateData?.rate && (
+      <>
+        {!rateData.meets_minimum && (
+          <Typography variant="caption" color="warning.main" sx={{ display: "block" }}>
+            Pedido mínimo para taxa reduzida: R$ {Number(rateData.rate.minimum_order).toFixed(2)}
+          </Typography>
+        )}
+        <Typography>
+          {Number(rateData.delivery_fee) === 0  // 👈 delivery_fee directo, no rate.delivery_fee
+            ? "Entrega grátis 🎉"
+            : `R$ ${Number(rateData.delivery_fee).toFixed(2)}`}{" "}
+          ({rateData.distance} km)
+        </Typography>
+      </>
+    )}
+  </>
+)}
         </Box>
 
         <Divider sx={{ mb: 2 }} />

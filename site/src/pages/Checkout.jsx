@@ -111,6 +111,7 @@ export default function Checkout() {
   }, [cartItems, methods]);
 
   //console.log(methods.watch("items"));
+  
 
   const onError = (errors) => {
     //console.log(errors);

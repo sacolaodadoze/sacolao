@@ -133,6 +133,7 @@ Route::prefix('store')->group(function () {
     Route::get('/delivery-rates', [StoreController::class, 'deliveryRates']);
      Route::get('/payments', [StoreController::class, 'paymentsTypes']); 
      Route::post('/order', [StoreController::class, 'storeOrder']) ->middleware('auth:sanctum');
+      Route::post('/calculate-rate', [StoreController::class, 'calculateRate']) ->middleware('auth:sanctum');
 });
 
 

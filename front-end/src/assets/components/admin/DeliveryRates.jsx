@@ -33,7 +33,7 @@ export function DeliveryRatesForm() {
           max_distance: 1.5,
           minimum_order: 60,
           delivery_fee: 0,
-          delivery_fee_after_minimum:0,
+          delivery_fee_after_minimum: 0,
         },
       ],
     },
@@ -117,10 +117,10 @@ export function DeliveryRatesForm() {
           onClick={() =>
             append({
               min_distance: 0,
-              max_distance: 0,
+              max_distance: null,
               minimum_order: 0,
               delivery_fee: 0,
-              delivery_fee_after_minimum:0,
+              delivery_fee_after_minimum: 0,
             })
           }
         >
@@ -184,9 +184,16 @@ export function DeliveryRatesForm() {
                   render={({ field }) => (
                     <TextField
                       {...field}
+                      value={field.value ?? ""} //  null → "" para mostrar vacío
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        field.onChange(val === "" ? null : Number(val)); //  "" → null al guardar
+                      }}
                       label={LANG.RATES.FINALDISTANCE}
                       type="number"
                       fullWidth
+                      placeholder="Sem limite" //  indica que vacío = sin límite
+                      InputLabelProps={{ shrink: true }}
                     />
                   )}
                 />

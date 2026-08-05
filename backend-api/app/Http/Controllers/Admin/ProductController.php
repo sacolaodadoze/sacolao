@@ -97,7 +97,8 @@ class ProductController extends Controller
 
     {
         $data = $request->validate([
-            'category_id' => ['nullable', 'integer'],
+            'category_id' => ['required', 'integer'],
+            'average_weight' => ['required', 'numeric'],//requerido se unit es kg
             'price_per_kg' => ['nullable', 'numeric'],
             'price_per_unit' => ['nullable', 'numeric'],
             'active' => ['nullable', 'boolean'],

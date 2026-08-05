@@ -328,9 +328,10 @@ export function Products() {
                   <th>Produto</th>
                   <th style={{ width: "190px" }}>Categoria</th>
                   <th style={{ width: "105px" }}>Unidade</th>
-                  <th style={{ width: "90px" }}>Preço</th>
                   <th style={{ width: "100px" }}>Peso medio</th>
-                  <th style={{ width: "107px" }}>Estoque</th>
+                  <th style={{ width: "90px" }}>Preço</th>
+
+                  {/*  <th style={{ width: "107px" }}>Estoque</th> */}
                   {/*  <th style={{ width: "80px" }}>Ativo</th> */}
                   <th style={{ width: "90px" }}>Ações</th>
                   <th style={{ width: "94px" }}>Estado</th>
@@ -395,11 +396,17 @@ export function Products() {
                       </Tooltip>
                     </td>
                     <td style={{ textAlign: "center" }}>{product.unit}</td>
-                    <td style={{ textAlign: "center" }}>{product.price}</td>
                     <td style={{ textAlign: "center" }}>
-                      {product.average_weight}
+                      {/* {product.average_weight} */}
+                      <TextField                       
+                        defaultValue={product.average_weight || ""}   
+                        type="number"
+                        disabled={product.unit !== "KG"}                   
+                      />
                     </td>
-                    <td
+                    <td style={{ textAlign: "center" }}>{product.price}</td>
+
+                    {/*     <td
                       style={{
                         textAlign: "center",
                         color: product.stock <= 0 ? "red" : "inherit",
@@ -407,7 +414,8 @@ export function Products() {
                       }}
                     >
                       {product.stock}
-                    </td>
+                    </td> */}
+
                     {/*     <td>
                   <Select
                     size="small"
@@ -513,8 +521,8 @@ export function Products() {
                           <Chip label="✓" color="success" size="small" />
                         </Tooltip>
                       ) : (
-                         <Tooltip title="Pendente" arrow>
-                        <Chip label="⚠" color="warning" size="small" />
+                        <Tooltip title="Pendente" arrow>
+                          <Chip label="⚠" color="warning" size="small" />
                         </Tooltip>
                       )}
                     </td>

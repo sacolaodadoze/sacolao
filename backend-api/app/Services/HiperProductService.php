@@ -60,7 +60,7 @@ dd('guardado');*/
             $description = ($item['unidade'] == "KG")
                 ?  "Produto vendido por "
                 . number_format($item['preco'], 2, ',', '.')
-                . "/Kg. O preço abaixo considera uma unidade média de "
+                . "/Kg. O preço acima considera uma unidade média de "
                 . $item['peso']
                 . "g do produto. O preço final será definido após a pesagem do produto."
                 : "";
@@ -76,9 +76,10 @@ dd('guardado');*/
                     'description' => $description,
                     'stock' => $item['quantidadeEmEstoque'] ?? 0,
                     'unit' => $item['unidade'] ?? '',
-                    'average_weight' => $item['peso'] ?? 0,
-                    'price' => $item['preco'] ?? 0,
-                    'active' => $item['ativo']
+                    //'average_weight' => $item['peso'] ?? 0,
+                    'price_hiper' => $item['preco'] ?? 0,
+                    'price' => ($item['unidade'] === "UN") ? $item['preco'] :[],
+                    'active' => $item['ativo'],                  
                 ]
             );
             /*    } catch (\Exception $e) {

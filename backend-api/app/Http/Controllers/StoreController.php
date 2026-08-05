@@ -16,9 +16,16 @@ use App\Models\Address;
 use App\Models\Detail;
 use App\Models\Observation;
 use Illuminate\Support\Facades\Auth;
+use App\Services\GeocodingService;
 
 class StoreController extends Controller
 {
+    protected $geocodingService;
+
+    public function __construct(GeocodingService $geocodingService)
+    {
+        $this->geocodingService = $geocodingService;
+    }
 
     public function settings()
     {
@@ -96,6 +103,70 @@ class StoreController extends Controller
         $payments = PaymentType::all();
         return response()->json($payments);
     }
+
+
+    public function calculateRate(Request $request)
+    {
+        $request->validate([
+            'cep'    => 'nullable|string',
+            'street' => 'required|string',
+            'number' => 'nullable|string',
+            'city'   => 'required|string',
+            'state'  => 'required|string',
+            'order_total' => 'required|numeric',
+        ]);
+
+        $settings = Setting::first();
+
+        if (!$settings->latitude || !$settings->longitude) {
+            return response()->json(['error' => 'Coordenadas do estabelecimento não configuradas'], 422);
+        }
+
+        // usa CEP si tiene, sino usa dirección completa
+        $address = $request->cep
+            ? "{$request->cep}, Brasil"
+            : "{$request->street}, {$request->number}, {$request->city}, {$request->state}, Brasil";
+
+        $distance = $this->geocodingService->calculateDistance(
+            $address,
+            $settings->latitude,
+            $settings->longitude
+        );
+
+        if (!$distance) {
+            return response()->json(['error' => 'Endereço não encontrado'], 422);
+        }
+
+        $rate = DeliveryRate::where('min_distance', '<=', $distance)
+            ->where(function ($q) use ($distance) {
+                $q->where('max_distance', '>=', $distance)
+                    ->orWhereNull('max_distance');
+            })
+            ->first();
+
+        if (!$rate) {
+            return response()->json([
+                'distance'     => round($distance, 2),
+                'rate'         => null,
+                'out_of_range' => true,
+                'delivery_fee' => null,
+            ]);
+        }
+
+        $orderTotal  = $request->order_total;
+        $deliveryFee = $orderTotal >= $rate->minimum_order
+            ? $rate->delivery_fee_after_minimum  // cumple el mínimo
+            : $rate->delivery_fee;               // no cumple el mínimo
+
+        return response()->json([
+            'distance'      => round($distance, 2),
+            'rate'          => $rate,
+            'delivery_fee'  => $deliveryFee,     //  taxa final a cobrar
+            'meets_minimum' => $orderTotal >= $rate->minimum_order, //total del pedido cumple o no el minumum_order
+            'out_of_range'  => false,
+        ]);
+    }
+
 
     public function storeOrder(Request $request, Order $order)
     {
@@ -189,7 +260,7 @@ class StoreController extends Controller
                 'rate_id'         => $data['rate_id'] ?? null,
                 'delivery_date'         => $data['delivery_date'] ?? null,
                 'delivery_hour'         => $data['delivery_hour'] ?? null,
-                'substitution_preference'=>$data['substitution_preference'],
+                'substitution_preference' => $data['substitution_preference'],
                 'created_by' => 8 //user Site
             ];
 
