@@ -206,7 +206,8 @@ export const LANG = {
     SUCCESSUPD:"Produto alterado con sucesso ",
     SEARCH:" Buscar",
     CLEAN: "Limpar",
-    PLACEHOLDERSEARCH:"Nome ou código"
+    PLACEHOLDERSEARCH:"Nome ou código",
+    MSGVALIDATION:"Se a unidade é KG, o peso médio é obrigatório",
   },
   RATES:{
     TAXA:"Taxa",

@@ -32,40 +32,16 @@ class HiperProductService
 
         $products = $response->json();
 
-
-        /*         file_put_contents(
-    storage_path('app/hiper_key.json'),
-    $response->body()
-); 
-
-dd('guardado');*/
-
-
-        /*        $apiCodes = collect($products['produtos'])
-        ->pluck('codigo')
-        ->map(fn($c) => (string) $c);
-
-    $dbCodes = Product::pluck('code')
-        ->map(fn($c) => (string) $c);
-
-
-
-        /*   $codes = collect($products['produtos'])->pluck('codigo');
-
-        dd([
-            'total' => $codes->count(),
-            'unicos' => $codes->unique()->count(),
-        ]); */
         foreach ($products['produtos'] as $item) {
-            $description = ($item['unidade'] == "KG")
+            /*  $description = ($item['unidade'] == "KG")
                 ?  "Produto vendido por "
                 . number_format($item['preco'], 2, ',', '.')
-                . "/Kg. O preço acima considera uma unidade média de "
+                . "/Kg. O preço abaixo considera uma unidade média de "
                 . $item['peso']
                 . "g do produto. O preço final será definido após a pesagem do produto."
-                : "";
-            //try {f
-            Product::updateOrCreate(
+                : ""; */
+
+            $product = Product::updateOrCreate(
                 [
                     'code' => $item['codigo']
                 ],
@@ -73,18 +49,31 @@ dd('guardado');*/
                     'name' => $item['nome'],
                     'slug' => Str::slug($item['nome']),
                     'image' => $item['imagem']   ?? '',
-                    'description' => $description,
+                    'description' => $item['descricao'] ?? [],
                     'stock' => $item['quantidadeEmEstoque'] ?? 0,
                     'unit' => $item['unidade'] ?? '',
-                    //'average_weight' => $item['peso'] ?? 0,
-                    'price_hiper' => $item['preco'] ?? 0,
-                    'price' => ($item['unidade'] === "UN") ? $item['preco'] :[],
-                    'active' => $item['ativo'],                  
+                    'price' => $item['preco'] ?? 0,
+                    //  'price_hiper' => $item['preco'] ?? 0,                 
+                    'active' => $item['ativo'],
                 ]
             );
-            /*    } catch (\Exception $e) {
-            dd($e->getMessage(), $products);
-        } */
+            // Si el campo 'price' acaba de cambiar en esta ejecución actualizar el "price_per_unit "
+            if ($product->wasChanged('price') /* || $product->wasRecentlyCreated */) {
+
+                if ($product->unit === "KG" && $product->average_weight > 0) {
+                    $product->price_per_unit = $product->price * $product->average_weight;
+
+                    $description = ($item['unidade'] == "KG")
+                        ?  "Produto vendido por "
+                        . number_format($product->price, 2, ',', '.')
+                        . "/Kg. O preço abaixo considera uma unidade média de "
+                        . $product->average_weight
+                        . "g do produto. O preço final será definido após a pesagem do produto."
+                        : "";
+                    $product->description = $description;
+                    $product->save();
+                }
+            }
         }
 
         /* $apiCodes = collect($products['produtos'])
@@ -96,21 +85,4 @@ dd('guardado');*/
 
         dd($apiCodes->diff($dbCodes)->values()); */
     }
-
-
-    /* public function sync()
-    {
-        $response = Http::get(
-            config('services.hiper.products_url')
-        );
-        dd(config('services.hiper.products_url'));
-
-        $products = $response->json();
-   /*     dd(
-    $response->successful(),
-    $response->status(),
-    $response->body() 
-);
-
-    }*/
 }

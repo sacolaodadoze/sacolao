@@ -22,6 +22,8 @@ export function ProductModal({ product, open, onClose }) {
   const quantity = cartItem?.quantity ?? 0;
   const outOfStock = Number(product.stock) <= 0;
 
+  const price = product.unit === "KG" ? product.price_per_unit : product.price;
+
   return (
     <Dialog
       open={open}
@@ -98,6 +100,12 @@ export function ProductModal({ product, open, onClose }) {
           </Typography>
         )}
         <Divider sx={{ my: 2 }} />
+        {/* descripción */}
+        {product.description && (
+          <Typography variant="body2" color="text.secondary" mb={2}>
+            {product.description}
+          </Typography>
+        )}
         {/* precio */}
         <Box sx={{ display: "flex", alignItems: "baseline", gap: 1, mb: 1 }}>
           <Typography variant="h5" className="product-price">
@@ -105,25 +113,19 @@ export function ProductModal({ product, open, onClose }) {
             {new Intl.NumberFormat("pt-BR", {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
-            }).format(product.price)}
+            }).format(price)}
             {/* {Number(product.price).toFixed(2)} */}
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          {/* <Typography variant="body2" color="text.secondary">
             {product.unit === "KG" ? "/ kg" : "/ unidade"}
-          </Typography>
+          </Typography> */}
         </Box>
         {/* precio por unidad si existe */}
-        {product.price_per_unit && (
+        {/*  {product.price_per_unit && (
           <Typography variant="body2" color="text.secondary" mb={1}>
             R$ {Number(product.price_per_unit).toFixed(2)} / unidade
           </Typography>
-        )}
-        {/* descripción */}
-        {product.description && (
-          <Typography variant="body2" color="text.secondary" mb={2}>
-            {product.description}
-          </Typography>
-        )}
+        )} */}
         <Divider sx={{ my: 2 }} />
         {/* controles */}
         <Box

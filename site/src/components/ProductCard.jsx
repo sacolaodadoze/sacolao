@@ -11,6 +11,7 @@ export function ProductCard({ product }) {
 
   const cartItem = cartItems.find((item) => item.id === product.id);
   const quantity = cartItem?.quantity ?? 0;
+  const price = product.unit === "KG" ? product.price_per_unit : product.price;
 
   //console.log(product);
   // console.log(product.category);
@@ -29,19 +30,7 @@ export function ProductCard({ product }) {
             />
           )} */}
 
-        {product.promotion && (
-          <Box
-            // size="small"
-            className="product-badge"
-            /*  // label="🔥"
-              sx={{
-                boxShadow: "none",
-                border: "none",
-              }} */
-          >
-            🔥Promoção
-          </Box>
-        )}
+        {product.promotion && <Box className="product-badge">🔥Promoção</Box>}
 
         {/*   {product.feature && (
             <div           
@@ -88,7 +77,7 @@ export function ProductCard({ product }) {
               {new Intl.NumberFormat("pt-BR", {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
-              }).format(product.price)}
+              }).format(price)}
             </span>
             {quantity > 0 ? (
               <div className="qty-controls">

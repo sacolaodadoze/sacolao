@@ -30,6 +30,9 @@ import SearchIcon from "@mui/icons-material/Search";
 import { useNotification } from "../../context/NotificationContext.jsx";
 import { ProductModal } from "./EditProduct";
 
+import { zodResolver } from "@hookform/resolvers/zod"; //validaciones
+import { schema } from "../../../forms/productsForm.js";
+
 export function Products() {
   const { showNotification } = useNotification();
   const [products, setProducts] = useState(productsData);
@@ -132,7 +135,14 @@ export function Products() {
         setOpenModal(false);
         setSelectedProduct(null);
         showNotification(LANG.PRODUCTS.SUCCESSUPD, "success");
-        await loadProducts();
+        await loadProducts(
+          perPage,
+          currentPage,
+          search,
+          categoryId,
+          unit,
+          statusFilter,
+        );
       }
     } catch (error) {
       console.error(error);
@@ -327,7 +337,7 @@ export function Products() {
                   <th style={{ width: "93px" }}>Imagen</th>
                   <th>Produto</th>
                   <th style={{ width: "190px" }}>Categoria</th>
-                  <th style={{ width: "105px" }}>Unidade</th>
+                  <th style={{ width: "101px" }}>Unidade</th>
                   <th style={{ width: "100px" }}>Peso medio</th>
                   <th style={{ width: "90px" }}>Preço</th>
 
@@ -398,13 +408,102 @@ export function Products() {
                     <td style={{ textAlign: "center" }}>{product.unit}</td>
                     <td style={{ textAlign: "center" }}>
                       {/* {product.average_weight} */}
-                      <TextField                       
-                        defaultValue={product.average_weight || ""}   
+                      {/*       <TextField
+                        //  value={product.average_weight?.toFixed(2) || ""}
+                        value={
+                          Number(product.average_weight)
+                            ? Number(product.average_weight).toFixed(2)
+                            : ""
+                        }
                         type="number"
-                        disabled={product.unit !== "KG"}                   
+                        disabled={product.unit !== "KG"}
+                        onChange={(e) =>
+                          handleChange(
+                            product.id,
+                            "average_weight",
+                            e.target.value,
+                          )
+                        }
+                        size="small"
+                        sx={{
+                          "& input[type=number]": {
+                            MozAppearance: "textfield",
+                          },
+                          "& input[type=number]::-webkit-outer-spin-button": {
+                            WebkitAppearance: "none",
+                            margin: 0,
+                          },
+                          "& input[type=number]::-webkit-inner-spin-button": {
+                            WebkitAppearance: "none",
+                            margin: 0,
+                          },
+                        }}
+                      /> */}
+                      <TextField
+                        value={product.average_weight || ""}
+                        type="number"
+                        disabled={product.unit !== "KG"}
+                        onChange={(e) => {
+                          const weight = e.target.value;
+                          handleChange(product.id, "average_weight", weight);
+                          if (weight === "" || isNaN(Number(weight))) {
+                            handleChange(product.id, "calculated_price", "");
+                            return;
+                          }
+
+                          const calculatedPrice =
+                            product.unit === "KG"
+                              ? (Number(product.price) * Number(weight)) /* /
+                                  1000 */
+                                  .toFixed(2)
+                              : product.price;
+
+                          handleChange(
+                            product.id,
+                            "calculated_price",
+                            calculatedPrice,
+                          ); // precio estimado
+                        }}
+                        size="small"
+                        sx={{
+                          "& input[type=number]": {
+                            MozAppearance: "textfield",
+                          },
+                          "& input[type=number]::-webkit-outer-spin-button": {
+                            WebkitAppearance: "none",
+                            margin: 0,
+                          },
+                          "& input[type=number]::-webkit-inner-spin-button": {
+                            WebkitAppearance: "none",
+                            margin: 0,
+                          },
+                        }}
                       />
                     </td>
-                    <td style={{ textAlign: "center" }}>{product.price}</td>
+                    <td style={{ textAlign: "center" }}>
+                      R${" "}
+                      {product.calculated_price !== undefined &&
+                      product.calculated_price !== ""
+                        ? Number(product.calculated_price).toLocaleString(
+                            "pt-BR",
+                            {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            },
+                          )
+                        : product.unit === "KG"
+                          ? Number(product.price_per_unit).toLocaleString(
+                              "pt-BR",
+                              {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              },
+                            )
+                          : Number(product.price).toLocaleString("pt-BR", {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            })}
+                    </td>
 
                     {/*     <td
                       style={{

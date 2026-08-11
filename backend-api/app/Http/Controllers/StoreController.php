@@ -123,16 +123,18 @@ class StoreController extends Controller
         }
 
         // usa CEP si tiene, sino usa dirección completa
-        $address = $request->cep
+        /* $address = $request->cep
             ? "{$request->cep}, Brasil"
-            : "{$request->street}, {$request->number}, {$request->city}, {$request->state}, Brasil";
+            : "{$request->street}, {$request->number}, {$request->city}, {$request->state}, Brasil"; */
 
+        $address = "19907-575, Brasil";
+        // dd($address);
         $distance = $this->geocodingService->calculateDistance(
             $address,
             $settings->latitude,
             $settings->longitude
         );
-
+        dd($distance);
         if (!$distance) {
             return response()->json(['error' => 'Endereço não encontrado'], 422);
         }
@@ -209,7 +211,8 @@ class StoreController extends Controller
         //dd($settings->is_closed,$request->delivery_date);
         // Pedido para hoy
         if (
-            ($settings->is_closed &&  $request->delivery_date === now()->toDateString()) || ($settings->is_closed &&  $request->delivery_date === null)
+            ($settings->is_closed &&  $request->delivery_date === now()->toDateString()) 
+            || ($settings->is_closed &&  $request->delivery_date === null)
 
         ) {
             return response()->json([

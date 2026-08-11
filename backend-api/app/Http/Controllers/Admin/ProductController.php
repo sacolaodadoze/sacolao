@@ -97,8 +97,11 @@ class ProductController extends Controller
 
     {
         $data = $request->validate([
-            'category_id' => ['required', 'integer'],
-            'average_weight' => ['required', 'numeric'],//requerido se unit es kg
+            /*  'category_id' => 'required|exists:categories,id',
+            'average_weight' =>  'nullable|numeric|required_if:unit,KG', //requerido se unit es kg */
+            
+            'category_id' => ['sometimes', 'nullable', 'exists:categories,id'],
+            'average_weight' => ['sometimes', 'nullable', 'numeric'],
             'price_per_kg' => ['nullable', 'numeric'],
             'price_per_unit' => ['nullable', 'numeric'],
             'active' => ['nullable', 'boolean'],
@@ -107,6 +110,23 @@ class ProductController extends Controller
             'new_product' => ['nullable', 'boolean'],
             'week_offer' => ['nullable', 'boolean'],
         ]);
+
+        //$price='';
+
+        if ($request['unit'] === 'KG' && $request['average_weight'] > 0) {
+            $data['price_per_unit'] = $request['price'] * $request['average_weight'] /* / 1000 */; // gramos → kg;
+        }
+
+        $description = ($request['unit'] == "KG")
+            ?  "Produto vendido por "
+            . number_format($request['price'], 2, ',', '.')
+            . "/Kg. O preço abaixo considera uma unidade média de "
+            . $request['average_weight']
+            . "g do produto. O preço final será definido após a pesagem do produto."
+            : "";
+        $data['description'] = $description;
+
+        //dd($data);
 
         $product->update($data);
 

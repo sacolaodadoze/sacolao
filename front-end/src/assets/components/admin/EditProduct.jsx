@@ -40,9 +40,9 @@ export function ProductModal({ open, onClose, onSubmit, product = null }) {
     }
   }, [product, reset]);
 
-  const submit = (id, product) => {
+  const submit = ( product) => {
     //console.log("Edit", product);
-    onSubmit(id, product);
+    onSubmit( product);
     reset();
   };
 

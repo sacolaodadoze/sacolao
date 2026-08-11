@@ -31,7 +31,7 @@ return new class extends Migration
             $table->decimal('price_per_kg', 10, 2)->nullable();
             $table->decimal('promo_price_per_kg', 10, 2)->nullable();
 
-            $table->decimal('average_weight', 8, 3)->nullable(); // peso medio
+            $table->decimal('average_weight', 8, 2)->nullable(); // peso medio
 
             $table->string('unit')->nullable(); // kg, un, bandeja, maço...
             $table->decimal('stock', 10, 3)->default(0);
