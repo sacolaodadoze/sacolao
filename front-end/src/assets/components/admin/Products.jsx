@@ -575,10 +575,10 @@ export function Products() {
 
                     <td>
                       <IconButton
-                        // color=""
+                       color="primary"
                         size="small"
                         sx={{
-                          color: "#64748b",
+                          //color: "#64748b",
                           "&:hover": {
                             backgroundColor: "#14532d",
                             color: "#fff",
@@ -594,10 +594,10 @@ export function Products() {
 
                       {/* Save */}
                       <IconButton
-                        color="disabled"
+                        color="primary"
                         size="small"
                         sx={{
-                          color: "#64748b",
+                          //color: "#64748b",
                           "&:hover": {
                             backgroundColor: "#14532d",
                             color: "#fff",
@@ -606,6 +606,7 @@ export function Products() {
                         onClick={() => {
                           handleSaveProduct(product);
                         }}
+                        disabled={!isConfigured(product)}
                       >
                         <SaveIcon />
                       </IconButton>
