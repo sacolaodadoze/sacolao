@@ -18,7 +18,7 @@ import {
 
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import AddIcon from '@mui/icons-material/Add';
+import AddIcon from "@mui/icons-material/Add";
 import { CategoryModal } from "./CategoryModal.jsx";
 import { useNotification } from "../../context/NotificationContext.jsx";
 import { apiFetch } from "../../../api/apiFetch.js";
@@ -83,9 +83,15 @@ export function Categories() {
     setOpenModal(true);
   };
 
+  const categoriesForTable = categories.flatMap((category) => [
+    category,
+    ...(category.children || []),
+  ]);
+
   const handleSaveCategory = async (data) => {
+    console.log(data);
     try {
-     // await apiFetch("/sanctum/csrf-cookie");
+      // await apiFetch("/sanctum/csrf-cookie");
 
       if (selectedCategory) {
         const response = await apiFetch(
@@ -109,9 +115,9 @@ export function Categories() {
           body: JSON.stringify(data),
         });
         if (response.ok) {
-          showNotification(LANG.CATEGORIES.SUCCESSADD, "success");
-          await loadCategories();
           setOpenModal(false);
+          await loadCategories();
+          showNotification(LANG.CATEGORIES.SUCCESSADD, "success");
           setSelectedCategory(null);
         } else {
           showNotification(LANG.CATEGORIES.ERRORADD, "error");
@@ -178,6 +184,7 @@ export function Categories() {
   if (loading) {
     return <Loader />;
   }
+
   return (
     <>
       <Box>
@@ -189,7 +196,9 @@ export function Categories() {
             mb: 3,
           }}
         >
-          <Typography variant="h5" className="page-title">{LANG.CATEGORIES.CATEGORIES}</Typography>
+          <Typography variant="h5" className="page-title">
+            {LANG.CATEGORIES.CATEGORIES}
+          </Typography>
 
           <Button
             variant="outlined"
@@ -210,7 +219,7 @@ export function Categories() {
               setOpenModal(true);
             }}
           >
-            <AddIcon fontSize="small"/>  {LANG.CATEGORIES.CATEGORY}
+            <AddIcon fontSize="small" /> {LANG.CATEGORIES.CATEGORY}
           </Button>
         </Box>
 
@@ -227,9 +236,46 @@ export function Categories() {
             </thead>
 
             <tbody>
-              {categories.map((category) => (
+              {/*  {categories.map((category) => (
                 <tr key={category.id}>
-                  <td>{category.name}</td>
+                  <td>
+                    {category.parent?.name && `${category.parent.name} / `}
+                    {category.name}
+                  </td>
+
+                  <td>{category.slug}</td>
+
+                  <td>{category.position}</td>
+
+                  <td>
+                    <Switch
+                      checked={category.active}
+                      disabled={active === category.id}
+                      onChange={() => handleActiveChange(category)}
+                    />
+                  </td>
+
+                  <td align="right">
+                    <IconButton onClick={() => handleEdit(category)}>
+                      <EditIcon />
+                    </IconButton>
+
+                    <IconButton
+                      color="error"
+                      onClick={() => handleDelete(category.id)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </td>
+                </tr>
+              ))} */}
+
+              {categoriesForTable.map((category) => (
+                <tr key={category.id}>
+                  <td>
+                    {category.parent_id && "↳ "}
+                    {category.name}
+                  </td>
 
                   <td>{category.slug}</td>
 
@@ -272,6 +318,7 @@ export function Categories() {
       <CategoryModal
         open={openModal}
         initialData={selectedCategory}
+        categories={categories}
         onClose={() => {
           setOpenModal(false);
           setSelectedCategory(null);

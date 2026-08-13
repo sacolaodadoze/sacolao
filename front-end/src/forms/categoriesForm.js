@@ -6,4 +6,5 @@ export const schema = z.object({
   position: z.coerce.number().min(1, LANG.GLOBAL.REQUIRED),
   active: z.boolean().default(true),
   image: z.string().nullable().optional(),
+  parent_id: z.number().nullable().optional(),
 });

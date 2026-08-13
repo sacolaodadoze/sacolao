@@ -1,23 +1,23 @@
 import React, { useState } from "react";
-import {SettingsForm} from "./SettingsForm";
+import { SettingsForm } from "./SettingsForm";
 import { DeliverySettingsForm } from "./DeliverySettingsForm";
-import {DeliveryRatesForm} from "./DeliveryRates";
-import SettingsIcon from '@mui/icons-material/Settings';
-import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
-import InventoryIcon from '@mui/icons-material/Inventory';
-import CategoryIcon from '@mui/icons-material/Category';
+import { DeliveryRatesForm } from "./DeliveryRates";
+import SettingsIcon from "@mui/icons-material/Settings";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import ShoppingCartCheckoutIcon from "@mui/icons-material/ShoppingCartCheckout";
+import InventoryIcon from "@mui/icons-material/Inventory";
+import CategoryIcon from "@mui/icons-material/Category";
 import { Categories } from "./Categories";
 import { Products } from "./Products";
 //import "./admin.css";
 
 const menuItems = [
-  { name: "Produtos", icon:<InventoryIcon/> /* "📦" */ },
+  { name: "Produtos", icon: <InventoryIcon /> /* "📦" */ },
   { name: "Categorias", icon: <CategoryIcon /> /* "🗂️" */ },
-  { name: "Promoções", icon:<ShoppingCartCheckoutIcon/> /* "💸" */ },
+  { name: "Promoções", icon: <ShoppingCartCheckoutIcon /> /* "💸" */ },
   { name: "Taxa", icon: "💱" },
-  { name: "Agendamento", icon: <CalendarMonthIcon /> /* "📅"  */},
-   { name: "Configuração", icon: <SettingsIcon /> /* "⚙️" */ },
+  { name: "Agendamento", icon: <CalendarMonthIcon /> /* "📅"  */ },
+  { name: "Configuração", icon: <SettingsIcon /> /* "⚙️" */ },
 ];
 
 export default function Admin() {
@@ -26,8 +26,9 @@ export default function Admin() {
   return (
     <div className="admin-container">
       {/* Sidebar */}
+
       <aside className="sidebar">
-       {/*  <div className="logo">Administración</div> */}
+        {/*  <div className="logo">Administración</div> */}
 
         <nav>
           {menuItems.map((item) => (
@@ -45,22 +46,12 @@ export default function Admin() {
 
       {/* Main content */}
       <main className="main-content">
-      {/*   <h1>{active}</h1>     */} 
-        {active === "Configuração" && (
-          <SettingsForm />
-        )} 
-          {active === "Agendamento" && (
-          <DeliverySettingsForm />
-        )} 
-         {active === "Taxa" && (
-          <DeliveryRatesForm />
-        )}
-          {active === "Categorias" && ( 
-            <Categories />
-          )}
-          {active === "Produtos" && ( 
-            <Products />
-          )}
+        {/*   <h1>{active}</h1>     */}
+        {active === "Configuração" && <SettingsForm />}
+        {active === "Agendamento" && <DeliverySettingsForm />}
+        {active === "Taxa" && <DeliveryRatesForm />}
+        {active === "Categorias" && <Categories />}
+        {active === "Produtos" && <Products />}
       </main>
     </div>
   );

@@ -81,9 +81,9 @@ export function ProductModal({ product, open, onClose }) {
           {product.week_offer && (
             <Chip size="small" color="warning" label="🥩 Oferta" />
           )}
-          {outOfStock && (
+         {/*  {outOfStock && (
             <Chip size="small" color="default" label="Indisponível" />
-          )}
+          )} */}
         </Box>
         {/* nombre */}
         <Typography variant="h5" className="product-title">
@@ -164,7 +164,7 @@ export function ProductModal({ product, open, onClose }) {
           ) : (
             <IconButton
               onClick={() => addToCart(product)}
-              disabled={outOfStock}
+             // disabled={outOfStock}
               sx={{
                 bgcolor: "accent.yellow",
                 backgroundColor: "#f5c518",

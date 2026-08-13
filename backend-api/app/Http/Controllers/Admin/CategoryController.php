@@ -12,19 +12,30 @@ class CategoryController extends Controller
 {
     public function index()
     {
-        $categories = Category::orderBy('position')
+        $categories = Category::whereNull('parent_id')
+            ->with(['children' => function ($query) {
+                $query->orderBy('position');
+            }])
+            ->orderBy('position')
             ->get();
         return response()->json($categories);
     }
 
+
     public function store(Request $request)
     {
+        //dd($request->all());
         $request->validate([
             'slug' => [
                 'required',
                 'string',
                 'regex:/^[a-z0-9-]+$/',
-               Rule::unique('categories')->ignore($request->id),
+                Rule::unique('categories')->ignore($request->id),
+            ],
+            'parent_id' => [
+                'nullable',
+                'exists:categories,id',
+                'not_in:' . $request->id,
             ],
         ]);
         Category::create($request->all());

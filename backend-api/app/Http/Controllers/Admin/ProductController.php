@@ -116,6 +116,7 @@ class ProductController extends Controller
         if ($request['unit'] === 'KG' && $request['average_weight'] > 0) {
             $data['price_per_unit'] = $request['price'] * $request['average_weight'] /* / 1000 */; // gramos → kg;
         }
+       // $peso=explode('.', $request['average_weight']).join(',',);
 
         $description = ($request['unit'] == "KG")
             ?  "Produto vendido por "

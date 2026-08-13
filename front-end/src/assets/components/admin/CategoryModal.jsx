@@ -8,6 +8,7 @@ import {
   FormControlLabel,
   Checkbox,
   Box,
+  MenuItem,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -17,7 +18,13 @@ import { LANG } from "../../constants/languages.js";
 import { zodResolver } from "@hookform/resolvers/zod"; //validaciones
 import { schema } from "../../../forms/categoriesForm.js";
 
-export function CategoryModal({ open, onClose, onSubmit, initialData = null }) {
+export function CategoryModal({
+  open,
+  initialData = null,
+  categories,
+  onClose,
+  onSubmit,
+}) {
   //console.log("initialData:", initialData);
   const {
     control,
@@ -34,6 +41,7 @@ export function CategoryModal({ open, onClose, onSubmit, initialData = null }) {
       position: initialData?.position || 0,
       active: initialData?.active ?? true,
       image: initialData?.image || "",
+      parent_id: initialData?.parent_id ?? null,
     },
   });
 
@@ -57,6 +65,7 @@ export function CategoryModal({ open, onClose, onSubmit, initialData = null }) {
         position: 0,
         active: true,
         image: "",
+        parent_id: null,
       });
     }
   }, [open, initialData, reset]);
@@ -139,6 +148,35 @@ export function CategoryModal({ open, onClose, onSubmit, initialData = null }) {
                 label={LANG.CATEGORIES.IMAGE}
                 fullWidth
               />
+            )}
+          />
+
+          <Controller
+            name="parent_id"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                select
+                label="Categoria principal"
+                fullWidth
+                value={field.value ?? ""}
+                onChange={(e) =>
+                  field.onChange(
+                    e.target.value === "" ? null : Number(e.target.value),
+                  )
+                }
+              >
+                <MenuItem value="">Nenhuma (categoria principal)</MenuItem>
+
+                {categories
+                  .filter((category) => category.parent_id === null)
+                  .map((category) => (
+                    <MenuItem key={category.id} value={category.id}>
+                      {category.name}
+                    </MenuItem>
+                  ))}
+              </TextField>
             )}
           />
 

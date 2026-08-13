@@ -65,7 +65,6 @@ export function Products() {
     if (product.unit === "KG") {
       return !!product.category_id && product.average_weight > 0;
     }
-
     return !!product.category_id;
   };
 
@@ -121,7 +120,7 @@ export function Products() {
   }, []);
 
   const handleSaveProduct = async (product) => {
-    console.log(product);
+    //console.log(product);
     setLoadingSave(true);
     try {
       const res = await apiFetch(`/api/products/${product.id}`, {
@@ -226,90 +225,92 @@ export function Products() {
           </Button>
         </Box>
 
-        <Box
-          className="filters"
-          sx={{
-            display: "flex",
-            gap: 2,
-            mb: 2,
-          }}
-        >
-          <TextField
-            size="small"
-            label="Buscar"
-            placeholder={LANG.PRODUCTS.PLACEHOLDERSEARCH}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            sx={{ width: 300 }}
-          />
-
-          <Select
-            size="small"
-            value={categoryId}
-            onChange={(e) => setCategoryId(e.target.value)}
-            displayEmpty
-            /*  sx={{ minWidth: 220 }} */
+        <div /* className="sticky-header" */>
+          <Box
+            className="filters"
+            sx={{
+              display: "flex",
+              gap: 2,
+              mb: 2,
+            }}
           >
-            <MenuItem value="">Categorias</MenuItem>
+            <TextField
+              size="small"
+              label="Buscar"
+              placeholder={LANG.PRODUCTS.PLACEHOLDERSEARCH}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              sx={{ width: 300 }}
+            />
 
-            {categories.map((category) => (
-              <MenuItem key={category.id} value={category.id}>
-                {category.name}
+            <Select
+              size="small"
+              value={categoryId}
+              onChange={(e) => setCategoryId(e.target.value)}
+              displayEmpty
+              /*  sx={{ minWidth: 220 }} */
+            >
+              <MenuItem value="">Categorias</MenuItem>
+
+              {categories.map((category) => (
+                <MenuItem key={category.id} value={category.id}>
+                  {category.name}
+                </MenuItem>
+              ))}
+            </Select>
+
+            <Select
+              size="small"
+              value={unit}
+              onChange={(e) => setUnit(e.target.value)}
+              displayEmpty
+              sx={{ textAlign: "center" }}
+            >
+              <MenuItem value="">Unidade</MenuItem>
+              <MenuItem value="UN">UN</MenuItem>
+              <MenuItem value="KG">KG</MenuItem>
+            </Select>
+
+            <Select
+              size="small"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              textAlign="center"
+              displayEmpty
+            >
+              <MenuItem value="">Estado</MenuItem>
+              <MenuItem value="configured">
+                <Chip label="✓" color="success" size="small" />
               </MenuItem>
-            ))}
-          </Select>
+              <MenuItem value="pending">
+                <Chip label="⚠" color="warning" size="small" />
+              </MenuItem>
+            </Select>
 
-          <Select
-            size="small"
-            value={unit}
-            onChange={(e) => setUnit(e.target.value)}
-            displayEmpty
-            sx={{ textAlign: "center" }}
-          >
-            <MenuItem value="">Unidade</MenuItem>
-            <MenuItem value="UN">UN</MenuItem>
-            <MenuItem value="KG">KG</MenuItem>
-          </Select>
-
-          <Select
-            size="small"
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            textAlign="center"
-            displayEmpty
-          >
-            <MenuItem value="">Estado</MenuItem>
-            <MenuItem value="configured">
-              <Chip label="✓" color="success" size="small" />
-            </MenuItem>
-            <MenuItem value="pending">
-              <Chip label="⚠" color="warning" size="small" />
-            </MenuItem>
-          </Select>
-
-          <Button
-            variant="contained"
-            size="small"
-            startIcon={<SearchIcon />}
-            sx={{
-              borderRadius: "12px",
-            }}
-            onClick={handleSearch}
-          >
-            {LANG.PRODUCTS.SEARCH}
-          </Button>
-          <Button
-            variant="outlined"
-            size="small"
-            startIcon={<ClearIcon />}
-            sx={{
-              borderRadius: "12px",
-            }}
-            onClick={handleClear}
-          >
-            {LANG.PRODUCTS.CLEAN}
-          </Button>
-        </Box>
+            <Button
+              variant="contained"
+              size="small"
+              startIcon={<SearchIcon />}
+              sx={{
+                borderRadius: "12px",
+              }}
+              onClick={handleSearch}
+            >
+              {LANG.PRODUCTS.SEARCH}
+            </Button>
+            <Button
+              variant="outlined"
+              size="small"
+              startIcon={<ClearIcon />}
+              sx={{
+                borderRadius: "12px",
+              }}
+              onClick={handleClear}
+            >
+              {LANG.PRODUCTS.CLEAN}
+            </Button>
+          </Box>
+        </div>
 
         {/* Table */}
         <Box sx={{ position: "relative" }}>
@@ -331,23 +332,24 @@ export function Products() {
 
           <TableContainer component={Paper}>
             <table className="table">
-              <thead>
-                <tr>
-                  {/* <th>Código</th> */}
-                  <th style={{ width: "93px" }}>Imagen</th>
-                  <th>Produto</th>
-                  <th style={{ width: "190px" }}>Categoria</th>
-                  <th style={{ width: "101px" }}>Unidade</th>
-                  <th style={{ width: "100px" }}>Peso medio</th>
-                  <th style={{ width: "90px" }}>Preço</th>
+            {/*   <div className="sticky-header-table"> */}
+                <thead >
+                  <tr>
+                    {/* <th>Código</th> */}
+                    <th style={{ width: "93px" }}>Imagen</th>
+                    <th>Produto</th>
+                    <th style={{ width: "190px" }}>Categoria</th>
+                    <th style={{ width: "101px" }}>Unidade</th>
+                    <th style={{ width: "100px" }}>Peso medio</th>
+                    <th style={{ width: "90px" }}>Preço</th>
 
-                  {/*  <th style={{ width: "107px" }}>Estoque</th> */}
-                  {/*  <th style={{ width: "80px" }}>Ativo</th> */}
-                  <th style={{ width: "90px" }}>Ações</th>
-                  <th style={{ width: "94px" }}>Estado</th>
-                </tr>
-              </thead>
-
+                    {/*  <th style={{ width: "107px" }}>Estoque</th> */}
+                    {/*  <th style={{ width: "80px" }}>Ativo</th> */}
+                    <th style={{ width: "90px" }}>Ações</th>
+                    <th style={{ width: "94px" }}>Estado</th>
+                  </tr>
+                </thead>
+              {/* </div> */}
               <tbody>
                 {products.map((product) => (
                   <tr key={product.id}>
@@ -440,7 +442,11 @@ export function Products() {
                         }}
                       /> */}
                       <TextField
-                        value={product.average_weight || ""}
+                        value=  /*  {new Intl.NumberFormat("pt-BR", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              }).format( product.average_weight || "")} */
+                          { product.average_weight || ""} 
                         type="number"
                         disabled={product.unit !== "KG"}
                         onChange={(e) => {
@@ -575,7 +581,7 @@ export function Products() {
 
                     <td>
                       <IconButton
-                       color="primary"
+                        color="primary"
                         size="small"
                         sx={{
                           //color: "#64748b",
