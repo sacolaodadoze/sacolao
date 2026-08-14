@@ -18,9 +18,9 @@ export default function UserMenu() {
 
   return (
     <>
-      <Tooltip title={`${user?.name || "User"}`}>
+      <Tooltip title={`${user?.name || "User"}`}arrow>
         <IconButton
-          title={`${user?.name || "User"}`}
+          /* title={`${user?.name || "User"}`} */
           size="small"
           className="btn-login"
           /* sx={{ bgcolor: '#15803d',border: '1px solid #facc15' }}  */ onClick={

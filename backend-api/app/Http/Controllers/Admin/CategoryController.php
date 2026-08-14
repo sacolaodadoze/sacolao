@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Category;
 use Illuminate\Validation\Rule;
 
+use function Laravel\Prompts\alert;
 
 class CategoryController extends Controller
 {
@@ -47,7 +48,12 @@ class CategoryController extends Controller
 
     public function update(Request $request, Category $category)
     {
-        $category->update($request->all());
+        // dd($category);
+        $category->update($request->except(['children'])  /* $request->all() */);
+
+        if ($category->children()->exists()) {            
+            $category->children()->update(['active' => $category->active ]);
+        }
 
         return response()->json([
             'message' => 'Categoria atualizada'

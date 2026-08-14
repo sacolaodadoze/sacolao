@@ -29,30 +29,7 @@ import Swal from "sweetalert2";
 export function Categories() {
   const [loading, setLoading] = useState(false);
   const [openModal, setOpenModal] = useState(false);
-  const [categories, setCategories] = useState([
-    /* 
-    {
-      id: 1,
-      name: "Frutas",
-      slug: "frutas",
-      position: 1,
-      active: true,
-    },
-    {
-      id: 2,
-      name: "Verduras",
-      slug: "verduras",
-      position: 2,
-      active: true,
-    },
-    {
-      id: 3,
-      name: "Bebidas",
-      slug: "bebidas",
-      position: 3,
-      active: false,
-    }, */
-  ]);
+  const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const { showNotification } = useNotification();
   const [active, setActive] = useState(null);
@@ -83,16 +60,15 @@ export function Categories() {
     setOpenModal(true);
   };
 
+  //Listar los hijos ne la tabla
   const categoriesForTable = categories.flatMap((category) => [
     category,
     ...(category.children || []),
   ]);
 
   const handleSaveCategory = async (data) => {
-    console.log(data);
+    // console.log(data);
     try {
-      // await apiFetch("/sanctum/csrf-cookie");
-
       if (selectedCategory) {
         const response = await apiFetch(
           `/api/categories/${selectedCategory.id}`,
@@ -140,11 +116,36 @@ export function Categories() {
         }),
       });
 
-      setCategories((prev) =>
+      /* TODO me quede aqui */
+      /* setCategories((prev) =>
         prev.map((c) =>
           c.id === category.id ? { ...c, active: !c.active } : c,
         ),
-      );
+      ); */
+      setCategories((prev) => {       
+
+        const nuevasCategorias = prev.map((c) => {
+          if (c.id === category.id) {
+            const nuevoEstadoPadre = !c.active;
+
+            // Al activar o desactivar el padre, todos los hijos toman su mismo valor
+            const hijosActualizados = c.children?.map((hijo) => ({
+              ...hijo,
+              active: nuevoEstadoPadre,
+            }));
+
+            return {
+              ...c,
+              active: nuevoEstadoPadre,
+              children: hijosActualizados,
+            };
+          }
+          return c;
+        });
+        return nuevasCategorias;
+      });
+
+      showNotification(LANG.CATEGORIES.SUCCESSEDIT, "success");
       setActive(null);
     } catch (error) {
       console.error(error);

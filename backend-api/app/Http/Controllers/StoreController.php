@@ -17,6 +17,7 @@ use App\Models\Detail;
 use App\Models\Observation;
 use Illuminate\Support\Facades\Auth;
 use App\Services\GeocodingService;
+use App\Models\OrderCapacity;
 
 class StoreController extends Controller
 {
@@ -30,6 +31,12 @@ class StoreController extends Controller
     public function settings()
     {
         $settings = Setting::first();
+         $today    = now()->toDateString();
+        $capacity = OrderCapacity::where('date', $today)->first();
+
+        // agregás los cupos al objeto de settings
+        $settings->delivery_morning   = $capacity?->morning_slots   ?? 0;
+        $settings->delivery_afternoon = $capacity?->afternoon_slots ?? 0;
         return response()->json($settings);
     }
 
@@ -89,9 +96,11 @@ class StoreController extends Controller
 
         return response()->json($products);
     }
+
     public function categories()
     {
         $categories = Category::whereNull('parent_id')
+            ->where('active', 'true')
             ->with('children')
             ->orderBy('position')
             ->get();
@@ -211,13 +220,49 @@ class StoreController extends Controller
         //dd($settings->is_closed,$request->delivery_date);
         // Pedido para hoy
         if (
-            ($settings->is_closed &&  $request->delivery_date === now()->toDateString()) 
+            ($settings->is_closed &&  $request->delivery_date === now()->toDateString())
             || ($settings->is_closed &&  $request->delivery_date === null)
 
         ) {
             return response()->json([
                 'message' => 'Não é possível realizar entregas para hoje.'
             ], 422);
+        }
+
+
+        $orderDate = $data['delivery_date'] ?? now()->toDateString();
+        $closeMorningHour = (int) explode(":", $settings->weekday_close_morning)[0];
+
+        $hour      = $data['delivery_hour']
+            ? (int) explode(":", $data['delivery_hour'])[0]
+            : now()->hour;
+
+        $isMorning = $hour < $closeMorningHour;
+
+        $capacity = OrderCapacity::firstOrCreate(
+            ['date' => $orderDate],
+            [
+                'morning_slots'   => $settings->delivery_morning,
+                'afternoon_slots' => $settings->delivery_afternoon,
+            ]
+        );
+
+        // contás pedidos del día en ese turno
+        $morningOrders   = Order::whereDate('created_at', $orderDate)
+            ->whereRaw('HOUR(delivery_hour) < ?', [$closeMorningHour])
+            ->count();
+
+        $afternoonOrders = Order::whereDate('created_at', $orderDate)
+            ->whereRaw('HOUR(delivery_hour) >= ?', [$closeMorningHour])
+            ->count();
+
+        // verificás cupos
+        if ($isMorning && $morningOrders >= $capacity->morning_slots) {
+            return response()->json(['error' => 'Sem vagas para o turno da manhã'], 422);
+        }
+
+        if (!$isMorning && $afternoonOrders >= $capacity->afternoon_slots) {
+            return response()->json(['error' => 'Sem vagas para o turno da tarde'], 422);
         }
 
         $order = DB::transaction(function () use ($data, $customer) {

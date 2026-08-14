@@ -119,8 +119,9 @@ export function Products() {
     loadCategories();
   }, []);
 
-  const handleSaveProduct = async (product) => {
+  const handleSaveProduct = async (product, e) => {
     //console.log(product);
+    if (e && e.preventDefault) e.preventDefault();
     setLoadingSave(true);
     try {
       const res = await apiFetch(`/api/products/${product.id}`, {
@@ -134,13 +135,43 @@ export function Products() {
         setOpenModal(false);
         setSelectedProduct(null);
         showNotification(LANG.PRODUCTS.SUCCESSUPD, "success");
-        await loadProducts(
+
+        /*  setProducts((prev) =>
+        prev.map((p) =>
+          p.id === product.id ? { ...p, active: !p.active } : p,
+        ),
+      ); */
+        /*  await loadProducts(
           perPage,
           currentPage,
           search,
           categoryId,
           unit,
           statusFilter,
+        );  */
+
+        setProducts((prev) =>
+          prev.map((p) => {
+            if (p.id === product.id) {
+              // Unimos lo que ya tenía el producto con los nuevos checkboxes del modal
+              const productoActualizado = { ...p, ...product };
+
+              // 3. CÁLCULO AUTOMÁTICO DE PRECIO EN CALIENTE
+              if (productoActualizado.unit === "KG") {
+                const peso = Number(productoActualizado.average_weight) || 0;
+
+                // Ajusta 'price_per_kilo' al nombre real de tu campo de precio base
+                const precioBase =
+                  Number(productoActualizado.price_per_kilo) || 0;
+
+                // Modifica el precio final en el estado local de React
+                productoActualizado.price = peso * precioBase;
+              }
+
+              return productoActualizado;
+            }
+            return p;
+          }),
         );
       }
     } catch (error) {
@@ -246,7 +277,10 @@ export function Products() {
             <Select
               size="small"
               value={categoryId}
-              onChange={(e) => setCategoryId(e.target.value)}
+              onChange={(e) => {
+                
+                setCategoryId(e.target.value);
+              }}
               displayEmpty
               /*  sx={{ minWidth: 220 }} */
             >
@@ -264,7 +298,7 @@ export function Products() {
               value={unit}
               onChange={(e) => setUnit(e.target.value)}
               displayEmpty
-              sx={{ textAlign: "center" }}
+              sx={{ textalign: "center" }}
             >
               <MenuItem value="">Unidade</MenuItem>
               <MenuItem value="UN">UN</MenuItem>
@@ -275,7 +309,7 @@ export function Products() {
               size="small"
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              textAlign="center"
+              textalign="center"
               displayEmpty
             >
               <MenuItem value="">Estado</MenuItem>
@@ -332,23 +366,23 @@ export function Products() {
 
           <TableContainer component={Paper}>
             <table className="table">
-            {/*   <div className="sticky-header-table"> */}
-                <thead >
-                  <tr>
-                    {/* <th>Código</th> */}
-                    <th style={{ width: "93px" }}>Imagen</th>
-                    <th>Produto</th>
-                    <th style={{ width: "190px" }}>Categoria</th>
-                    <th style={{ width: "101px" }}>Unidade</th>
-                    <th style={{ width: "100px" }}>Peso medio</th>
-                    <th style={{ width: "90px" }}>Preço</th>
+              {/*   <div className="sticky-header-table"> */}
+              <thead>
+                <tr>
+                  {/* <th>Código</th> */}
+                  <th style={{ width: "93px" }}>Imagen</th>
+                  <th>Produto</th>
+                  <th style={{ width: "190px" }}>Categoria</th>
+                  <th style={{ width: "101px" }}>Unidade</th>
+                  <th style={{ width: "100px" }}>Peso medio</th>
+                  <th style={{ width: "90px" }}>Preço</th>
 
-                    {/*  <th style={{ width: "107px" }}>Estoque</th> */}
-                    {/*  <th style={{ width: "80px" }}>Ativo</th> */}
-                    <th style={{ width: "90px" }}>Ações</th>
-                    <th style={{ width: "94px" }}>Estado</th>
-                  </tr>
-                </thead>
+                  {/*  <th style={{ width: "107px" }}>Estoque</th> */}
+                  {/*  <th style={{ width: "80px" }}>Ativo</th> */}
+                  <th style={{ width: "90px" }}>Ações</th>
+                  <th style={{ width: "94px" }}>Estado</th>
+                </tr>
+              </thead>
               {/* </div> */}
               <tbody>
                 {products.map((product) => (
@@ -407,8 +441,8 @@ export function Products() {
                         </Select>
                       </Tooltip>
                     </td>
-                    <td style={{ textAlign: "center" }}>{product.unit}</td>
-                    <td style={{ textAlign: "center" }}>
+                    <td style={{ textalign: "center" }}>{product.unit}</td>
+                    <td style={{ textalign: "center" }}>
                       {/* {product.average_weight} */}
                       {/*       <TextField
                         //  value={product.average_weight?.toFixed(2) || ""}
@@ -442,11 +476,12 @@ export function Products() {
                         }}
                       /> */}
                       <TextField
-                        value=  /*  {new Intl.NumberFormat("pt-BR", {
+                        value /*  {new Intl.NumberFormat("pt-BR", {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
-              }).format( product.average_weight || "")} */
-                          { product.average_weight || ""} 
+              }).format( product.average_weight || "")} */={
+                          product.average_weight || ""
+                        }
                         type="number"
                         disabled={product.unit !== "KG"}
                         onChange={(e) => {
@@ -486,7 +521,7 @@ export function Products() {
                         }}
                       />
                     </td>
-                    <td style={{ textAlign: "center" }}>
+                    <td style={{ textalign: "center" }}>
                       R${" "}
                       {product.calculated_price !== undefined &&
                       product.calculated_price !== ""
@@ -513,7 +548,7 @@ export function Products() {
 
                     {/*     <td
                       style={{
-                        textAlign: "center",
+                        textalign: "center",
                         color: product.stock <= 0 ? "red" : "inherit",
                         fontWeight: product.stock <= 0 ? "bold" : "normal",
                       }}
@@ -621,7 +656,7 @@ export function Products() {
                       <DeleteIcon />
                     </IconButton> */}
                     </td>
-                    <td style={{ textAlign: "center" }}>
+                    <td style={{ textalign: "center" }}>
                       {isConfigured(product) ? (
                         <Tooltip title="Configurado" arrow>
                           <Chip label="✓" color="success" size="small" />
@@ -641,7 +676,7 @@ export function Products() {
                     <td
                       colSpan={9}
                       style={{
-                        textAlign: "center",
+                        textalign: "center",
                         padding: "20px",
                       }}
                     >

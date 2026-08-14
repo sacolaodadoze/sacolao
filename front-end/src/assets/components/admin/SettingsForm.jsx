@@ -130,14 +130,12 @@ export function SettingsForm() {
   //console.log(errors)
 
   // SAVE
-  const onSubmit = async (data) => {
-    console.log("entro");
-    console.info(data);
+  const onSubmit = async (data) => {   
+    //console.info(data);
     setLoadingSave(true);
-
     try {
-      /*      await apiFetch("/sanctum/csrf-cookie"); */
-
+          /*  await apiFetch("/sanctum/csrf-cookie"); 
+ */
       await apiFetch("/api/settings", {
         method: "PUT",
         body: JSON.stringify(data),
