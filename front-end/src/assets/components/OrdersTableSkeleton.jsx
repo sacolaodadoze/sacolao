@@ -1,6 +1,6 @@
 import { Skeleton} from "@mui/material";
 
-export const OrdersTableSkeleton = ({ rows = 6 }) => (
+export const OrdersTableSkeleton = ({ rows = 8 }) => (
   <>
     {[...Array(rows)].map((_, index) => (
       <tr key={index}>
@@ -27,6 +27,16 @@ export const OrdersTableSkeleton = ({ rows = 6 }) => (
         {/* Estado */}
         <td>
           <Skeleton width={80} />
+        </td>
+
+         {/* Agendado */}
+        <td>
+          <Skeleton width={50} />
+        </td>
+
+           {/* Retirado */}
+        <td>
+          <Skeleton width={40} />
         </td>
 
         {/* Acciones */}

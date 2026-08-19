@@ -15,6 +15,7 @@ use Maatwebsite\Excel\Concerns\ToCollection;
 use Illuminate\Support\Collection;
 use App\Services\GeocodingService;
 use App\Services\VuuptService;
+use Illuminate\Support\Facades\Log;
 
 
 
@@ -42,27 +43,52 @@ class CustomerImport implements ToCollection, WithHeadingRow, WithChunkReading
         $this->totalRows += $rows->count(); // suma por chunk
         //$customersToInsert = [];
 
+        \Log::info('CHUNK', [
+            'cantidad' => $rows->count(),
+            'primera' => $rows->first()['cnpjcpf'] ?? null,
+            'ultima' => $rows->last()['cnpjcpf'] ?? null,
+        ]);
 
         DB::transaction(function () use ($rows, &$customersToInsert) {
             /****** Trae solo los clientes que cumplen las dos condiciones:
                 document está en la lista del CSV ,customer_code es NULL *******/
             // $documents = [];
 
-            foreach ($rows as $row) {
+            foreach ($rows as $index => $row) {
 
                 //$document = (new ImportHelper())->validatedValue($row, 'cnpjcpf');
                 $document = preg_replace('/\D/', '', trim($row['cnpjcpf'] ?? ''));
-                // dd($document);
+
 
                 if ($document !== '' && !isset($documents[$document])) {
                     // if ($document && !isset($documents[$document])) {
                     $documents[$document] =  $row['codigo'];
                 }
             }
+            // dd($documents);
 
             $existingCustomers = Customer::whereIn('document', array_keys($documents))
                 ->whereNull('customer_code')
                 ->get();
+               /*   dd([
+   'csv' => $documents['42874937886'] ?? 'NO ESTA EN CSV',
+
+    'bd' => Customer::where('document', '42874937886')->first(), 
+]);*/
+         /*    dd([
+                'documentos_csv' => array_keys($documents),
+                'cantidad_csv' => count($documents),
+
+                'clientes_sin_codigo' => Customer::whereIn(
+                    'document',
+                    array_keys($documents)
+                )->whereNull('customer_code')->get(),
+
+                'clientes_con_documento' => Customer::whereIn(
+                    'document',
+                    array_keys($documents)
+                )->get(),
+            ]); */
 
             foreach ($existingCustomers as $customer) {
                 // dd($customer);  
@@ -85,7 +111,7 @@ class CustomerImport implements ToCollection, WithHeadingRow, WithChunkReading
                         ($data['addresses'][0]['cep'] ?? ''),
                     'phone_number' => $data['phones'][0]['number'] ?? "",
                 ];
-              
+
                 //dd($customerData);
                 $this->vuuptService->storeCustomer($customerData);
                 //  $customersToInsert[] = $customer;                
@@ -145,10 +171,9 @@ class CustomerImport implements ToCollection, WithHeadingRow, WithChunkReading
                 ->get()
                 ->keyBy('customer_code');
 
-            /*  dd(
-    count($codes),
-    $customersDB->count(),
-    Customer::count()  ); */
+            \Log::info('FIN CHUNK', [
+                'cantidad' => $rows->count(),
+            ]);
 
             //Insertar endereços e telefones
             foreach ($rows as $row) {

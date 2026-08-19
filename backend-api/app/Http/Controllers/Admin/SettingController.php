@@ -17,6 +17,8 @@ class SettingController extends Controller
         
         $settings->delivery_morning   = $capacity?->morning_slots   ?? 0;
         $settings->delivery_afternoon = $capacity?->afternoon_slots ?? 0;
+         $settings->delivery_saturday = $capacity?->saturday_slots ?? 0;
+        $settings->delivery_sunday = $capacity?->sunday_slots ?? 0;
 
         return response()->json($settings);
     }
@@ -34,6 +36,8 @@ class SettingController extends Controller
             [
                 'morning_slots'   => $request->delivery_morning,
                 'afternoon_slots' => $request->delivery_afternoon,
+                'saturday_slots' => $request->delivery_saturday,
+                'sunday_slots' => $request->delivery_sunday,
             ]
         );
         

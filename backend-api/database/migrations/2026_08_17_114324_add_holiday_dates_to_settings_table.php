@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('products', function (Blueprint $table) {
-           // $table->decimal('price_hiper', 10, 2)->nullable();
+        Schema::table('settings', function (Blueprint $table) {
+             $table->text('holiday_dates')->nullable(); // ej: "2026-09-07,2026-12-25,2026-01-01"
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('products', function (Blueprint $table) {
-        //  $table->dropColumn('price_hiper');
+        Schema::table('settings', function (Blueprint $table) {
+           $table->dropColumn('holiday_dates');
         });
     }
 };

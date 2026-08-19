@@ -1,4 +1,15 @@
-import { Paper, Typography, Divider, Box, Button, Alert } from "@mui/material";
+import {
+  Paper,
+  Typography,
+  Divider,
+  Box,
+  Button,
+  Alert,
+  Dialog,
+  DialogContent,
+  DialogActions,
+  DialogTitle
+} from "@mui/material";
 import { useFormContext } from "react-hook-form";
 import { useContext } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -13,11 +24,10 @@ import { SettingsContext } from "../context/SettingsContext.jsx";
 import { useDeliverySlots } from "../hooks/useDeliverySlots";
 import { useWatch } from "react-hook-form";
 
-export function CheckoutSummary({ checkoutError }) {
+export function CheckoutSummary({ checkoutError, scheduleConfirmation,onConfirmSchedule,onCancelSchedule }) {
   const { settings } = useContext(SettingsContext);
   //console.log( settings.is_closed,checkoutError);
   const { settingsDelivery } = useDeliverySlots();
-  // console.log("Sumary",settingsDelivery);
 
   const {
     watch,
@@ -35,10 +45,6 @@ export function CheckoutSummary({ checkoutError }) {
     0,
   );
 
-  //const delivery = 5; // luego vendrá de la BD
-
- 
-
   const scheduled = watch("scheduled");
   const deliveryDate = watch("delivery_date");
   const deliveryHour = watch("delivery_hour");
@@ -50,7 +56,7 @@ export function CheckoutSummary({ checkoutError }) {
   const state = useWatch({ control, name: "state" });
   const cep = useWatch({ control, name: "cep" });
 
-/*   const totalOrder = cartItems.reduce(
+  /*   const totalOrder = cartItems.reduce(
     (acc, item) => acc + item.unitPrice * item.quantity,
     0,
   ); */
@@ -76,11 +82,10 @@ export function CheckoutSummary({ checkoutError }) {
     staleTime: 0, // 0 porque el total puede cambiar si el cliente modifica el carrito
   });
 
-  const deliveryFee =parseFloat(rateData?.delivery_fee ?? 0);
-   const total = subtotal + deliveryFee;
- 
+  const deliveryFee = parseFloat(rateData?.delivery_fee ?? 0);
+  const total = subtotal + deliveryFee;
 
- // console.log(rateData);
+  // console.log(rateData);
 
   const prevision = checkoutError
     ? ""
@@ -149,37 +154,42 @@ export function CheckoutSummary({ checkoutError }) {
           {/* <Typography color="text.secondary">Entrega</Typography> */}
           <Typography>{/* R$ {delivery.toFixed(2)} */}</Typography>
           {deliveryType !== "pickup" && (
-  <>
-    <Divider sx={{ my: 2 }} />
-    <Typography variant="h6">Taxa de entrega</Typography>
+            <>
+              <Divider sx={{ my: 2 }} />
+              <Typography variant="h6">Taxa de entrega</Typography>
 
-    {isLoadingRate && (
-      <Typography variant="body2">Calculando...</Typography>
-    )}
+              {isLoadingRate && (
+                <Typography variant="body2">Calculando...</Typography>
+              )}
 
-    {rateData?.out_of_range && (
-      <Typography color="error">
-        Endereço fora da área de entrega
-      </Typography>
-    )}
+              {rateData?.out_of_range && (
+                <Typography color="error">
+                  Endereço fora da área de entrega
+                </Typography>
+              )}
 
-    {rateData?.rate && (
-      <>
-        {!rateData.meets_minimum && (
-          <Typography variant="caption" color="warning.main" sx={{ display: "block" }}>
-            Pedido mínimo para taxa reduzida: R$ {Number(rateData.rate.minimum_order).toFixed(2)}
-          </Typography>
-        )}
-        <Typography>
-          {Number(rateData.delivery_fee) === 0  // 👈 delivery_fee directo, no rate.delivery_fee
-            ? "Entrega grátis 🎉"
-            : `R$ ${Number(rateData.delivery_fee).toFixed(2)}`}{" "}
-          ({rateData.distance} km)
-        </Typography>
-      </>
-    )}
-  </>
-)}
+              {rateData?.rate && (
+                <>
+                  {!rateData.meets_minimum && (
+                    <Typography
+                      variant="caption"
+                      color="warning.main"
+                      sx={{ display: "block" }}
+                    >
+                      Pedido mínimo para taxa reduzida: R${" "}
+                      {Number(rateData.rate.minimum_order).toFixed(2)}
+                    </Typography>
+                  )}
+                  <Typography>
+                    {Number(rateData.delivery_fee) === 0 // 👈 delivery_fee directo, no rate.delivery_fee
+                      ? "Entrega grátis 🎉"
+                      : `R$ ${Number(rateData.delivery_fee).toFixed(2)}`}{" "}
+                    ({rateData.distance} km)
+                  </Typography>
+                </>
+              )}
+            </>
+          )}
         </Box>
 
         <Divider sx={{ mb: 2 }} />
@@ -245,23 +255,18 @@ export function CheckoutSummary({ checkoutError }) {
         >
           Finalizar Pedido
         </Button>
-        {/*   <Typography variant="h6" fontWeight={700} mb={3}>
-          Horário
-        </Typography>
-        <p style={{ textDecoration: "solid" }}>Segunda-feira a Sexta-feira</p>
-        <p>
-          {settings.weekday_open_morning} às {settings.weekday_close_morning} -{" "}
-          {settings.weekday_open_afternoon} às{" "}
-          {settings.weekday_close_afternoon}
-        </p>
-        <p style={{ textDecoration: "solid" }}>Sábado</p>
-        <p>
-          {settings.saturday_open} às {settings.saturday_close}
-        </p>
-        <p style={{ textDecoration: "solid" }}>Domingos e Feriados</p>
-        <p>
-          {settings.sunday_open} às {settings.sunday_close}
-        </p> */}
+        <Dialog open={!!scheduleConfirmation} onClose={onCancelSchedule}>
+          <DialogTitle>Confirmar horário de entrega</DialogTitle>
+          <DialogContent>
+            <Typography>{scheduleConfirmation?.message}</Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={onCancelSchedule}>Cancelar</Button>
+            <Button variant="contained" onClick={onConfirmSchedule}>
+              Confirmar
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Paper>
     </>
   );

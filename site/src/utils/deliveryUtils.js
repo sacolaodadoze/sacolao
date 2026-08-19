@@ -3,14 +3,15 @@ export function calculateEstimatedDelivery(settings, isPickup = false) {
   if (!settings || !timeStr) return null;
 
   const now = new Date();
-  // now.setHours(11, 0, 0, 0); // para probar manualmente
+  now.setDate(20); //cambiar el dia del mes
+  now.setHours(11, 0, 0, 0); // para probar manualmente
 
-  const nowMins    = now.getHours() * 60 + now.getMinutes();
-  const deliveryTime = parseInt(timeStr.split(":")[0], 10); 
+  const nowMins = now.getHours() * 60 + now.getMinutes();
+  const deliveryTime = parseInt(timeStr.split(":")[0], 10);
 
   const toTime = (mins) => {
     const hh = String(Math.floor(mins / 60)).padStart(2, "0");
-    const mm  = String(mins % 60).padStart(2, "0");
+    const mm = String(mins % 60).padStart(2, "0");
     return `${hh}:${mm}`;
   };
 
@@ -20,9 +21,27 @@ export function calculateEstimatedDelivery(settings, isPickup = false) {
     return h * 60 + m;
   };
 
-  const dayOfWeek  = now.getDay();
+  //Saber si es feriado
+  const todayKey = (() => {
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, "0");
+    const d = String(now.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  })();
+
+  const holidaySet = new Set(
+    (settings.holiday_dates || "")
+      .split(",")
+      .map((d) => d.trim())
+      .filter(Boolean),
+  );
+
+  const isHoliday = holidaySet.has(todayKey);
+
+  const dayOfWeek = now.getDay();
   const isSaturday = dayOfWeek === 6;
-  const isSunday   = dayOfWeek === 0;
+  const isSunday = dayOfWeek === 0 || isHoliday;
+ 
 
   let openMorning, closeMorning, openAfternoon, closeAfternoon;
 
@@ -32,49 +51,70 @@ export function calculateEstimatedDelivery(settings, isPickup = false) {
   }
 
   if (isSaturday) {
-    openMorning    = toMins(settings.saturday_open);
-    closeMorning   = toMins(settings.saturday_close);
-    openAfternoon  = null;
+    openMorning = toMins(settings.saturday_open);
+    closeMorning = toMins(settings.saturday_close);
+    openAfternoon = null;
     closeAfternoon = null;
   } else if (isSunday) {
-    openMorning    = toMins(settings.sunday_open);
-    closeMorning   = toMins(settings.sunday_close);
-    openAfternoon  = null;
+    //  también cubre feriado  
+    openMorning = toMins(settings.sunday_open);
+    closeMorning = toMins(settings.sunday_close);
+    openAfternoon = null;
     closeAfternoon = null;
   } else {
-    openMorning    = toMins(settings.weekday_open_morning);
-    closeMorning   = toMins(settings.weekday_close_morning);
-    openAfternoon  = toMins(settings.weekday_open_afternoon);
+    openMorning = toMins(settings.weekday_open_morning);
+    closeMorning = toMins(settings.weekday_close_morning);
+    openAfternoon = toMins(settings.weekday_open_afternoon);
     closeAfternoon = toMins(settings.weekday_close_afternoon);
   }
-
+ 
   // 1. antes de la apertura de mañana
   if (openMorning && nowMins < openMorning) {
     return `Fechado por hoje amanhã até as ${toTime(openMorning + deliveryTime)}`;
   }
 
   // 2. dentro del horario de mañana
-  if (openMorning && closeMorning && nowMins >= openMorning && nowMins < closeMorning) {
+  if (
+    openMorning &&
+    closeMorning &&
+    nowMins >= openMorning &&
+    nowMins < closeMorning
+  ) {
     const estimated = nowMins + deliveryTime;
-    if (estimated > closeMorning && openAfternoon) {
-      return toTime(openAfternoon + deliveryTime);
+
+    if (estimated > closeMorning) {
+      if (openAfternoon) {
+        // día de semana: se pasa a la tarde
+        return toTime(openAfternoon + deliveryTime);
+      }
+      // domingo/feriado/sábado sin tarde → no hay más turno hoy, pasa a mañana
+      return `Amanhã até as ${toTime(openMorning + deliveryTime)}`;
     }
+
     return toTime(estimated);
   }
 
   // 3. entre cierre mañana y apertura tarde
-  if (closeMorning && openAfternoon && nowMins >= closeMorning && nowMins < openAfternoon) {
+  if (
+    closeMorning &&
+    openAfternoon &&
+    nowMins >= closeMorning &&
+    nowMins < openAfternoon
+  ) {
     return `Até as ${toTime(openAfternoon + deliveryTime)}`;
   }
 
   // 4. dentro del horario de tarde
-  if (openAfternoon && closeAfternoon && nowMins >= openAfternoon && nowMins < closeAfternoon) {
-    
-     
+  if (
+    openAfternoon &&
+    closeAfternoon &&
+    nowMins >= openAfternoon &&
+    nowMins < closeAfternoon
+  ) {
     const estimated = nowMins + deliveryTime;
-    if (estimated > closeAfternoon) {     
+    if (estimated > closeAfternoon) {
       return `Amanhã até as ${toTime(openMorning + deliveryTime)}`;
-    }   
+    }
     return `Até as ${toTime(estimated)}`;
   }
 
@@ -119,4 +159,41 @@ export function CalculateScheduleDelivery(
   return `Até às ${eh}:${em}`;
 }
 
+export function buildOrderConfirmation(
+  order,
+  data,
+  settings,
+  settingsDelivery,
+) {
+  if (!data.scheduled && data.deliveryType !== "pickup") {
+    const estimatedAt = calculateEstimatedDelivery(settings);
+    order.confirmation = {
+      scheduled: false,
+      estimatedAt: estimatedAt ?? "",
+    };
+  }
 
+  if (data.scheduled) {
+    const estimatedAt = CalculateScheduleDelivery(
+      data.delivery_hour,
+      data.delivery_date,
+      settingsDelivery,
+    );
+    order.confirmation = {
+      scheduled: true,
+      date: data.delivery_date,
+      hourStart: data.delivery_hour,
+      hourEnd: estimatedAt,
+    };
+  }
+
+  if (data.deliveryType === "pickup") {
+    const estimatedAt = calculateEstimatedDelivery(settings, data.deliveryType);
+    order.confirmation = {
+      deliveryType: "pickup",
+      estimatedAt: estimatedAt ?? "",
+    };
+  }
+
+  return order;
+}

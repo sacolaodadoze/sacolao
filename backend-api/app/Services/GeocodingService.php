@@ -2,6 +2,9 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+
 class GeocodingService
 {
     function getGeocodeData($address)
@@ -65,7 +68,7 @@ class GeocodingService
             'overview' => 'false',
             'steps' => 'false'
         ]);
-//dd($response);
+        //dd($response);
         if ($response->successful()) {
             $responseData = $response->json();
 
@@ -100,20 +103,21 @@ class GeocodingService
         //dd($destinoData);
 
         // Paso 2: Obtener coordenadas de destino con TU función
-       // $destinoData = $this->getGeocodeData($direccionDestino);
+        // $destinoData = $this->getGeocodeData($direccionDestino);
 
         // Validar que ambas direcciones hayan sido geocodificadas con éxito
-        if (/* $origenData && */ $destinoData) {
+        if (/* $origenData && */$destinoData) {
 
             // Paso 3: Calcular la ruta REAL por calle usando OSRM
             $rutaReal = $this->getRealRouteData(
-               /*  $origenData['latitude'],
+                /*  $origenData['latitude'],
                 $origenData['longitude'], */
-                $lat, $lng,
+                $lat,
+                $lng,
                 $destinoData['latitude'],
                 $destinoData['longitude']
             );
-             dd($rutaReal);
+            // dd($rutaReal);
 
             if ($rutaReal) {
                 // ¡Listo! Aquí tienes los valores exactos reales
@@ -131,5 +135,43 @@ class GeocodingService
         }
 
         return response()->json(['status' => 'error', 'message' => 'No se pudo calcular la ruta'], 400);
+    }
+
+    public function obtenerDistancia($latOrigen, $lngOrigen, $latDestino, $lngDestino)
+    {
+        // dd($latOrigen, $lngOrigen, $latDestino, $lngDestino);
+        // 1. Forzamos la conversión a float para limpiar las comillas limpiamente
+        $latOrigen = (float) $latOrigen;
+        $lngOrigen = (float) $lngOrigen;
+        $latDestino = (float) $latDestino;
+        $lngDestino = (float) $lngDestino;
+
+        // 2. Armamos la URL respetando el orden estricto de OSRM: longitud,latitud
+        //// Estructura: Origen -> Destino -> Origen otra vez
+        $url = "https://router.project-osrm.org/route/v1/driving/{$lngOrigen},{$latOrigen};{$lngDestino},{$latDestino}?overview=false";
+        //dd($url);
+
+        try {
+            $respuesta = Http::get($url);
+
+            if ($respuesta->successful()) {
+                $data = $respuesta->json();
+
+                if (isset($data['code']) && $data['code'] === 'Ok' && !empty($data['routes'])) {
+                    // OSRM devuelve los metros siempre como número flotante o entero
+                    $metros = $data['routes'][0]['distance'];
+                    $factoresUrbanos = 1.05; // Factor de corrección urbano, entre 1.3 y 1.5 según la zona
+
+                    // Convertimos a kilómetros redondeando a 2 decimales
+                    return round($metros* $factoresUrbanos  / 1000, 2);
+                }
+            }
+
+            Log::warning("OSRM no pudo calcular la ruta. Código de respuesta: " . ($data['code'] ?? 'Desconocido'));
+            return null;
+        } catch (\Exception $e) {
+            Log::error("Error en GeocodingService al conectar con OSRM: " . $e->getMessage());
+            return null;
+        }
     }
 }

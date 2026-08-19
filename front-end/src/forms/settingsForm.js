@@ -25,8 +25,12 @@ export const settingsSchema = z.object({
   free_rate: z.string().optional(),
   is_closed: z.boolean().optional(),
 
-  delivery_morning: z.coerce.number().min(1, "Campo obrigatório"),
-  delivery_afternoon: z.coerce.number().min(1, "Campo obrigatório"),
+  delivery_morning: z.coerce.number(), //.min(1, "Campo obrigatório"),
+  delivery_afternoon: z.coerce.number(), // .min(1, "Campo obrigatório"),
+  delivery_saturday: z.coerce.number(), // .min(1, "Campo obrigatório"),
+  delivery_sunday: z.coerce.number(), // .min(1, "Campo obrigatório"),
+  holiday_dates: z.string().optional(),
+
   pickup_time: z.string().min(1, "Campo obrigatório"),
 
   whatsapp_default_message: z.string().optional(),

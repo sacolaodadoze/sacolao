@@ -6,9 +6,13 @@ import React, {
   useContext,
   useRef,
 } from "react";
-import { TrashIcon, EditIcon, PrintIcon } from "./Icons";
-import { Tooltip, CircularProgress } from "@mui/material";
-import { formatDate } from "../helpers/formatDate.js";
+import { TrashIcon /* EditIcon,  PrintIcon */ } from "./Icons";
+import { Tooltip, CircularProgress, Chip, IconButton } from "@mui/material";
+import { Edit, Print, DeleteOutlined } from "@mui/icons-material";
+//import PrintIcon from '@mui/icons-material/Print';
+import DeleteIcon from "@mui/icons-material/Delete";
+//import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
+import { formatDate, formatDeliveryDateTime } from "../helpers/formatDate.js";
 import { OrdersTableSkeleton } from "./OrdersTableSkeleton.jsx";
 import { useDeleteOrder } from "../hooks/useDeleteOrder.jsx";
 import { useEditOrder } from "../hooks/useEditOrder.jsx";
@@ -113,13 +117,15 @@ export function OrderTable({
             <th style={{ width: "135px" }}>Data</th>
             <th>Cliente</th>
             <th>Endereço</th>
-              <th style={{ width: "165px" }}>Estado</th>
-            <th style={{ width: "155px" }}>Ações</th>
+            <th style={{ width: "165px" }}>Estado</th>
+            <th style={{ width: "152px"}}>Agendado</th>
+            <th style={{ width: "61px", textAlign:"center"}}>Ret</th>
+            <th style={{ width: "180px", textAlign:"center" }}>Ações</th>
           </tr>
         </thead>
         <tbody>
           {isLoading ? (
-            <OrdersTableSkeleton rows={6} />
+            <OrdersTableSkeleton rows={8} />
           ) : (
             orders.map((order, index) => (
               <tr key={order.id}>
@@ -151,56 +157,70 @@ export function OrderTable({
 
                 {/* 6. Estado */}
                 <td>{order.status.name}</td>
-
-                {/*    <select                 
-                  className="filter-select"
-                  id={statusTableId}
-                  value={order.status_id}
-                  onChange={(e) => setEstatus(e.target.value)}
-                >
-                  {opciones.map((opcion) => (
-                    <option key={opcion.id} value={opcion.id}>
-                      {opcion.name}
-                    </option>
-                  ))}
-                </select> */}
-                {/*  </td> */}
+                <td>
+                  {order.delivery_date
+                    ? formatDeliveryDateTime(
+                        order.delivery_date,
+                        order.delivery_hour,
+                      )
+                    : ""}
+                </td>
+                <td style={{ textAlign:"right" }}>
+                  {order.pickup ? (
+                    <Chip label="✓" color="warning" size="small" />
+                  ) : (
+                    ""
+                  )}
+                </td>
 
                 {/* 7. Columna de acciones*/}
-                <td>
+                <td style={{ textAlign:"right" }}>
                   <Tooltip title="Alterar pedido">
-                    <button
-                      className="btn-action btn-edit"
+                    <IconButton
+                    color="action"
+                        size="small"
+                        sx={{
+                          //color: "#64748b",
+                          "&:hover": {
+                            backgroundColor: "#14532d",
+                            color: "#fff",
+                          },
+                        }}
+                     /*  className="btn-action btn-edit" */
                       onClick={() => handleEdit(order.id)}
                     >
                       {editing === order.id ? (
                         <CircularProgress size={20} />
                       ) : (
-                        <EditIcon />
+                        <Edit />
                       )}
-                    </button>
+                    </IconButton>
                   </Tooltip>
 
                   <Tooltip title="Imprimir pedido">
-                    <button
-                      className="btn-action"
+                    <IconButton
+                      /* className="btn-action" */
                       onClick={() => handlePrint(order.id)}
                     >
                       {printing === order.id ? (
                         <CircularProgress size={20} />
                       ) : (
-                        <PrintIcon />
+                        <Print />
                       )}
-                    </button>
+                    </IconButton>
                   </Tooltip>
                   <Tooltip title="Excluir  pedido">
-                    <button
+                    <IconButton
                       onClick={() => handleDelete(order.id)}
                       disabled={!hasAnyRole(["admin"])}
-                      className="btn-action btn-del"
+                     /*  className="btn-action btn-del" */
                     >
-                      <TrashIcon />
-                    </button>
+                      <DeleteOutlined />
+                    </IconButton>
+
+                    {/*   <IconButton color="error" onClick={() => remove(index)}>
+                <DeleteIcon />
+              </IconButton> */}
                   </Tooltip>
                 </td>
               </tr>

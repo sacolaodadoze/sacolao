@@ -167,6 +167,8 @@ export const LANG = {
     CLOSED: "Fechado",
     MORNING_DELIVERY:"Entregas pela manhã",
     AFTERNOON_DELIVERY:"Entregas pela tarde",
+    SATURDAY_DELIVERY:"Entregas no Sabado",
+    SUNDAY_DELIVERY:"Entregas no Domingo",
     PICKUP_TIME:"Tempo de retirada na loja ( minutos )",
   },
 

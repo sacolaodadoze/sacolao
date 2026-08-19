@@ -23,6 +23,7 @@ import { useAuth } from "../context/AuthContext.jsx";
 import {
   calculateEstimatedDelivery,
   CalculateScheduleDelivery,
+  buildOrderConfirmation,
 } from "../utils/deliveryUtils";
 
 export default function Checkout() {
@@ -39,6 +40,9 @@ export default function Checkout() {
   const { settingsDelivery } = useDeliverySlots();
 
   const [checkoutError, setCheckoutError] = useState("");
+
+  const [scheduleConfirmation, setScheduleConfirmation] = useState(null);
+  const [pendingOrderData, setPendingOrderData] = useState(null);
 
   const loadPaymentTypes = () => {
     apiFetch("/api/store/payments")
@@ -111,13 +115,12 @@ export default function Checkout() {
   }, [cartItems, methods]);
 
   //console.log(methods.watch("items"));
-  
 
   const onError = (errors) => {
     //console.log(errors);
   };
 
-  const onSubmit = async (data) => {
+  /* const onSubmit = async (data) => {
     try {
       const pickup = data.deliveryType === "delivery" ? false : true;
 
@@ -134,12 +137,20 @@ export default function Checkout() {
 
       if (!res.ok) {
         const errorData = await res.json();
-        console.log(errorData.message);
-        throw new Error(errorData.message || "Erro ao criar pedido");
+        console.log(errorData.error);
+        throw new Error(
+          errorData.error || responseData.message || "Erro ao criar pedido",
+        );
       }
 
       // respuesta del backend
       const order = await res.json();
+
+      if (order.requires_confirmation) {
+        setScheduleConfirmation(responseData); // data para mostrar el diálogo
+        setPendingOrderData(orderData); //data para reenviarlo si confirma
+        return null;
+      }
 
       // si no es un pedido agendado
       if (!data.scheduled) {
@@ -174,7 +185,7 @@ export default function Checkout() {
         );
 
         order.confirmation = {
-          deliveryType:"pickup",
+          deliveryType: "pickup",
           estimatedAt: estimatedAt ?? "",
         };
       }
@@ -188,7 +199,75 @@ export default function Checkout() {
       console.error(error);
       setCheckoutError(error.message);
     }
+  }; */
+
+  async function submitOrder(payload) {
+    const res = await apiFetch("/api/store/order", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+
+    const responseData = await res.json();
+
+    if (!res.ok) {
+      throw new Error(
+        responseData.error || responseData.message || "Erro ao criar pedido",
+      );
+    }
+
+    if (responseData.requires_confirmation) {
+      setScheduleConfirmation(responseData);
+      setPendingOrderData(payload);
+      return null;
+    }
+
+    return responseData;
+  }
+
+  const onSubmit = async (data) => {
+    try {
+      const pickup = data.deliveryType === "delivery" ? false : true;
+      const orderData = { ...data, pickup };
+
+      const order = await submitOrder(orderData);
+      if (!order) return;
+
+      buildOrderConfirmation(order, data, settings, settingsDelivery);
+      clearCart();
+      navigate("/order-confirmation", { state: { order } });
+    } catch (error) {
+      console.error(error);
+      setCheckoutError(error.message);
+    }
   };
+
+  function handleConfirmSchedule() {
+    submitOrder({ ...pendingOrderData, confirm_schedule_change: true })
+      .then((order) => {
+        if (!order) return;
+
+        buildOrderConfirmation(
+          order,
+          pendingOrderData,
+          settings,
+          settingsDelivery,
+        );
+        setScheduleConfirmation(null);
+        setPendingOrderData(null);
+        clearCart();
+        navigate("/order-confirmation", { state: { order } });
+      })
+      .catch((error) => {
+        console.error(error);
+        setCheckoutError(error.message);
+        setScheduleConfirmation(null);
+      });
+  }
+
+  function handleCancelSchedule() {
+    setScheduleConfirmation(null);
+    setPendingOrderData(null);
+  }
 
   return (
     <>
@@ -266,7 +345,12 @@ export default function Checkout() {
               </Grid>
 
               <Grid size={{ xs: 12, md: 5 }}>
-                <CheckoutSummary checkoutError={checkoutError} />
+                <CheckoutSummary
+                  checkoutError={checkoutError}
+                  scheduleConfirmation={scheduleConfirmation}
+                  onConfirmSchedule={handleConfirmSchedule}
+                  onCancelSchedule={handleCancelSchedule}
+                />
               </Grid>
             </Grid>
           </form>

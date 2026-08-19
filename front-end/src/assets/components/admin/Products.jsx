@@ -656,7 +656,7 @@ export function Products() {
                       <DeleteIcon />
                     </IconButton> */}
                     </td>
-                    <td style={{ textalign: "center" }}>
+                    <td style={{ textalign: "right" }}>
                       {isConfigured(product) ? (
                         <Tooltip title="Configurado" arrow>
                           <Chip label="✓" color="success" size="small" />

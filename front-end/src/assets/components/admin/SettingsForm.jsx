@@ -72,8 +72,11 @@ export function SettingsForm() {
       free_rate: "",
       is_closed: false,
 
-      delivery_morning: 0,
-      delivery_afternoon: 0,
+      delivery_morning: null,
+      delivery_afternoon: null,
+      delivery_saturday: null,
+      delivery_sunday: null,
+      holiday_dates:"",
       pickup_time: "",
 
       whatsapp_default_message: "",
@@ -130,12 +133,12 @@ export function SettingsForm() {
   //console.log(errors)
 
   // SAVE
-  const onSubmit = async (data) => {   
+  const onSubmit = async (data) => {
     //console.info(data);
     setLoadingSave(true);
     try {
-          /*  await apiFetch("/sanctum/csrf-cookie"); 
- */
+      /*  await apiFetch("/sanctum/csrf-cookie");
+       */
       await apiFetch("/api/settings", {
         method: "PUT",
         body: JSON.stringify(data),
@@ -334,10 +337,19 @@ export function SettingsForm() {
               "number",
             )}
             {renderTextField(
-              "pickup_time",
-              LANG.SETTINGS.PICKUP_TIME,
-             "text"
+              "delivery_saturday",
+              LANG.SETTINGS.SATURDAY_DELIVERY,
+              "number",
             )}
+
+            {renderTextField(
+              "delivery_sunday",
+              LANG.SETTINGS.SUNDAY_DELIVERY,
+              "number",
+            )}
+            
+
+            {renderTextField("pickup_time", LANG.SETTINGS.PICKUP_TIME, "text")}
 
             {renderTextField(
               "delivery_time",
@@ -367,6 +379,26 @@ export function SettingsForm() {
                     />
                   }
                   label={LANG.SETTINGS.CLOSED}
+                />
+              )}
+            />
+          </Box>
+        </Box>
+
+            <Box>
+          <Typography variant="h6">Dias feriados</Typography>
+
+          <Box sx={{ mt: 2 }}>
+            <Controller
+              name="holiday_dates"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Dias feriados (separados por vírgula, ex: 2024-01-01,2024-12-25)"
+                  multiline
+                  rows={1}
+                  fullWidth
                 />
               )}
             />

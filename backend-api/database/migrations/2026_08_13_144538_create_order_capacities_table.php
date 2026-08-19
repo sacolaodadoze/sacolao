@@ -14,8 +14,10 @@ return new class extends Migration
         Schema::create('order_capacities', function (Blueprint $table) {
             $table->id();
             $table->date('date')->unique();          // un registro por día
-            $table->integer('morning_slots');        // cupos disponibles mañana
-            $table->integer('afternoon_slots');      // cupos disponibles tarde
+            $table->integer('morning_slots')->nullable();;        // cupos disponibles mañana
+            $table->integer('afternoon_slots')->nullable();;      // cupos disponibles tarde
+            $table->integer('saturday_slots')->nullable(); //cupos disponibles sabados
+            $table->integer('sunday_slots')->nullable(); //cupos disponibles domingos
             $table->timestamps();
         });
     }

@@ -11,8 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('products', function (Blueprint $table) {
-           // $table->decimal('price_hiper', 10, 2)->nullable();
+        Schema::table('settings', function (Blueprint $table) {
+           $table->integer('delivery_saturday')->nullable();
+            $table->integer('delivery_sunday')->nullable();
         });
     }
 
@@ -21,8 +22,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('products', function (Blueprint $table) {
-        //  $table->dropColumn('price_hiper');
+        Schema::table('settings', function (Blueprint $table) {
+            $table->dropColumn('delivery_saturday');
+            $table->dropColumn('delivery_sunday');
         });
     }
 };

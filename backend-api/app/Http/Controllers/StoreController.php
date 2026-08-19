@@ -17,13 +17,14 @@ use App\Models\Detail;
 use App\Models\Observation;
 use Illuminate\Support\Facades\Auth;
 use App\Services\GeocodingService;
+use App\Services\DeliverySlotService;
 use App\Models\OrderCapacity;
 
 class StoreController extends Controller
 {
     protected $geocodingService;
 
-    public function __construct(GeocodingService $geocodingService)
+    public function __construct(GeocodingService $geocodingService, private DeliverySlotService $deliverySlotService) //private , no tengo que declararlo ni asignarlo manualmente como esta hecho con el otro service 
     {
         $this->geocodingService = $geocodingService;
     }
@@ -31,12 +32,15 @@ class StoreController extends Controller
     public function settings()
     {
         $settings = Setting::first();
-         $today    = now()->toDateString();
+        $today    = now()->toDateString();
         $capacity = OrderCapacity::where('date', $today)->first();
 
         // agregás los cupos al objeto de settings
         $settings->delivery_morning   = $capacity?->morning_slots   ?? 0;
         $settings->delivery_afternoon = $capacity?->afternoon_slots ?? 0;
+        $settings->delivery_saturday = $capacity?->saturday_slots ?? 0;
+        $settings->delivery_sunday = $capacity?->sunday_slots ?? 0;
+       //dd($settings);
         return response()->json($settings);
     }
 
@@ -136,14 +140,16 @@ class StoreController extends Controller
             ? "{$request->cep}, Brasil"
             : "{$request->street}, {$request->number}, {$request->city}, {$request->state}, Brasil"; */
 
-        $address = "19907-575, Brasil";
+        $address = $this->geocodingService->getGeocodeData("Alameda Perimetral Oeste 743 Royal Park OURINHOS SP"); //"19907-575, Brasil";
         // dd($address);
-        $distance = $this->geocodingService->calculateDistance(
-            $address,
+        $distance = $this->geocodingService->obtenerDistancia(
             $settings->latitude,
-            $settings->longitude
+            $settings->longitude,
+            $address['latitude'],
+            $address['longitude']
+
         );
-        dd($distance);
+        //dd($distance);
         if (!$distance) {
             return response()->json(['error' => 'Endereço não encontrado'], 422);
         }
@@ -210,13 +216,14 @@ class StoreController extends Controller
             'city' => 'required|string',
             'state' => 'required|string',
             'substitution_preference' => 'required|in:similar,contact,remove',
+            'confirm_schedule_change' => 'nullable|boolean',
         ];
 
         $data = $request->validate($rules);
 
         $customer = $request->user();
 
-        $settings =  Setting::first();
+        /*         $settings =  Setting::first();
         //dd($settings->is_closed,$request->delivery_date);
         // Pedido para hoy
         if (
@@ -227,45 +234,75 @@ class StoreController extends Controller
             return response()->json([
                 'message' => 'Não é possível realizar entregas para hoje.'
             ], 422);
-        }
+        } */
 
-
+        $settings = Setting::first();
         $orderDate = $data['delivery_date'] ?? now()->toDateString();
-        $closeMorningHour = (int) explode(":", $settings->weekday_close_morning)[0];
 
-        $hour      = $data['delivery_hour']
+        $hour = $data['delivery_hour']
             ? (int) explode(":", $data['delivery_hour'])[0]
             : now()->hour;
 
-        $isMorning = $hour < $closeMorningHour;
+        $minute = $data['delivery_hour'] && isset(explode(":", $data['delivery_hour'])[1])
+            ? (int) explode(":", $data['delivery_hour'])[1]
+            : now()->minute;
+
+        $resolved = $this->deliverySlotService->resolveOrderSlot($settings, $orderDate, $hour, $minute);
+
+        $dateWasAdjusted = $resolved['date'] !== $orderDate;
+
+        //Si la data cambio 
+        if ($dateWasAdjusted && empty($data['confirm_schedule_change'])) {
+            return response()->json([
+                'requires_confirmation' => true,
+                'requested_date'        => $orderDate,
+                'confirmed_date'        => $resolved['date'],
+                'shift'                 => $resolved['shift'],
+                'message'               => "O horário solicitado já está fechado. Seu pedido será agendado para "
+                    . \Carbon\Carbon::parse($resolved['date'])->translatedFormat('d/m/Y') . ". Deseja continuar?",
+            ], 200); // 200, no es un error, es una confirmación pendiente
+        }
+
+        $closeMorningHour = (int) explode(":", $settings->weekday_close_morning)[0]; //Extrae solo la hora (sin minutos) del cierre de la mañana en días de semana.
 
         $capacity = OrderCapacity::firstOrCreate(
-            ['date' => $orderDate],
+            ['date' => $resolved['date']], //fecha ya corregida
             [
                 'morning_slots'   => $settings->delivery_morning,
                 'afternoon_slots' => $settings->delivery_afternoon,
+                'saturday_slots'  => $settings->delivery_saturday,
+                'sunday_slots'    => $settings->delivery_sunday,
             ]
         );
 
-        // contás pedidos del día en ese turno
-        $morningOrders   = Order::whereDate('created_at', $orderDate)
-            ->whereRaw('HOUR(delivery_hour) < ?', [$closeMorningHour])
+        $slotsAvailable = $capacity->{$resolved['slotsField']};
+
+        $ordersCount = Order::where(function ($q) use ($resolved) {
+            $q->whereDate('delivery_date', $resolved['date'])
+                ->orWhere(function ($q2) use ($resolved) {
+                    $q2->whereNull('delivery_date')
+                        ->whereDate('created_at', $resolved['date']);
+                });
+        })
+            ->when($resolved['shift'] === 'morning', fn($q) => $q->whereRaw('EXTRACT(HOUR FROM COALESCE(delivery_hour, created_at::time)) < ?', [$closeMorningHour]))
+            ->when($resolved['shift'] === 'afternoon', fn($q) => $q->whereRaw('EXTRACT(HOUR FROM COALESCE(delivery_hour, created_at::time)) >= ?', [$closeMorningHour]))
             ->count();
 
-        $afternoonOrders = Order::whereDate('created_at', $orderDate)
-            ->whereRaw('HOUR(delivery_hour) >= ?', [$closeMorningHour])
-            ->count();
-
-        // verificás cupos
-        if ($isMorning && $morningOrders >= $capacity->morning_slots) {
-            return response()->json(['error' => 'Sem vagas para o turno da manhã'], 422);
+        if ($slotsAvailable !== null && $ordersCount >= $slotsAvailable) {
+            $mensajes = [
+                'morning'   => 'Não é possível fazer entregas no turno da manhã',
+                'afternoon' => 'Não é possível fazer entregas no turno da tarde',
+                'single'    => 'Não é possível fazer entregas nesse dia',
+            ];
+            return response()->json(['error' => $mensajes[$resolved['shift']]], 422);
         }
 
-        if (!$isMorning && $afternoonOrders >= $capacity->afternoon_slots) {
-            return response()->json(['error' => 'Sem vagas para o turno da tarde'], 422);
-        }
 
-        $order = DB::transaction(function () use ($data, $customer) {
+        /////////////////
+
+
+
+        $order = DB::transaction(function () use ($data, $customer, $resolved) {
 
             //Dados do cliente
 
@@ -306,7 +343,7 @@ class StoreController extends Controller
                 'paid'             => $data['paid'] ?? false,
                 'pickup'         => $data['pickup'],
                 'rate_id'         => $data['rate_id'] ?? null,
-                'delivery_date'         => $data['delivery_date'] ?? null,
+                'delivery_date'         => $resolved['date'],   //$data['delivery_date'] ?? null,
                 'delivery_hour'         => $data['delivery_hour'] ?? null,
                 'substitution_preference' => $data['substitution_preference'],
                 'created_by' => 8 //user Site

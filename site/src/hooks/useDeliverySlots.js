@@ -1,8 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { apiFetch } from "../api/apiFetch.js";
-import { useCallback, useMemo } from "react";
+import { SettingsContext } from "../context/SettingsContext.jsx";
+
+import { useCallback, useMemo, useContext } from "react";
 
 export function useDeliverySlots() {
+  const { settings: globalSettings  } = useContext(SettingsContext);
   const fetchDeliverySettings = async () => {
     const res = await apiFetch("/api/store/delivery-settings");
     const data = await res.json();
@@ -14,6 +17,23 @@ export function useDeliverySlots() {
     queryFn: fetchDeliverySettings,
     staleTime: Infinity,
   });
+
+  //console.log("settings.holiday_dates:", globalSettings);
+
+  const holidaySet = useMemo(() => {
+    if (!globalSettings?.holiday_dates) return new Set();
+    return new Set(
+      globalSettings.holiday_dates
+        .split(",")
+        .map((d) => d.trim())
+        .filter(Boolean),
+    );
+  }, [globalSettings]);
+
+  const isHoliday = useCallback(
+    (dateKey) => holidaySet.has(dateKey),
+    [holidaySet],
+  );
 
   // días disponibles para agendar
   const availableDates = useMemo(() => {
@@ -31,16 +51,17 @@ export function useDeliverySlots() {
       const isSunday = dayOfWeek === 0;
       const isSaturday = dayOfWeek === 6;
 
-      if (isSunday) continue;
-      if (isSaturday && !settings.saturday_open_delivery) continue;
-      if (isToday && !settings.same_day_delivery) continue;
-
       // const dateKey = date.toISOString().split("T")[0];
       const y = date.getFullYear();
       const m = String(date.getMonth() + 1).padStart(2, "0");
       const d = String(date.getDate()).padStart(2, "0");
 
       const dateKey = `${y}-${m}-${d}`;
+
+      if (isSunday) continue;
+      if (isHoliday(dateKey)) continue;
+      if (isSaturday && !settings.saturday_open_delivery) continue;
+      if (isToday && !settings.same_day_delivery) continue;
 
       dates.push({
         dateKey,
@@ -51,7 +72,7 @@ export function useDeliverySlots() {
         }),
       });
     }
-    
+
     return dates;
   }, [settings]);
 
@@ -204,7 +225,7 @@ export function useDeliverySlots() {
         const nowMins = now
           ? now.getHours() * 60 +
             now.getMinutes() +
-             Number(settings.minimum_schedule_minutes)//settings.minimum_schedule_minutes
+            Number(settings.minimum_schedule_minutes) //settings.minimum_schedule_minutes
           : 0;
 
         for (
@@ -212,7 +233,7 @@ export function useDeliverySlots() {
           t + settings.delivery_window_minutes <= closeMins;
           t += settings.delivery_window_minutes
         ) {
-           if (now && t < nowMins) continue;
+          if (now && t < nowMins) continue;
 
           if (isToday && settings.minimum_hour_to_schedule_same_day) {
             const [lh, lm] = settings.minimum_hour_to_schedule_same_day
@@ -249,7 +270,7 @@ export function useDeliverySlots() {
           settings.weekday_delivery_close_afternoon,
         );
       }
-      
+
       if (slots.length > 0) result[dateKey] = slots;
     });
 
@@ -261,6 +282,7 @@ export function useDeliverySlots() {
     availableDates,
     slotsByDate,
     isValidHour,
+    isHoliday,
     settingsDelivery: settings /* getEstimatedHour */,
   };
 }
