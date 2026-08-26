@@ -3,8 +3,8 @@ export function calculateEstimatedDelivery(settings, isPickup = false) {
   if (!settings || !timeStr) return null;
 
   const now = new Date();
-  now.setDate(20); //cambiar el dia del mes
-  now.setHours(11, 0, 0, 0); // para probar manualmente
+ // now.setDate(30); //cambiar el dia del mes
+  //now.setHours(20, 0, 0, 0); // para probar manualmente
 
   const nowMins = now.getHours() * 60 + now.getMinutes();
   const deliveryTime = parseInt(timeStr.split(":")[0], 10);
@@ -37,13 +37,18 @@ export function calculateEstimatedDelivery(settings, isPickup = false) {
   );
 
   const isHoliday = holidaySet.has(todayKey);
-
+  console.log(isHoliday);
   const dayOfWeek = now.getDay();
   const isSaturday = dayOfWeek === 6;
-  const isSunday = dayOfWeek === 0 || isHoliday;
- 
+  //const isSunday = dayOfWeek === 0 || isHoliday;
+  const isSunday = dayOfWeek === 0 && !isHoliday; // domingo real, nunca feriado
 
   let openMorning, closeMorning, openAfternoon, closeAfternoon;
+
+  if (isSunday) {
+    openMorning = toMins(settings.weekday_open_morning);
+    return `Não há entregas no dia de hoje, amanha até as ${toTime(openMorning + deliveryTime)}`;
+  }
 
   if (settings.is_closed) {
     openMorning = toMins(settings.weekday_open_morning);
@@ -55,8 +60,8 @@ export function calculateEstimatedDelivery(settings, isPickup = false) {
     closeMorning = toMins(settings.saturday_close);
     openAfternoon = null;
     closeAfternoon = null;
-  } else if (isSunday) {
-    //  también cubre feriado  
+  } else if (isHoliday) {
+    // feriado: SÍ hay entregas, usando el horario de domingo
     openMorning = toMins(settings.sunday_open);
     closeMorning = toMins(settings.sunday_close);
     openAfternoon = null;
@@ -67,7 +72,7 @@ export function calculateEstimatedDelivery(settings, isPickup = false) {
     openAfternoon = toMins(settings.weekday_open_afternoon);
     closeAfternoon = toMins(settings.weekday_close_afternoon);
   }
- 
+
   // 1. antes de la apertura de mañana
   if (openMorning && nowMins < openMorning) {
     return `Fechado por hoje amanhã até as ${toTime(openMorning + deliveryTime)}`;
@@ -125,6 +130,7 @@ export function calculateEstimatedDelivery(settings, isPickup = false) {
 
   return null;
 }
+
 // hora de inicio elegida + delivery_window_minutes = hora estimada fin
 export function CalculateScheduleDelivery(
   deliveryHour,

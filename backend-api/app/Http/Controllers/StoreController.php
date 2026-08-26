@@ -40,7 +40,7 @@ class StoreController extends Controller
         $settings->delivery_afternoon = $capacity?->afternoon_slots ?? 0;
         $settings->delivery_saturday = $capacity?->saturday_slots ?? 0;
         $settings->delivery_sunday = $capacity?->sunday_slots ?? 0;
-       //dd($settings);
+        //dd($settings);
         return response()->json($settings);
     }
 
@@ -136,11 +136,11 @@ class StoreController extends Controller
         }
 
         // usa CEP si tiene, sino usa dirección completa
-        /* $address = $request->cep
+        $address = $request->cep
             ? "{$request->cep}, Brasil"
-            : "{$request->street}, {$request->number}, {$request->city}, {$request->state}, Brasil"; */
+            : "{$request->street}, {$request->number}, {$request->city}, {$request->state}, Brasil";
 
-        $address = $this->geocodingService->getGeocodeData("Alameda Perimetral Oeste 743 Royal Park OURINHOS SP"); //"19907-575, Brasil";
+        $address = $this->geocodingService->getGeocodeData($address); //"19907-575, Brasil";
         // dd($address);
         $distance = $this->geocodingService->obtenerDistancia(
             $settings->latitude,
@@ -201,6 +201,7 @@ class StoreController extends Controller
             'pickup' => 'nullable|boolean',
             //'paid' => 'nullable|boolean',
             // 'rate_id' => 'nullable|exists:rates,id',
+            'scheduled'         => 'nullable|boolean',
             'delivery_date' => 'nullable|date|required_if:scheduled,true',
             'delivery_hour' => 'nullable|date_format:H:i|required_if:scheduled,true',
             //'order_id' => 'nullable|exists:orders,id',          
@@ -216,7 +217,7 @@ class StoreController extends Controller
             'city' => 'required|string',
             'state' => 'required|string',
             'substitution_preference' => 'required|in:similar,contact,remove',
-            'confirm_schedule_change' => 'nullable|boolean',
+            /* 'confirm_schedule_change' => 'nullable|boolean', */
         ];
 
         $data = $request->validate($rules);
@@ -238,21 +239,32 @@ class StoreController extends Controller
 
         $settings = Setting::first();
         $orderDate = $data['delivery_date'] ?? now()->toDateString();
+       // dd( $orderDate);
 
-        $hour = $data['delivery_hour']
+         $hour = $data['delivery_hour']
             ? (int) explode(":", $data['delivery_hour'])[0]
             : now()->hour;
 
         $minute = $data['delivery_hour'] && isset(explode(":", $data['delivery_hour'])[1])
             ? (int) explode(":", $data['delivery_hour'])[1]
-            : now()->minute;
+            : now()->minute; 
+
+       // $hour = 23;   //  forzado para probar
+      //  $minute = 0;  // forzado para probar
 
         $resolved = $this->deliverySlotService->resolveOrderSlot($settings, $orderDate, $hour, $minute);
+        /*  dd([
+            'weekday_open_morning'    => $settings->weekday_open_morning,
+            'weekday_close_morning'   => $settings->weekday_close_morning,
+            'weekday_open_afternoon'  => $settings->weekday_open_afternoon,
+            'weekday_close_afternoon' => $settings->weekday_close_afternoon,
+        ]); */
+        // dd($resolved);
 
-        $dateWasAdjusted = $resolved['date'] !== $orderDate;
+        /*  $dateWasAdjusted = $resolved['date'] !== $orderDate;
 
         //Si la data cambio 
-        if ($dateWasAdjusted && empty($data['confirm_schedule_change'])) {
+       if ($dateWasAdjusted && empty($data['confirm_schedule_change'])) {
             return response()->json([
                 'requires_confirmation' => true,
                 'requested_date'        => $orderDate,
@@ -261,7 +273,7 @@ class StoreController extends Controller
                 'message'               => "O horário solicitado já está fechado. Seu pedido será agendado para "
                     . \Carbon\Carbon::parse($resolved['date'])->translatedFormat('d/m/Y') . ". Deseja continuar?",
             ], 200); // 200, no es un error, es una confirmación pendiente
-        }
+        } */
 
         $closeMorningHour = (int) explode(":", $settings->weekday_close_morning)[0]; //Extrae solo la hora (sin minutos) del cierre de la mañana en días de semana.
 
@@ -274,6 +286,7 @@ class StoreController extends Controller
                 'sunday_slots'    => $settings->delivery_sunday,
             ]
         );
+        // dd($capacity);
 
         $slotsAvailable = $capacity->{$resolved['slotsField']};
 
@@ -343,6 +356,7 @@ class StoreController extends Controller
                 'paid'             => $data['paid'] ?? false,
                 'pickup'         => $data['pickup'],
                 'rate_id'         => $data['rate_id'] ?? null,
+                 'scheduled'         => $data['scheduled'] ?? false,
                 'delivery_date'         => $resolved['date'],   //$data['delivery_date'] ?? null,
                 'delivery_hour'         => $data['delivery_hour'] ?? null,
                 'substitution_preference' => $data['substitution_preference'],

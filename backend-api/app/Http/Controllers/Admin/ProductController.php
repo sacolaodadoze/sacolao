@@ -112,10 +112,12 @@ class ProductController extends Controller
         ]);
 
         //$price='';
+         //dd($request['price'],"-",$request['average_weight']);
 
         if ($request['unit'] === 'KG' && $request['average_weight'] > 0) {
             $data['price_per_unit'] = $request['price'] * $request['average_weight'] /* / 1000 */; // gramos → kg;
         }
+     //   dd($data['price_per_unit']);
        // $peso=explode('.', $request['average_weight']).join(',',);
 
         $description = ($request['unit'] == "KG")

@@ -4,11 +4,7 @@ import {
   Divider,
   Box,
   Button,
-  Alert,
-  Dialog,
-  DialogContent,
-  DialogActions,
-  DialogTitle
+  Alert,  
 } from "@mui/material";
 import { useFormContext } from "react-hook-form";
 import { useContext } from "react";
@@ -24,7 +20,7 @@ import { SettingsContext } from "../context/SettingsContext.jsx";
 import { useDeliverySlots } from "../hooks/useDeliverySlots";
 import { useWatch } from "react-hook-form";
 
-export function CheckoutSummary({ checkoutError, scheduleConfirmation,onConfirmSchedule,onCancelSchedule }) {
+export function CheckoutSummary({ checkoutError }) {
   const { settings } = useContext(SettingsContext);
   //console.log( settings.is_closed,checkoutError);
   const { settingsDelivery } = useDeliverySlots();
@@ -255,7 +251,7 @@ export function CheckoutSummary({ checkoutError, scheduleConfirmation,onConfirmS
         >
           Finalizar Pedido
         </Button>
-        <Dialog open={!!scheduleConfirmation} onClose={onCancelSchedule}>
+       {/*  <Dialog open={!!scheduleConfirmation} onClose={onCancelSchedule}>
           <DialogTitle>Confirmar horário de entrega</DialogTitle>
           <DialogContent>
             <Typography>{scheduleConfirmation?.message}</Typography>
@@ -266,7 +262,7 @@ export function CheckoutSummary({ checkoutError, scheduleConfirmation,onConfirmS
               Confirmar
             </Button>
           </DialogActions>
-        </Dialog>
+        </Dialog> */}
       </Paper>
     </>
   );

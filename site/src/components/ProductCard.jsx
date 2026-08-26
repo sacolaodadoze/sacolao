@@ -83,7 +83,7 @@ export function ProductCard({ product }) {
               <div className="qty-controls">
                 <button
                   onClick={(e) => {
-                    e.stopPropagation;
+                    e.stopPropagation();
                     updateQuantity(product.id, -1);
                   }}
                 >
@@ -92,7 +92,7 @@ export function ProductCard({ product }) {
                 <span>{quantity}</span>
                 <button
                   onClick={(e) => {
-                    e.stopPropagation;
+                    e.stopPropagation();
                     updateQuantity(product.id, 1);
                   }}
                 >

@@ -35,7 +35,7 @@ class GeocodingService
         }
     }
 
-    //distancia en kilómetros entre dos coordenadas usando la fórmula matemática de Haversine
+    //distancia en kilómetros entre dos coordenadas usando la fórmula matemática de Haversine (no calcula correctamente)
     public function haversine($lat1, $lon1, $lat2, $lon2)
     {
         $earthRadius = 6371;
@@ -86,7 +86,7 @@ class GeocodingService
         return false; // Retorna falso si el servidor de OSRM falla o no encuentra ruta
     }
 
-    //Calculo de distancia 
+    //Calculo de distancia (no dio certo)
     public function calculateDistance($address, $lat, $lng)
     {
         /* $coords = $this->getGeocodeData($address);
@@ -167,7 +167,7 @@ class GeocodingService
                 }
             }
 
-            Log::warning("OSRM no pudo calcular la ruta. Código de respuesta: " . ($data['code'] ?? 'Desconocido'));
+            Log::warning("OSRM não conseguiu calcular a ruta. Código da respuesta: " . ($data['code'] ?? 'Desconocido'));
             return null;
         } catch (\Exception $e) {
             Log::error("Error en GeocodingService al conectar con OSRM: " . $e->getMessage());

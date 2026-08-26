@@ -83,7 +83,7 @@ export function Products() {
       );
 
       const data = await res.json();
-      //console.log(data);
+      //  console.log(data);
       if (data) {
         setProducts(data.data);
         setTotal(data.total);
@@ -123,10 +123,14 @@ export function Products() {
     //console.log(product);
     if (e && e.preventDefault) e.preventDefault();
     setLoadingSave(true);
+    const payload = {
+      ...product,
+      price: product.price,
+    };
     try {
       const res = await apiFetch(`/api/products/${product.id}`, {
         method: "PUT",
-        body: JSON.stringify(product),
+        body: JSON.stringify(payload),
       });
       //  console.log("res:", res);
       if (res.ok) {
@@ -135,6 +139,24 @@ export function Products() {
         setOpenModal(false);
         setSelectedProduct(null);
         showNotification(LANG.PRODUCTS.SUCCESSUPD, "success");
+
+        setProducts((prev) =>
+          prev.map((p) => {
+            if (p.id === product.id) {
+              const productoActualizado = { ...p, ...data };
+
+              if (productoActualizado.unit === "KG") {
+                const peso = Number(productoActualizado.average_weight) || 0;
+                const precioBase =
+                  Number(productoActualizado.price_per_kilo) || 0;
+                productoActualizado.price = peso * precioBase;
+              }
+
+              return productoActualizado;
+            }
+            return p;
+          }),
+        );
 
         /*  setProducts((prev) =>
         prev.map((p) =>
@@ -190,7 +212,7 @@ export function Products() {
       //  console.log("res:", res);
       if (res.ok) {
         const data = await res.json();
-        console.log(data);
+        // console.log(data);
         showNotification(LANG.PRODUCTS.SUCCESS, "success");
         await loadProducts();
       }
@@ -220,6 +242,7 @@ export function Products() {
     return <Loader />;
   }
   // console.log(categories);
+  //console.log("selectedProduct:", selectedProduct);
   return (
     <>
       <Box>
@@ -278,7 +301,6 @@ export function Products() {
               size="small"
               value={categoryId}
               onChange={(e) => {
-                
                 setCategoryId(e.target.value);
               }}
               displayEmpty
@@ -487,18 +509,19 @@ export function Products() {
                         onChange={(e) => {
                           const weight = e.target.value;
                           handleChange(product.id, "average_weight", weight);
+
                           if (weight === "" || isNaN(Number(weight))) {
                             handleChange(product.id, "calculated_price", "");
                             return;
                           }
-
-                          const calculatedPrice =
+                     
+                         const calculatedPrice =
                             product.unit === "KG"
-                              ? (Number(product.price) * Number(weight)) /* /
-                                  1000 */
+                              ? (Number(product.price) * Number(weight)) 
                                   .toFixed(2)
-                              : product.price;
+                              : product.price; 
 
+                         
                           handleChange(
                             product.id,
                             "calculated_price",

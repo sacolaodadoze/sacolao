@@ -70,7 +70,7 @@ class OrderController extends Controller
         $page = (int) $request->currentPage;
         $orders = $query->orderBy('id', 'desc')->paginate(
             $perPage,
-          /*   ['*'],
+            /*   ['*'],
             'page',
             $page */
         ); //->get();
@@ -105,6 +105,7 @@ class OrderController extends Controller
             'pickup' => 'nullable|boolean',
             'paid' => 'nullable|boolean',
             'rate_id' => 'nullable|exists:rates,id',
+            'scheduled'         => $data['scheduled'] ?? false,
             'delivery_date' => 'nullable|date|required_if:scheduled,true',
             'delivery_hour' => 'nullable|date_format:H:i|required_if:scheduled,true',
             'order_id' => 'nullable|exists:orders,id',
@@ -212,6 +213,7 @@ class OrderController extends Controller
                 'paid'             => $data['paid'],
                 'pickup'         => $data['pickup'],
                 'rate_id'         => $data['rate_id'] ?? null,
+                'scheduled'         => $data['scheduled'] ?? false,
                 'delivery_date'         => $data['delivery_date'] ?? null,
                 'delivery_hour'         => $data['delivery_hour'] ?? null,
                 'created_by' => $user->id

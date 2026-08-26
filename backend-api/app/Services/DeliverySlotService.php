@@ -29,10 +29,17 @@ class DeliverySlotService
     public function getScheduleForDate(Setting $settings, Carbon $date): array
     {
         $isHoliday = $this->isHoliday($settings, $date);
-         //dd($isHoliday);
         $dayOfWeek = $date->dayOfWeek; // 0 = domingo, 6 = sábado
 
-        if ($isHoliday || $dayOfWeek === 0) {
+        // Domingo: nunca hay entregas, sin excepción.
+        if ($dayOfWeek === 0 && !$isHoliday) {
+            return [
+                'type' => 'closed',
+            ];
+        }
+
+        // Feriado: SÍ hay entregas, usando el mismo horario ya establecido para domingo.
+        if ($isHoliday) {
             return [
                 'type'  => 'single',
                 'open'  => $settings->sunday_open,
@@ -63,6 +70,10 @@ class DeliverySlotService
     public function isDayOpen(Setting $settings, Carbon $date): bool
     {
         $schedule = $this->getScheduleForDate($settings, $date);
+
+        if ($schedule['type'] === 'closed') {
+            return false;
+        }
 
         if ($schedule['type'] === 'single') {
             return !empty($schedule['open']) && !empty($schedule['close']);
@@ -104,8 +115,16 @@ class DeliverySlotService
     public function resolveOrderSlot(Setting $settings, string $orderDate, int $hour, int $minute): array
     {
         $date = Carbon::parse($orderDate);
+       // dd($date);
         $currentTime = sprintf('%02d:%02d', $hour, $minute);
         $schedule = $this->getScheduleForDate($settings, $date);
+        //dd($schedule);
+
+        if ($schedule['type'] === 'closed') {
+            // domingo: nunca hay entregas, se va directo al próximo día hábil
+            $nextDay = $this->nextOpenDay($settings, $date);
+            return $this->resolveOrderSlot($settings, $nextDay->toDateString(), 0, 0);
+        }
 
         if ($schedule['type'] === 'single') {
             // sábado, domingo o feriado
@@ -121,7 +140,7 @@ class DeliverySlotService
 
                 return [
                     'date'         => $date->toDateString(),
-                    'shift'        => 'single', 
+                    'shift'        => 'single',
                     'slotsField'   => $isSunday ? 'sunday_slots' : 'saturday_slots',
                     'settingField' => $isSunday ? 'delivery_sunday' : 'delivery_saturday',
                 ];
@@ -129,7 +148,6 @@ class DeliverySlotService
 
             // ya cerró -> próximo día hábil
             $nextDay = $this->nextOpenDay($settings, $date);
-           
             return $this->resolveOrderSlot($settings, $nextDay->toDateString(), 0, 0);
         }
 

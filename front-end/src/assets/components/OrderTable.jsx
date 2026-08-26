@@ -12,7 +12,7 @@ import { Edit, Print, DeleteOutlined } from "@mui/icons-material";
 //import PrintIcon from '@mui/icons-material/Print';
 import DeleteIcon from "@mui/icons-material/Delete";
 //import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
-import { formatDate, formatDeliveryDateTime } from "../helpers/formatDate.js";
+import { formatDate, formatDeliveryDateTime , formatDateShort} from "../helpers/formatDate.js";
 import { OrdersTableSkeleton } from "./OrdersTableSkeleton.jsx";
 import { useDeleteOrder } from "../hooks/useDeleteOrder.jsx";
 import { useEditOrder } from "../hooks/useEditOrder.jsx";
@@ -107,6 +107,7 @@ export function OrderTable({
       setPrinting(null);
     }
   };
+
   return (
     <div className="table-container">
       <table>
@@ -118,9 +119,10 @@ export function OrderTable({
             <th>Cliente</th>
             <th>Endereço</th>
             <th style={{ width: "165px" }}>Estado</th>
-            <th style={{ width: "152px"}}>Agendado</th>
-            <th style={{ width: "61px", textAlign:"center"}}>Ret</th>
-            <th style={{ width: "180px", textAlign:"center" }}>Ações</th>
+            <th style={{ width: "152px" }}>Agendado</th>
+            <th style={{ width: "152px" }}>Entrega</th>
+            <th style={{ width: "61px", textAlign: "center" }}>Ret</th>
+            <th style={{ width: "180px", textAlign: "center" }}>Ações</th>
           </tr>
         </thead>
         <tbody>
@@ -157,6 +159,8 @@ export function OrderTable({
 
                 {/* 6. Estado */}
                 <td>{order.status.name}</td>
+
+                {/* Agendado  */}
                 <td>
                   {order.delivery_date
                     ? formatDeliveryDateTime(
@@ -165,7 +169,24 @@ export function OrderTable({
                       )
                     : ""}
                 </td>
-                <td style={{ textAlign:"right" }}>
+
+                {/* Entrega */}
+                <td>
+                  {(() => {
+                    if (order.scheduled) return ""; // ya se muestra en la columna Agendado
+                    if (!order.delivery_date) return "";
+
+                    const createdDateKey = order.created_at.split("T")[0];
+                    const isDifferentDay =
+                      order.delivery_date !== createdDateKey;                   
+
+                    if (!isDifferentDay) return "";
+                     return formatDateShort(order.delivery_date);                    
+                  })()}
+                </td>
+
+                {/*  */}
+                <td style={{ textAlign: "right" }}>
                   {order.pickup ? (
                     <Chip label="✓" color="warning" size="small" />
                   ) : (
@@ -174,19 +195,19 @@ export function OrderTable({
                 </td>
 
                 {/* 7. Columna de acciones*/}
-                <td style={{ textAlign:"right" }}>
+                <td style={{ textAlign: "right" }}>
                   <Tooltip title="Alterar pedido">
                     <IconButton
-                    color="action"
-                        size="small"
-                        sx={{
-                          //color: "#64748b",
-                          "&:hover": {
-                            backgroundColor: "#14532d",
-                            color: "#fff",
-                          },
-                        }}
-                     /*  className="btn-action btn-edit" */
+                      color="action"
+                      size="small"
+                      sx={{
+                        //color: "#64748b",
+                        "&:hover": {
+                          backgroundColor: "#14532d",
+                          color: "#fff",
+                        },
+                      }}
+                      /*  className="btn-action btn-edit" */
                       onClick={() => handleEdit(order.id)}
                     >
                       {editing === order.id ? (
@@ -213,7 +234,7 @@ export function OrderTable({
                     <IconButton
                       onClick={() => handleDelete(order.id)}
                       disabled={!hasAnyRole(["admin"])}
-                     /*  className="btn-action btn-del" */
+                      /*  className="btn-action btn-del" */
                     >
                       <DeleteOutlined />
                     </IconButton>

@@ -49,12 +49,18 @@ class HiperProductService
                     'name' => $item['nome'],
                     'slug' => Str::slug($item['nome']),
                     'image' => $item['imagem']   ?? '',
-                    'description' => $item['descricao'] ?? [],
+                    // 'description' => $item['descricao'] ?? "",
                     'stock' => $item['quantidadeEmEstoque'] ?? 0,
                     'unit' => $item['unidade'] ?? '',
                     'price' => $item['preco'] ?? 0,
                     //  'price_hiper' => $item['preco'] ?? 0,                 
                     'active' => $item['ativo'],
+
+                    ...(
+                       !empty($item['descricao'])
+                        ? ['description' => $item['descricao']]
+                        : []
+                    ),
                 ]
             );
             // Si el campo 'price' acaba de cambiar en esta ejecución actualizar el "price_per_unit "

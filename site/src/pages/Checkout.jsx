@@ -41,8 +41,8 @@ export default function Checkout() {
 
   const [checkoutError, setCheckoutError] = useState("");
 
-  const [scheduleConfirmation, setScheduleConfirmation] = useState(null);
-  const [pendingOrderData, setPendingOrderData] = useState(null);
+  /* const [scheduleConfirmation, setScheduleConfirmation] = useState(null); 
+  const [pendingOrderData, setPendingOrderData] = useState(null);*/
 
   const loadPaymentTypes = () => {
     apiFetch("/api/store/payments")
@@ -215,11 +215,11 @@ export default function Checkout() {
       );
     }
 
-    if (responseData.requires_confirmation) {
+  /*   if (responseData.requires_confirmation) {
       setScheduleConfirmation(responseData);
       setPendingOrderData(payload);
       return null;
-    }
+    } */
 
     return responseData;
   }
@@ -241,7 +241,7 @@ export default function Checkout() {
     }
   };
 
-  function handleConfirmSchedule() {
+/*   function handleConfirmSchedule() {
     submitOrder({ ...pendingOrderData, confirm_schedule_change: true })
       .then((order) => {
         if (!order) return;
@@ -267,7 +267,7 @@ export default function Checkout() {
   function handleCancelSchedule() {
     setScheduleConfirmation(null);
     setPendingOrderData(null);
-  }
+  } */
 
   return (
     <>
@@ -347,9 +347,9 @@ export default function Checkout() {
               <Grid size={{ xs: 12, md: 5 }}>
                 <CheckoutSummary
                   checkoutError={checkoutError}
-                  scheduleConfirmation={scheduleConfirmation}
-                  onConfirmSchedule={handleConfirmSchedule}
-                  onCancelSchedule={handleCancelSchedule}
+                  /*scheduleConfirmation={scheduleConfirmation}
+                   onConfirmSchedule={handleConfirmSchedule} 
+                  onCancelSchedule={handleCancelSchedule}*/
                 />
               </Grid>
             </Grid>
