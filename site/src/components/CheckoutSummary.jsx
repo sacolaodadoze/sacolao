@@ -1,11 +1,4 @@
-import {
-  Paper,
-  Typography,
-  Divider,
-  Box,
-  Button,
-  Alert,  
-} from "@mui/material";
+import { Paper, Typography, Divider, Box, Button, Alert } from "@mui/material";
 import { useFormContext } from "react-hook-form";
 import { useContext } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -148,10 +141,10 @@ export function CheckoutSummary({ checkoutError }) {
           }}
         >
           {/* <Typography color="text.secondary">Entrega</Typography> */}
-          <Typography>{/* R$ {delivery.toFixed(2)} */}</Typography>
+        
           {deliveryType !== "pickup" && (
             <>
-              <Divider sx={{ my: 2 }} />
+              
               <Typography variant="h6">Taxa de entrega</Typography>
 
               {isLoadingRate && (
@@ -165,24 +158,27 @@ export function CheckoutSummary({ checkoutError }) {
               )}
 
               {rateData?.rate && (
-                <>
+                <Box>
+                  <Typography sx={{ textAlign: "right" }}>
+                    {Number(rateData.delivery_fee) === 0
+                      ? "Entrega grátis 🎉"
+                      : `R$ ${Number(rateData.delivery_fee).toFixed(2)} (${rateData.distance} km)`}
+                  </Typography>
+
                   {!rateData.meets_minimum && (
                     <Typography
                       variant="caption"
                       color="warning.main"
-                      sx={{ display: "block" }}
+                      sx={{
+                        display: "block",
+                        textAlign: "right",
+                      }}
                     >
                       Pedido mínimo para taxa reduzida: R${" "}
                       {Number(rateData.rate.minimum_order).toFixed(2)}
                     </Typography>
                   )}
-                  <Typography>
-                    {Number(rateData.delivery_fee) === 0 // 👈 delivery_fee directo, no rate.delivery_fee
-                      ? "Entrega grátis 🎉"
-                      : `R$ ${Number(rateData.delivery_fee).toFixed(2)}`}{" "}
-                    ({rateData.distance} km)
-                  </Typography>
-                </>
+                </Box>
               )}
             </>
           )}
@@ -251,7 +247,7 @@ export function CheckoutSummary({ checkoutError }) {
         >
           Finalizar Pedido
         </Button>
-       {/*  <Dialog open={!!scheduleConfirmation} onClose={onCancelSchedule}>
+        {/*  <Dialog open={!!scheduleConfirmation} onClose={onCancelSchedule}>
           <DialogTitle>Confirmar horário de entrega</DialogTitle>
           <DialogContent>
             <Typography>{scheduleConfirmation?.message}</Typography>

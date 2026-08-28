@@ -37,7 +37,7 @@ export function calculateEstimatedDelivery(settings, isPickup = false) {
   );
 
   const isHoliday = holidaySet.has(todayKey);
-  console.log(isHoliday);
+  //console.log(isHoliday);
   const dayOfWeek = now.getDay();
   const isSaturday = dayOfWeek === 6;
   //const isSunday = dayOfWeek === 0 || isHoliday;
@@ -170,10 +170,14 @@ export function buildOrderConfirmation(
   data,
   settings,
   settingsDelivery,
+  summary
 ) {
+
+  let confirmation = {};
+
   if (!data.scheduled && data.deliveryType !== "pickup") {
     const estimatedAt = calculateEstimatedDelivery(settings);
-    order.confirmation = {
+    confirmation = {
       scheduled: false,
       estimatedAt: estimatedAt ?? "",
     };
@@ -185,7 +189,7 @@ export function buildOrderConfirmation(
       data.delivery_date,
       settingsDelivery,
     );
-    order.confirmation = {
+    confirmation = {
       scheduled: true,
       date: data.delivery_date,
       hourStart: data.delivery_hour,
@@ -195,11 +199,22 @@ export function buildOrderConfirmation(
 
   if (data.deliveryType === "pickup") {
     const estimatedAt = calculateEstimatedDelivery(settings, data.deliveryType);
-    order.confirmation = {
+    confirmation = {
       deliveryType: "pickup",
       estimatedAt: estimatedAt ?? "",
     };
   }
+
+   confirmation.summary = {
+    items: data.items,
+    subtotal: summary.subtotal,
+    deliveryFee: summary.deliveryFee,
+    total: summary.total,
+    rate: summary.rateData ?? null,
+    pickup: data.deliveryType === "pickup",
+  };
+
+  order.confirmation = confirmation;
 
   return order;
 }

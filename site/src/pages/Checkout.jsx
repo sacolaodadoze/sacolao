@@ -1,5 +1,6 @@
 import React from "react";
 import { useEffect, useState, useContext } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 import { useForm, Controller, FormProvider } from "react-hook-form";
 import { CheckoutProducts } from "../components/CheckoutProducts.jsx";
@@ -20,31 +21,37 @@ import { zodResolver } from "@hookform/resolvers/zod"; //validaciones
 import { checkoutSchema } from "../forms/checkoutForm.js";
 import { useCart } from "../context/CartContext.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
+
 import {
   calculateEstimatedDelivery,
   CalculateScheduleDelivery,
   buildOrderConfirmation,
 } from "../utils/deliveryUtils";
 
+import { Loader } from "../components/Loader.jsx";
+
 export default function Checkout() {
   const { customer } = useAuth();
 
   const navigate = useNavigate();
+
   const primaryAddress = customer?.addresses?.find((a) => a.is_primary === 1);
   const primaryPhone = customer?.phones?.find((p) => p.type === 1);
   const secundaryPhone = customer?.phones?.find((p) => p.type === 2);
 
   const { cartItems, clearCart } = useCart();
-  const [paymentTypes, setPaymentTypes] = useState([]);
+
   const { settings } = useContext(SettingsContext);
-  const { settingsDelivery } = useDeliverySlots();
+  /* const { settingsDelivery } = useDeliverySlots(); */
+  const { settingsDelivery, isLoading: loadingDeliverySettings } =
+    useDeliverySlots();
 
   const [checkoutError, setCheckoutError] = useState("");
 
-  /* const [scheduleConfirmation, setScheduleConfirmation] = useState(null); 
-  const [pendingOrderData, setPendingOrderData] = useState(null);*/
+  /* const [paymentTypes, setPaymentTypes] = useState([]);
+  const [loadingPaymentTypes, setLoadingPaymentTypes] = useState(true); */
 
-  const loadPaymentTypes = () => {
+  /*   const loadPaymentTypes = () => {
     apiFetch("/api/store/payments")
       .then((response) => {
         if (response.ok) {
@@ -59,11 +66,21 @@ export default function Checkout() {
       .catch((error) => {
         console.error(error.message || "Error ao trazer os payments");
       });
-  };
+  }; */
 
-  useEffect(() => {
-    loadPaymentTypes();
-  }, []);
+  const { data: paymentTypes = [], isLoading: loadingPaymentTypes } = useQuery({
+    queryKey: ["payment-types"],
+    queryFn: async () => {
+      const response = await apiFetch("/api/store/payments");
+
+      if (!response.ok) {
+        throw new Error("Erro ao carregar formas de pagamento");
+      }
+
+      return response.json();
+    },
+    staleTime: Infinity,
+  });
 
   const methods = useForm({
     resolver: zodResolver(checkoutSchema),
@@ -114,7 +131,8 @@ export default function Checkout() {
     );
   }, [cartItems, methods]);
 
-  //console.log(methods.watch("items"));
+  const checkoutReady =
+    customer && settings && paymentTypes.length > 0 && cartItems.length > 0;
 
   const onError = (errors) => {
     //console.log(errors);
@@ -215,7 +233,7 @@ export default function Checkout() {
       );
     }
 
-  /*   if (responseData.requires_confirmation) {
+    /*   if (responseData.requires_confirmation) {
       setScheduleConfirmation(responseData);
       setPendingOrderData(payload);
       return null;
@@ -232,7 +250,7 @@ export default function Checkout() {
       const order = await submitOrder(orderData);
       if (!order) return;
 
-      buildOrderConfirmation(order, data, settings, settingsDelivery);
+      buildOrderConfirmation(order, data, settings, settingsDelivery, summary);
       clearCart();
       navigate("/order-confirmation", { state: { order } });
     } catch (error) {
@@ -241,7 +259,7 @@ export default function Checkout() {
     }
   };
 
-/*   function handleConfirmSchedule() {
+  /*   function handleConfirmSchedule() {
     submitOrder({ ...pendingOrderData, confirm_schedule_change: true })
       .then((order) => {
         if (!order) return;
@@ -334,27 +352,41 @@ export default function Checkout() {
         >
           Confira seu pedido
         </Typography>
+        {loadingPaymentTypes || loadingDeliverySettings ? (
+          <Box
+            sx={{
+              minHeight: "400px",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Loader />
+          </Box>
+        ) : (
+          <>
+            {/* Contenido */}
+            <FormProvider {...methods}>
+              <form onSubmit={methods.handleSubmit(onSubmit, onError)}>
+                <Grid container spacing={3} sx={{ mt: 5 }}>
+                  <Grid size={{ xs: 12, md: 7 }}>
+                    <CheckoutProducts />
+                    <CheckoutForm paymentTypes={paymentTypes} />
+                  </Grid>
 
-        {/* Contenido */}
-        <FormProvider {...methods}>
-          <form onSubmit={methods.handleSubmit(onSubmit, onError)}>
-            <Grid container spacing={3} sx={{ mt: 5 }}>
-              <Grid size={{ xs: 12, md: 7 }}>
-                <CheckoutProducts />
-                <CheckoutForm paymentTypes={paymentTypes} />
-              </Grid>
-
-              <Grid size={{ xs: 12, md: 5 }}>
-                <CheckoutSummary
-                  checkoutError={checkoutError}
-                  /*scheduleConfirmation={scheduleConfirmation}
+                  <Grid size={{ xs: 12, md: 5 }}>
+                    <CheckoutSummary
+                      checkoutError={checkoutError}
+                      /*scheduleConfirmation={scheduleConfirmation}
                    onConfirmSchedule={handleConfirmSchedule} 
                   onCancelSchedule={handleCancelSchedule}*/
-                />
-              </Grid>
-            </Grid>
-          </form>
-        </FormProvider>
+                    />
+                  </Grid>
+                </Grid>
+              </form>
+            </FormProvider>
+          </>
+        )}
       </Box>
       <Footer />
     </>

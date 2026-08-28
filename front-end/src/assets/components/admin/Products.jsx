@@ -35,7 +35,7 @@ import { schema } from "../../../forms/productsForm.js";
 
 export function Products() {
   const { showNotification } = useNotification();
-  const [products, setProducts] = useState(productsData);
+  const [products, setProducts] = useState([] /* productsData */);
   const [categories, setCategories] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -120,17 +120,20 @@ export function Products() {
   }, []);
 
   const handleSaveProduct = async (product, e) => {
-    //console.log(product);
+    console.log(product.price);
     if (e && e.preventDefault) e.preventDefault();
     setLoadingSave(true);
+
     const payload = {
       ...product,
       price: product.price,
     };
+
+    //console.log("payload", payload);
     try {
       const res = await apiFetch(`/api/products/${product.id}`, {
         method: "PUT",
-        body: JSON.stringify(payload),
+        body: JSON.stringify(product),
       });
       //  console.log("res:", res);
       if (res.ok) {
@@ -140,29 +143,7 @@ export function Products() {
         setSelectedProduct(null);
         showNotification(LANG.PRODUCTS.SUCCESSUPD, "success");
 
-        setProducts((prev) =>
-          prev.map((p) => {
-            if (p.id === product.id) {
-              const productoActualizado = { ...p, ...data };
-
-              if (productoActualizado.unit === "KG") {
-                const peso = Number(productoActualizado.average_weight) || 0;
-                const precioBase =
-                  Number(productoActualizado.price_per_kilo) || 0;
-                productoActualizado.price = peso * precioBase;
-              }
-
-              return productoActualizado;
-            }
-            return p;
-          }),
-        );
-
-        /*  setProducts((prev) =>
-        prev.map((p) =>
-          p.id === product.id ? { ...p, active: !p.active } : p,
-        ),
-      ); */
+        setProducts((prev) => prev.map((p) => (p.id === data.id ? data : p)));
         /*  await loadProducts(
           perPage,
           currentPage,
@@ -171,30 +152,6 @@ export function Products() {
           unit,
           statusFilter,
         );  */
-
-        setProducts((prev) =>
-          prev.map((p) => {
-            if (p.id === product.id) {
-              // Unimos lo que ya tenía el producto con los nuevos checkboxes del modal
-              const productoActualizado = { ...p, ...product };
-
-              // 3. CÁLCULO AUTOMÁTICO DE PRECIO EN CALIENTE
-              if (productoActualizado.unit === "KG") {
-                const peso = Number(productoActualizado.average_weight) || 0;
-
-                // Ajusta 'price_per_kilo' al nombre real de tu campo de precio base
-                const precioBase =
-                  Number(productoActualizado.price_per_kilo) || 0;
-
-                // Modifica el precio final en el estado local de React
-                productoActualizado.price = peso * precioBase;
-              }
-
-              return productoActualizado;
-            }
-            return p;
-          }),
-        );
       }
     } catch (error) {
       console.error(error);
@@ -378,7 +335,7 @@ export function Products() {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
-                backgroundColor: "rgba(255,255,255,0.7)",
+                backgroundColor: "rgba(255,255,255,0.95)",
                 zIndex: 10,
               }}
             >
@@ -463,70 +420,37 @@ export function Products() {
                         </Select>
                       </Tooltip>
                     </td>
-                    <td style={{ textalign: "center" }}>{product.unit}</td>
-                    <td style={{ textalign: "center" }}>
-                      {/* {product.average_weight} */}
-                      {/*       <TextField
-                        //  value={product.average_weight?.toFixed(2) || ""}
-                        value={
-                          Number(product.average_weight)
-                            ? Number(product.average_weight).toFixed(2)
-                            : ""
-                        }
-                        type="number"
-                        disabled={product.unit !== "KG"}
-                        onChange={(e) =>
-                          handleChange(
-                            product.id,
-                            "average_weight",
-                            e.target.value,
-                          )
-                        }
-                        size="small"
-                        sx={{
-                          "& input[type=number]": {
-                            MozAppearance: "textfield",
-                          },
-                          "& input[type=number]::-webkit-outer-spin-button": {
-                            WebkitAppearance: "none",
-                            margin: 0,
-                          },
-                          "& input[type=number]::-webkit-inner-spin-button": {
-                            WebkitAppearance: "none",
-                            margin: 0,
-                          },
-                        }}
-                      /> */}
+                    {/* Unidad */}
+                    <td style={{ textAlign: "center" }}>{product.unit}</td>
+
+                    {/* Peso medio */}
+                    <td style={{ textAlign: "center" }}>
                       <TextField
-                        value /*  {new Intl.NumberFormat("pt-BR", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              }).format( product.average_weight || "")} */={
-                          product.average_weight || ""
-                        }
+                        value={product.average_weight ?? ""}
                         type="number"
                         disabled={product.unit !== "KG"}
                         onChange={(e) => {
                           const weight = e.target.value;
+
                           handleChange(product.id, "average_weight", weight);
 
                           if (weight === "" || isNaN(Number(weight))) {
                             handleChange(product.id, "calculated_price", "");
                             return;
                           }
-                     
-                         const calculatedPrice =
-                            product.unit === "KG"
-                              ? (Number(product.price) * Number(weight)) 
-                                  .toFixed(2)
-                              : product.price; 
 
-                         
+                          const calculatedPrice =
+                            product.unit === "KG"
+                              ? (
+                                  Number(product.price) * Number(weight)
+                                ).toFixed(2)
+                              : product.price;
+
                           handleChange(
                             product.id,
                             "calculated_price",
                             calculatedPrice,
-                          ); // precio estimado
+                          );
                         }}
                         size="small"
                         sx={{
@@ -544,7 +468,9 @@ export function Products() {
                         }}
                       />
                     </td>
-                    <td style={{ textalign: "center" }}>
+
+                    {/* Preco */}
+                    <td style={{ textAlign: "center" }}>
                       R${" "}
                       {product.calculated_price !== undefined &&
                       product.calculated_price !== ""

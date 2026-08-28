@@ -62,7 +62,7 @@ export function ProductModal({ open, onClose, onSubmit, product = null }) {
           }}
         >
           <Typography variant="subtitle1" fontWeight="bold">
-            Dados do Hiper
+            Dados
           </Typography>
 
           <Divider />

@@ -102,6 +102,7 @@ class ProductController extends Controller
             
             'category_id' => ['sometimes', 'nullable', 'exists:categories,id'],
             'average_weight' => ['sometimes', 'nullable', 'numeric'],
+            'price'=>['nullable', 'numeric'],
             'price_per_kg' => ['nullable', 'numeric'],
             'price_per_unit' => ['nullable', 'numeric'],
             'active' => ['nullable', 'boolean'],
@@ -110,6 +111,8 @@ class ProductController extends Controller
             'new_product' => ['nullable', 'boolean'],
             'week_offer' => ['nullable', 'boolean'],
         ]);
+
+        //dd($data);
 
         //$price='';
          //dd($request['price'],"-",$request['average_weight']);
@@ -129,14 +132,13 @@ class ProductController extends Controller
             : "";
         $data['description'] = $description;
 
-        //dd($data);
-
         $product->update($data);
+        return response()->json($product->fresh());
 
-        return response()->json([
+        /* return response()->json([
             'success' => true,
             'message' => 'Produto atualizado com sucesso',
-        ]);
+        ]); */
     }
 
     /**

@@ -4,6 +4,7 @@ export const schema = z
   .object({
     category_id: z.string().min(1, LANG.GLOBAL.REQUIRED),
     average_weight: z.number().optional(),
+   // price:
   })
   //Validar peso medio si la unidad es KG
   .superRefine((data, ctx) => {

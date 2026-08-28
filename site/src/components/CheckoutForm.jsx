@@ -156,6 +156,7 @@ function ScheduleSection() {
     </Paper>
   );
 }
+
 export function CheckoutForm({ paymentTypes }) {
   const {
     control,
