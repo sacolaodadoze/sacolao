@@ -7,12 +7,21 @@ import { apiFetch } from "../api/apiFetch.js";
 import { useQuery } from "@tanstack/react-query";
 import { Loader } from "../components/Loader.jsx";
 
-export function Products({ selectedCategory,selectedParentCategory, headerHeight }) {
+export function Products({
+  selectedCategory,
+  selectedParentCategory,
+  headerHeight,
+  search,
+}) {
   const categoryRefs = useRef({});
 
   const loadProducts = async () => {
-    const res = await apiFetch("/api/store/products");
+    const res = await apiFetch(
+      `/api/store/products?search=${encodeURIComponent(search)}`,
+    );
     const data = await res.json();
+
+     console.log("RESPUESTA BACKEND:", data);
     return data.data ?? data;
   };
 
@@ -22,18 +31,18 @@ export function Products({ selectedCategory,selectedParentCategory, headerHeight
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ["products"],
+    queryKey: ["products", search],
     queryFn: loadProducts, // función que llama a la API
     staleTime: 1000 * 60 * 15, // considera los datos frescos por 15 minutos
     refetchOnMount: false, //  no refetchea cuando el componente se monta si los datos están frescos
   });
-//console.log(products)
-    // filtrar productos si hay categoría padre seleccionada
+  //console.log(products)
+  // filtrar productos si hay categoría padre seleccionada
   const visibleProducts = selectedParentCategory
     ? products.filter((product) =>
         selectedParentCategory.children.some(
-          (child) => child.id === product.category?.id
-        )
+          (child) => child.id === product.category?.id,
+        ),
       )
     : products;
 
@@ -48,7 +57,7 @@ export function Products({ selectedCategory,selectedParentCategory, headerHeight
       };
     }
 
-    acc[id].products.push(product); 
+    acc[id].products.push(product);
 
     return acc;
   }, {});
@@ -70,7 +79,7 @@ export function Products({ selectedCategory,selectedParentCategory, headerHeight
       if (!element) return;
 
       const elementTop = getOffsetTop(element);
-      
+
       document.body.scrollTo({
         top: elementTop - headerHeight - 16,
         behavior: "smooth",
@@ -80,7 +89,7 @@ export function Products({ selectedCategory,selectedParentCategory, headerHeight
     return () => clearTimeout(timer);
   }, [selectedCategory, headerHeight]);
 
-  if (isLoading) return <Loader/>;
+  if (isLoading) return <Loader />;
   if (isError) return <p>Error al cargar productos</p>;
 
   return (

@@ -1,4 +1,4 @@
-import { useState, useContext,useEffect } from "react";
+import { useState, useContext, useEffect } from "react";
 import logo from "/img/logo/logo.png";
 import SearchIcon from "@mui/icons-material/Search";
 import "./Header.css";
@@ -16,8 +16,9 @@ import { useCart } from "../context/CartContext.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import { CartDrawer } from "./Cart.jsx";
 
-export default function Header() {
-  const {settings} = useContext(SettingsContext);
+export default function Header({ search, setSearch, handleSearch,handleClearSearch  }) {
+
+  const { settings } = useContext(SettingsContext);
   const [openCart, setOpenCart] = useState(false);
 
   const { cartItems } = useCart();
@@ -33,6 +34,10 @@ export default function Header() {
     navigate("/login");
   };
 
+ /*  const handleSearch = () => {
+    onSearch(search.trim());
+  }; */
+
   return (
     <header className="header">
       <TopBar />
@@ -43,14 +48,33 @@ export default function Header() {
         </Link>
         {settings.business_name || "Sacolão da Doze"}
       </div>
+
       <div className="search-container">
-        <input
-          type="text"
-          placeholder="Nome do produto..."
-          className="search"
-        />
+        <div className="search-input-wrapper">
+          <input
+            type="text"
+            placeholder="Nome do produto..."
+            className="search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleSearch();
+              }
+            }}
+          />
+
+          {search && (
+            <button className="clear-search" onClick={handleClearSearch} >
+              ✕
+            </button>
+          )}
+        </div>
+
         <Button
+          onClick={handleSearch}
           sx={{
+             height: "38px",
             backgroundColor: "#f28c28",
             marginTop: "-1px",
             borderRadius: "0 12px 12px 0",

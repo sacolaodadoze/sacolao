@@ -63,7 +63,8 @@ class StoreController extends Controller
     } */
     public function products(Request $request)
     {
-        /*  $products = Category::with('products')->orderBy('position')->get()->flatMap(function ($category) {
+
+ /*  $products = Category::with('products')->orderBy('position')->get()->flatMap(function ($category) {
             return $category->products->map(function ($product) use ($category) {
                 $product->category_name = $category->name;
                 return $product;
@@ -86,8 +87,12 @@ class StoreController extends Controller
             $search = $request->search;
 
             $query->where(function ($q) use ($search) {
-                $q->where('name', 'ILIKE', "%{$search}%")
-                    ->orWhere('code', 'ILIKE', "%{$search}%");
+                /* Ignora mayusculas y acentos  */
+                $q->whereRaw(
+                    'unaccent(name) ILIKE unaccent(?)',
+                    ["%{$search}%"]
+                );
+                // $q->where('name', 'ILIKE', "%{$search}%") ;
             });
         }
 
@@ -240,19 +245,19 @@ class StoreController extends Controller
 
         $settings = Setting::first();
         $orderDate = $data['delivery_date'] ?? now()->toDateString();
-       //$orderDate='2026-08-29';
-       // dd( $orderDate);
+        //$orderDate='2026-08-29';
+        // dd( $orderDate);
 
-         $hour = $data['delivery_hour']
+        $hour = $data['delivery_hour']
             ? (int) explode(":", $data['delivery_hour'])[0]
             : now()->hour;
 
         $minute = $data['delivery_hour'] && isset(explode(":", $data['delivery_hour'])[1])
             ? (int) explode(":", $data['delivery_hour'])[1]
-            : now()->minute; 
+            : now()->minute;
 
-       // $hour = 23;   //  forzado para probar
-      //  $minute = 0;  // forzado para probar
+        // $hour = 23;   //  forzado para probar
+        //  $minute = 0;  // forzado para probar
 
         $resolved = $this->deliverySlotService->resolveOrderSlot($settings, $orderDate, $hour, $minute);
         /*  dd([
@@ -358,7 +363,7 @@ class StoreController extends Controller
                 'paid'             => $data['paid'] ?? false,
                 'pickup'         => $data['pickup'],
                 'rate_id'         => $data['rate_id'] ?? null,
-                 'scheduled'         => $data['scheduled'] ?? false,
+                'scheduled'         => $data['scheduled'] ?? false,
                 'delivery_date'         => $resolved['date'],   //$data['delivery_date'] ?? null,
                 'delivery_hour'         => $data['delivery_hour'] ?? null,
                 'substitution_preference' => $data['substitution_preference'],

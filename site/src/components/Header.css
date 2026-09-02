@@ -4,7 +4,7 @@
   gap: 12px;
   padding: 0px 0px 17px 0px;
   background: var(--primary); /* #1b5e20 */ /* #2e7d32 */
-  color: var(--background); 
+  color: var(--background);
   flex-wrap: wrap; /* Permite que los elementos salten de línea */
   justify-content: space-between;
   align-items: center;
@@ -12,7 +12,6 @@
 
 .logo {
   font-weight: bold;
-
 }
 
 .logo-container {
@@ -38,24 +37,53 @@
   flex: 1;
   margin-right: auto;
   align-items: center;
+  flex-wrap: nowrap;
+   display: flex;    
+}
+
+.search-input-wrapper {
+  position: relative;
+   flex: 1 1 auto;  
+  min-width: 0;
 }
 
 .search {
-  /* margin-right: auto; /* EMPUJA el espacio sobrante a la derecha */
-  flex: none;
-  width: 75%;
-  /*padding: 10px 38px 10px 12px; /* espacio a la derecha */
-  border-top-left-radius: var(--radius);
-  border-bottom-left-radius: var(--radius);
+ 
+  width: 100%;
+  height: 38px;
+  box-sizing: border-box;
+
   border: none;
   background: #f5f5f5;
+  border-radius: 12px 0 0 12px;
+
   padding: 10px 40px 10px 12px;
-  box-sizing: border-box; /* MUY IMPORTANTE */
 }
+
+.clear-search {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+
+  border: none;
+  background: transparent;
+  cursor: pointer;
+
+  font-size: 16px;
+  line-height: 1;
+  padding: 0;
+}
+
+.search:focus {
+  outline: none;
+}
+
+
 
 .cart {
   cursor: pointer;
-  margin-right:80px;
+  margin-right: 80px;
   display: flex;
   align-items: center;
   gap: 20px; /* 👈 espacio entre el carrito y el nombre */
@@ -103,8 +131,13 @@
     width: calc(100% - 12px);
     box-sizing: border-box;
   }
+  .search-input-wrapper {
+    flex: 1;
+    min-width: 0;
+  }
 
   .search {
+    width: 100%; /* revisar como se ve en movil */
     flex: 1;
     min-width: 0;
     border-right: none;
@@ -116,7 +149,7 @@
     flex-shrink: 0;
     margin-left: -2px;
     height: 38px;
-     font-size: 10px;
+    font-size: 10px;
   }
 
   .whatsapp-notice {

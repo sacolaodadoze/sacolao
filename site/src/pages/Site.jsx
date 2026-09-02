@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef,useContext } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import Footer from "../components/Footer.jsx";
 import SideBar from "../components/SideBar.jsx";
 import Header from "../components/Header.jsx";
@@ -16,50 +16,61 @@ import { SettingsContext } from "../context/SettingsContext.jsx";
 export default function Site({ children }) {
   const stickyHeaderRef = useRef(null);
   const [headerHeight, setHeaderHeight] = useState(0);
-  const {settings} = useContext(SettingsContext);
+  const { settings } = useContext(SettingsContext);
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
 
   const [selectedParentCategory, setSelectedParentCategory] = useState(null);
 
-  const handleSelectParent = (category) => {
-    setSelectedCategory(null);
-  setSelectedParentCategory(category); // { id: 3, name: "Merceria", children: [...] }
-  
+  const [search, setSearch] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearch = () => {
+    setSearchQuery(search.trim());
+  };
+
+  const handleClearSearch = () => {
+  setSearch("");
+  setSearchQuery("");
 };
 
-const handleSelectCategory = (categoryId) => {
-  setSelectedParentCategory(null);
-  setSelectedCategory(categoryId);
-};
+  const handleSelectParent = (category) => {
+    setSelectedCategory(null);
+    setSelectedParentCategory(category); // { id: 3, name: "Merceria", children: [...] }
+  };
+
+  const handleSelectCategory = (categoryId) => {
+    setSelectedParentCategory(null);
+    setSelectedCategory(categoryId);
+  };
 
   // const [settings, setSettings] = useState([]);
   // const [loading, setLoading] = useState(false);
 
   //Altura del Header para ajustar el scroll de las categorias
   useEffect(() => {
-  const updateHeaderHeight = () => {
-    if (stickyHeaderRef.current) {
+    const updateHeaderHeight = () => {
+      if (stickyHeaderRef.current) {
+        setHeaderHeight(stickyHeaderRef.current.offsetHeight);
+      }
+    };
+
+    window.addEventListener("resize", updateHeaderHeight);
+    return () => window.removeEventListener("resize", updateHeaderHeight);
+  }, []);
+
+  // recalcula cuando settings carga
+  useEffect(() => {
+    if (!settings || !stickyHeaderRef.current) return;
+
+    const timer = setTimeout(() => {
       setHeaderHeight(stickyHeaderRef.current.offsetHeight);
-    }
-  };
+      //  console.log("headerHeight actualizado:", stickyHeaderRef.current.offsetHeight);
+    }, 300);
 
-  window.addEventListener("resize", updateHeaderHeight);
-  return () => window.removeEventListener("resize", updateHeaderHeight);
-}, []);
-
-// recalcula cuando settings carga
-useEffect(() => {
-  if (!settings || !stickyHeaderRef.current) return;
-
-  const timer = setTimeout(() => {
-    setHeaderHeight(stickyHeaderRef.current.offsetHeight);
-  //  console.log("headerHeight actualizado:", stickyHeaderRef.current.offsetHeight);
-  }, 300);
-
-  return () => clearTimeout(timer);
-}, [settings]);
+    return () => clearTimeout(timer);
+  }, [settings]);
 
   const fetchCategories = async () => {
     const res = await apiFetch("/api/store/categories");
@@ -101,22 +112,27 @@ useEffect(() => {
     <div className="site-container">
       <div className="sticky-header" ref={stickyHeaderRef}>
         {/* HEADER */}
-        <Header />
+        <Header
+          search={search}
+          setSearch={setSearch}
+          handleSearch={handleSearch}
+           handleClearSearch={handleClearSearch}
+        />
 
         {/* SIDEBAR */}
         <SideBar
           menuOpen={menuOpen}
           setMenuOpen={setMenuOpen}
           categories={categories}
-           headerHeight={headerHeight}
-           onSelectCategory={handleSelectCategory}
+          headerHeight={headerHeight}
+          onSelectCategory={handleSelectCategory}
         />
 
         <Categories
           setMenuOpen={setMenuOpen}
           categories={categories}
           onSelectCategory={handleSelectCategory}
-           onSelectParent={handleSelectParent}
+          onSelectParent={handleSelectParent}
         />
       </div>
       {/* MAIN */}
@@ -128,6 +144,7 @@ useEffect(() => {
               selectedCategory={selectedCategory}
               selectedParentCategory={selectedParentCategory}
               headerHeight={headerHeight}
+             search={searchQuery}
             />
             <Us />
           </>
