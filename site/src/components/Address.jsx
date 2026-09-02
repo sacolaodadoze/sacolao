@@ -15,7 +15,7 @@ import {
 import { apiFetch } from "../api/apiFetch";
 import { useState, useEffect } from "react";
 
-export function Address({ 
+export function Address({
   control,
   setValue,
   watch /* , showNotification  */,
@@ -30,9 +30,9 @@ export function Address({
   const getAddress = async (cep) => {
     setLoadCep(true);
     try {
-      const response = await apiFetch(`/api/address/${cep}`);
+      const response = await apiFetch(`/api/store/address/${cep}`);
       const data = await response.json();
-     // console.log("GetCep", response);
+      // console.log("GetCep", response);
       if (data.erro) {
         throw new Error("CEP invalido");
       }
@@ -60,7 +60,7 @@ export function Address({
   useEffect(() => {
     const fetchStatus = async () => {
       try {
-        const response = await apiFetch("/api/states/");
+        const response = await apiFetch("/api/store/states/");
         if (!response.ok) {
           throw new Error("Error ao trazer endereço");
         }
@@ -81,7 +81,7 @@ export function Address({
   const getCities = async (uf) => {
     setLoadingCities(true);
     try {
-      const response = await apiFetch(`/api/cities/${uf}`);
+      const response = await apiFetch(`/api/store/cities/${uf}`);
       if (!response.ok) {
         throw new Error("Error ao trazer as cidades");
       }
@@ -126,6 +126,13 @@ export function Address({
                   field.onChange(value);
                   if (value.length === 8) {
                     getAddress(value);
+                  }
+
+                  if (value.length < 8) {
+                    setValue("street", "");
+                    setValue("state", "");
+                    setValue("city", "");
+                    setCities([]);
                   }
                 }}
                 InputProps={{
@@ -188,7 +195,7 @@ export function Address({
         >
           <Controller
             name="state"
-            control={control}           
+            control={control}
             render={({ field }) => (
               <FormControl sx={{ width: "100%" }}>
                 <InputLabel>{LANG.RATEDELIVERY.STATE}</InputLabel>
@@ -227,7 +234,7 @@ export function Address({
           <Controller
             name="city"
             control={control}
-             disabled={!stateValue || loadingCities}
+            disabled={!stateValue || loadingCities}
             render={({ field }) => (
               <FormControl sx={{ width: "100%" }}>
                 <InputLabel id="city-label">

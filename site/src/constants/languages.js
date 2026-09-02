@@ -15,20 +15,6 @@ export const LANG = {
     MANAGE: "Gerenciar Pedido",
     LOGGIN: "Loggin",
   },
-  NAV: {
-    PEDIDOS: "Pedidos",
-    MANAGE: "Gerenciar Pedido",
-    VUUPT: "VUUPT",
-    CARDAPIO: "Cardapio",
-    ADMIN: "Administração",
-  },
-  IMPORT: {
-    ACTIONS: "--Ações--",
-    CLIENTES: "Importar clientes",
-    PRODUCTS: "Produtos",
-    // TOOLTSELECT: "Importar Clientes/Produtos",
-    PDF: "Ver clientes a inserir",
-  },
   LOGGIN: {
     ERROR: "Nome de usuário ou senha incorretos",
     LOAD: "Carregando dados iniciais...",
@@ -84,36 +70,7 @@ export const LANG = {
     SCHEDULED: "Agendado",
     SEARCHCUSTOMER: "Pesquisar cliente",
   },
-  VUUPT: {
-    TITLE: "Dados do Vuupt",
-    ERROR: "Erro ao obter os dados do cliente no Vuupt",
-    NOTFOUND: "Cliente não encontrado",
-    TEXT: "Deseja que este pedido seja inserido no VUUPT?",
-    VUUPT: "Inserir pedido no Vuupt",
-    CONFIRM: "Sim, inserir",
-    TEXTNOTFOUND: "O cliente não foi encontrado no Vuupt",
-    CONFIRMNOTFOUND: "Ok",
-    CREATEDFAIL: "Erro ao inserir o pedido no Vuupt",
-    CREATEDSUCCESS: "Pedido inserido com sucesso no Vuupt",
-    CUSTOMERCREATEDFAIL: "Erro ao inserir o  cliente no Vuupt ",
-    INSERTING: "Inserindo pedido no Vuupt...",
-    CHANGEADDRESS: "Endereço diferente",
-    TEXTADDR:
-      "O endereço do cliente no sistema é diferente do endereço registrado no Vuupt. Deseja inserir mesmo asim?",
-  },
-  DELETEORDER: {
-    TITLE: "¿Deseja cancelar este pedido?",
-    TEXT: "Esta ação não pode ser desfeita",
-    NOTIFICATIONS_ORDER_DELETED: "Pedido excluído com sucesso",
-    UNAUTHORIZED: "Você não tem permissão para excluir pedidos",
-    ERROR: "Erro ao excluir",
-    CONFIRM: "Sím, excluir",
-  },
-  EDITORDER: {
-    WEDIT: "Alterar pedido",
-    ERRORUPD: "Erro ao alterar o pedido",
-    SUCCESSUPD: "Pedido alterado com sucesso",
-  },
+ 
   RATEDELIVERY: {  
     STREET: "Rua",
     CEP: "CEP",

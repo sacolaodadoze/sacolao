@@ -134,8 +134,10 @@ Route::prefix('store')->group(function () {
     Route::get('/payments', [StoreController::class, 'paymentsTypes']);
     Route::post('/order', [StoreController::class, 'storeOrder'])->middleware('auth:sanctum');
     Route::post('/calculate-rate', [StoreController::class, 'calculateRate'])->middleware('auth:sanctum');
-    // routes/api.php
-  
+    
+    Route::get('/address/{cep}', [ExtCustomerController::class, 'address']);
+    Route::get('/states', [ExtCustomerController::class, 'states']);
+    Route::get('/cities/{uf}', [ExtCustomerController::class, 'cities']);
 });
 
 
