@@ -26,9 +26,11 @@ export const schema = z
     delivery_hour: z.string().optional(),
     pickup: z.boolean().optional(),
     paid: z.boolean().optional(),
-    rate_id:z.coerce.number().optional(),
+    rate_id: z.coerce.number().optional(),
+    substitution_preference: z.enum(["similar", "contact", "remove"], {
+      message: "Selecione uma opção",
+    }),
     //created_by:z.string(),
-    
   }) //Validar fecha y hr si esta agendado
   .superRefine((data, ctx) => {
     if (data.scheduled) {

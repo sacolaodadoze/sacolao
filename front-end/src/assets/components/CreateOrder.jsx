@@ -19,6 +19,10 @@ import {
   Autocomplete,
   Box,
   CircularProgress,
+  Typography,
+  RadioGroup,
+  Radio,
+  FormHelperText,
 } from "@mui/material";
 
 import { SectionCollapse } from "./SectionCollapse.jsx";
@@ -69,6 +73,7 @@ export default function CreateOrder({
       delivery_date: "",
       delivery_hour: "",
       rate_id: null,
+      substitution_preference: "",
       phone: "",
       //Endereço
       cep: "",
@@ -163,6 +168,7 @@ export default function CreateOrder({
   };
 
   const onSubmit = async (data) => {
+    //console.log(data);
     setLoadingSave(true);
     const original = formData; // objeto traído del backend
     const current = data; // datos del formulario
@@ -577,7 +583,7 @@ export default function CreateOrder({
                   <Controller
                     name="entry_id"
                     control={control}
-                    rules={{ required: "Campo obligatorio" }}
+                    rules={{ required: "Campo obrigatorio" }}
                     defaultValue=""
                     render={({ field }) => (
                       <FormControl
@@ -783,6 +789,57 @@ export default function CreateOrder({
                     )}
                   />
                 </Box>
+
+                {/* Substituiciones */}
+
+                <Grid item xs={12}>
+                  <Typography variant="h6" fontWeight={80} mb={1}>
+                    Caso algum produto esteja indisponível, como você prefere
+                    que procedamos
+                    <Box
+                      component="span"
+                      sx={{
+                        color: "error.main",
+                        fontWeight: 400,
+                      }}
+                    >
+                      {"*"}
+                    </Box>
+                  </Typography>
+
+                  <Controller
+                    name="substitution_preference"
+                    control={control}
+                    defaultValue="contact"
+                    render={({ field, fieldState }) => (
+                      <FormControl error={!!fieldState.error}>
+                        <RadioGroup {...field}>
+                          <FormControlLabel
+                            value="similar"
+                            control={<Radio />}
+                            label="Substituir por um similar."
+                          />
+
+                          <FormControlLabel
+                            value="contact"
+                            control={<Radio />}
+                            label="Entrar em contato antes de substituir."
+                          />
+
+                          <FormControlLabel
+                            value="remove"
+                            control={<Radio />}
+                            label="Remover o produto do pedido."
+                          />
+                        </RadioGroup>
+
+                        <FormHelperText>
+                          {fieldState.error?.message}
+                        </FormHelperText>
+                      </FormControl>
+                    )}
+                  />
+                </Grid>
               </Box>
             </Stack>
           </SectionCollapse>

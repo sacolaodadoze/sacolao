@@ -122,6 +122,41 @@ export default function Checkout() {
       substitution_preference: "",
     },
   });
+  const street = methods.watch("street");
+  const number = methods.watch("number");
+  const city = methods.watch("city");
+  const state = methods.watch("state");
+  const cep = methods.watch("cep");
+  const deliveryType = methods.watch("deliveryType");
+
+  const subtotal = cartItems.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0,
+  );
+
+  const { data: rateData, isLoading: isLoadingRate } = useQuery({
+    queryKey: ["rate", cep, street, number, city, state, subtotal],
+    queryFn: async () => {
+      if (!street || !city || !state) return null;
+      const res = await apiFetch("/api/store/calculate-rate", {
+        method: "POST",
+        body: JSON.stringify({
+          cep,
+          street,
+          number,
+          city,
+          state,
+          order_total: subtotal,
+        }),
+      });
+      return res.json();
+    },
+    enabled: deliveryType !== "pickup" && !!street && !!city && !!state,
+    staleTime: 0,
+  });
+
+  const deliveryFee = parseFloat(rateData?.delivery_fee ?? 0);
+  const total = subtotal + deliveryFee;
 
   // sincroniza el carrito con el form cada vez que cambia
   useEffect(() => {
@@ -250,7 +285,14 @@ export default function Checkout() {
       const order = await submitOrder(orderData);
       if (!order) return;
 
-      buildOrderConfirmation(order, data, settings, settingsDelivery, summary);
+      //buildOrderConfirmation(order, data, settings, settingsDelivery/* , summary */);
+
+      buildOrderConfirmation(order, data, settings, settingsDelivery, {
+        subtotal,
+        deliveryFee,
+        total,
+        rateData,
+      });
       clearCart();
       navigate("/order-confirmation", { state: { order } });
     } catch (error) {
@@ -377,9 +419,11 @@ export default function Checkout() {
                   <Grid size={{ xs: 12, md: 5 }}>
                     <CheckoutSummary
                       checkoutError={checkoutError}
-                      /*scheduleConfirmation={scheduleConfirmation}
-                   onConfirmSchedule={handleConfirmSchedule} 
-                  onCancelSchedule={handleCancelSchedule}*/
+                      subtotal={subtotal}
+                      rateData={rateData}
+                      isLoadingRate={isLoadingRate}
+                      deliveryFee={deliveryFee}
+                      total={total}
                     />
                   </Grid>
                 </Grid>

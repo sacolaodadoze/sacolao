@@ -4,9 +4,14 @@ import SupportAgentIcon from "@mui/icons-material/SupportAgent"; */
 import { useContext } from "react";
 import { SettingsContext } from "../context/SettingsContext";
 import "./TopBar.css";
+import { useState } from "react";
+import Button from "@mui/material/Button";
+import { DeliveryRatesModal } from "./DeliveryRatesModal.jsx";
+
 export default function TopBar() {
-  const {settings} = useContext(SettingsContext);
- // console.log(settings);
+  const { settings } = useContext(SettingsContext);
+  const [ratesModalOpen, setRatesModalOpen] = useState(false);
+  // console.log(settings);
   if (!settings) return null;
   return (
     <div className="topbar">
@@ -21,6 +26,23 @@ export default function TopBar() {
         <span className="topbar-emoji">🛒</span>
         <span>{settings.free_rate}</span>
       </div>
+
+      <div className="topbar-divider"></div>
+
+      <div className="topbar-item">
+        <button
+          onClick={() => setRatesModalOpen(true)}
+          className="topbar-item topbar-link"
+        >
+          <span className="topbar-emoji">📍</span>
+          Taxa de entrega
+        </button>
+      </div>
+
+      <DeliveryRatesModal
+        open={ratesModalOpen}
+        onClose={() => setRatesModalOpen(false)}
+      />
 
       {/*  <div className="topbar-item">
           <LocalShippingIcon className="topbar-icon" />

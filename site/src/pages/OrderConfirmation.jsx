@@ -24,7 +24,7 @@ export default function OrderConfirmation() {
 
   const order = state.order;
   const itemsList = order.items?.split("\n") ?? [];
-   console.log("COnfitmation",order.confirmation);
+ // console.log("COnfitmation", order.confirmation);
 
   return (
     <Box sx={{ maxWidth: 700, mx: "auto", mt: 4, px: 2 }}>
@@ -78,7 +78,19 @@ export default function OrderConfirmation() {
               </Box>
             ))}
           </Box>
-
+          <Divider sx={{ my: 3 }} />
+          <Typography>
+            Subtotal: <strong> R${order.confirmation.summary.subtotal.toFixed(2)}</strong>
+          </Typography>
+          <Divider sx={{ my: 3 }} />
+          <Typography>
+            Taxa de entrega:{" "}
+            <strong> R${order.confirmation.summary.deliveryFee.toFixed(2)}</strong>
+          </Typography>
+          <Divider sx={{ my: 3 }} />
+          <Typography>
+            Total: <strong>R${order.confirmation.summary.total.toFixed(2)}</strong>
+          </Typography>
           <Divider sx={{ my: 3 }} />
 
           {/* entrega */}
@@ -144,23 +156,23 @@ export default function OrderConfirmation() {
             </>
           ) : (
             <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-            {order.confirmation.deliveryType ? (               
-              <>
-             
-              <Typography>
-                Pode ser retirado a partir das :{" "}
-               
-                <strong>{order.confirmation.estimatedAt.split(" ").pop()}</strong>
-              </Typography>
-              </>
-              ):(
+              {order.confirmation.deliveryType ? (
                 <>
-              <LocalShippingIcon color="success" />
-              <Typography>
-                Previsão de entrega:{" "}
-                <strong>{order.confirmation.estimatedAt}</strong>
-              </Typography>
-              </>
+                  <Typography>
+                    Pode ser retirado a partir das :{" "}
+                    <strong>
+                      {order.confirmation.estimatedAt.split(" ").pop()}
+                    </strong>
+                  </Typography>
+                </>
+              ) : (
+                <>
+                  <LocalShippingIcon color="success" />
+                  <Typography>
+                    Previsão de entrega:{" "}
+                    <strong>{order.confirmation.estimatedAt}</strong>
+                  </Typography>
+                </>
               )}
             </Box>
           )}

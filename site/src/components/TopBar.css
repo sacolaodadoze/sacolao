@@ -36,6 +36,20 @@
   background: rgba(255, 255, 255, 0.3);
   margin: 0 12px;
 }
+
+.topbar-link {
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.topbar-link:hover {
+  opacity: 0.8;
+}
 /* @keyframes iconFloat {
 
   0% {

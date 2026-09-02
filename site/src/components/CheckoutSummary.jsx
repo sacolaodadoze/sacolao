@@ -13,7 +13,14 @@ import { SettingsContext } from "../context/SettingsContext.jsx";
 import { useDeliverySlots } from "../hooks/useDeliverySlots";
 import { useWatch } from "react-hook-form";
 
-export function CheckoutSummary({ checkoutError }) {
+export function CheckoutSummary({
+  checkoutError,
+  subtotal,
+  rateData,
+  isLoadingRate,
+  deliveryFee,
+  total,
+}) {
   const { settings } = useContext(SettingsContext);
   //console.log( settings.is_closed,checkoutError);
   const { settingsDelivery } = useDeliverySlots();
@@ -29,28 +36,23 @@ export function CheckoutSummary({ checkoutError }) {
 
   const items = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
-  const subtotal = cartItems.reduce(
+  /* const subtotal = cartItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0,
-  );
+  ); */
 
-  const scheduled = watch("scheduled");
-  const deliveryDate = watch("delivery_date");
+   const scheduled = watch("scheduled");
+ const deliveryDate = watch("delivery_date");
   const deliveryHour = watch("delivery_hour");
   const deliveryType = useWatch({ control, name: "deliveryType" });
-
+ /*
   const street = useWatch({ control, name: "street" });
   const number = useWatch({ control, name: "number" });
   const city = useWatch({ control, name: "city" });
   const state = useWatch({ control, name: "state" });
   const cep = useWatch({ control, name: "cep" });
 
-  /*   const totalOrder = cartItems.reduce(
-    (acc, item) => acc + item.unitPrice * item.quantity,
-    0,
-  ); */
-
-  const { data: rateData, isLoading: isLoadingRate } = useQuery({
+   const { data: rateData, isLoading: isLoadingRate } = useQuery({
     queryKey: ["rate", cep, street, number, city, state, subtotal],
     queryFn: async () => {
       if (!street || !city || !state) return null;
@@ -69,10 +71,10 @@ export function CheckoutSummary({ checkoutError }) {
     },
     enabled: deliveryType !== "pickup" && !!street && !!city && !!state, //  solo si es delivery y hay dirección
     staleTime: 0, // 0 porque el total puede cambiar si el cliente modifica el carrito
-  });
+  }); */
 
-  const deliveryFee = parseFloat(rateData?.delivery_fee ?? 0);
-  const total = subtotal + deliveryFee;
+  /* const deliveryFee = parseFloat(rateData?.delivery_fee ?? 0);
+  const total = subtotal + deliveryFee; */
 
   // console.log(rateData);
 
@@ -141,10 +143,9 @@ export function CheckoutSummary({ checkoutError }) {
           }}
         >
           {/* <Typography color="text.secondary">Entrega</Typography> */}
-        
+
           {deliveryType !== "pickup" && (
             <>
-              
               <Typography variant="h6">Taxa de entrega</Typography>
 
               {isLoadingRate && (

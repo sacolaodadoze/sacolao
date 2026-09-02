@@ -16,7 +16,7 @@ import { useCart } from "../context/CartContext.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import { CartDrawer } from "./Cart.jsx";
 
-export default function Header(/* {settings} */) {
+export default function Header() {
   const {settings} = useContext(SettingsContext);
   const [openCart, setOpenCart] = useState(false);
 

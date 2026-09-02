@@ -53,6 +53,7 @@ class StoreController extends Controller
     public function deliveryRates()
     {
         $rates = DeliveryRate::all();
+        //  $rates = DeliveryRate::orderBy('min_distance')->get();
         return response()->json($rates);
     }
     /* 
@@ -239,6 +240,7 @@ class StoreController extends Controller
 
         $settings = Setting::first();
         $orderDate = $data['delivery_date'] ?? now()->toDateString();
+       //$orderDate='2026-08-29';
        // dd( $orderDate);
 
          $hour = $data['delivery_hour']
@@ -305,7 +307,7 @@ class StoreController extends Controller
             $mensajes = [
                 'morning'   => 'Não é possível fazer entregas no turno da manhã',
                 'afternoon' => 'Não é possível fazer entregas no turno da tarde',
-                'single'    => 'Não é possível fazer entregas nesse dia',
+                'single'    => 'Não é possível fazer entregas no dia de hoje',
             ];
             return response()->json(['error' => $mensajes[$resolved['shift']]], 422);
         }
