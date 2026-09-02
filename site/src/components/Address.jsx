@@ -23,12 +23,14 @@ export function Address({
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
   const [loadingCities, setLoadingCities] = useState(false);
+  const [loadingStreet, setLoadingStreet] = useState(false);
   const [loadcep, setLoadCep] = useState(false);
 
   const stateValue = watch("state");
 
   const getAddress = async (cep) => {
     setLoadCep(true);
+    setLoadingStreet(true);
     try {
       const response = await apiFetch(`/api/store/address/${cep}`);
       const data = await response.json();
@@ -54,6 +56,7 @@ export function Address({
       //showNotification(error.message || "Error ao trazer o endereço", "error");
     } finally {
       setLoadCep(false);
+      setLoadingStreet(false);
     }
   };
   //console.log("WATCH state_1:", watch("state_1"));
@@ -110,7 +113,7 @@ export function Address({
         {/* CEP */}
         <Box
           sx={{
-            width: { xs: "100%", md: "calc(25% - 8px)", gap: 2 },
+            width: { xs: "100%", md: "calc(24% - 8px)", gap: 2 },
           }}
         >
           <Controller
@@ -124,10 +127,12 @@ export function Address({
                 onChange={(e) => {
                   const value = e.target.value.replace(/\D/g, ""); // solo números
                   field.onChange(value);
+
+                  //Hasta que no coloque el cep completo no busca
                   if (value.length === 8) {
                     getAddress(value);
                   }
-
+                  //Limpia los campos
                   if (value.length < 8) {
                     setValue("street", "");
                     setValue("state", "");
@@ -142,13 +147,14 @@ export function Address({
                     </InputAdornment>
                   ),
                 }}
+                disabled={loadingStreet}
               />
             )}
           />
         </Box>
         <Box
           sx={{
-            width: { xs: "100%", md: "calc(75% - 8px)", gap: 2 },
+            width: { xs: "100%", md: "calc(76% - 8px)", gap: 2 },
           }}
         >
           <Controller
@@ -164,10 +170,11 @@ export function Address({
             )}
           />
         </Box>
+
         {/* NUMERO */}
         <Box
           sx={{
-            width: { xs: "100%", md: "calc(20% - 8px)", gap: 2 },
+            width: { xs: "100%", md: "calc(24% - 8px)", gap: 2 },
           }}
         >
           <Controller
@@ -188,7 +195,7 @@ export function Address({
           sx={{
             width: {
               xs: "100%",
-              md: "calc(20% - 8px)",
+              md: "calc(27% - 8px)",
               gap: 2,
             },
           }}
@@ -228,7 +235,7 @@ export function Address({
         {/* City */}
         <Box
           sx={{
-            width: { xs: "100%", md: "calc(36% - 8px)", gap: 2 },
+            width: { xs: "100%", md: "calc(47% - 8px)", gap: 2 },
           }}
         >
           <Controller

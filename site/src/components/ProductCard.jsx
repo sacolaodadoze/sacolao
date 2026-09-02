@@ -3,8 +3,13 @@ import { useContext, useState } from "react";
 import { Chip, Typography, Box } from "@mui/material";
 import { useCart } from "../context/CartContext.jsx";
 import { ProductModal } from "./ProductModal";
+import { useAuth } from "../context/AuthContext.jsx";
+import { useNavigate } from "react-router-dom";
 
 export function ProductCard({ product }) {
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+
   const [openModal, setOpenModal] = useState(false);
 
   const { cartItems, addToCart, updateQuantity } = useCart();
@@ -104,6 +109,12 @@ export function ProductCard({ product }) {
                 className="btn-add-cart"
                 onClick={(e) => {
                   e.stopPropagation();
+
+                  if (!isAuthenticated) {
+                    navigate("/login");
+                    return;
+                  }
+                  
                   addToCart(product);
                 }}
               >
