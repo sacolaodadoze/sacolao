@@ -88,7 +88,7 @@ export default function Header({ search, setSearch, handleSearch,handleClearSear
         </Button>
 
         {/*  <span className="search-icon">🔍</span> */}
-        <p className="whatsapp-notice">🛒{settings.info}</p>
+        <p className="whatsapp-notice">{settings.info ?? " "}</p>
       </div>
 
       <div className="cart">

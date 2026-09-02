@@ -161,7 +161,7 @@ export const LANG = {
     SATURDAY_CLOSE: "Sábado fechamento",
     SUNDAY_OPEN: "Domingo abertura",
     SUNDAY_CLOSE: "Domingo fechamento",
-    INFOSEARCH: "Informações embaixo do search",
+    INFOSEARCH: "Informações embaixo do botão de busca",
     DELIVERYTIME: "Tempo de entrega ( minutos)",
     FREE_RATE: "Valor mínimo para entrega grátis",
     CLOSED: "Fechado",
