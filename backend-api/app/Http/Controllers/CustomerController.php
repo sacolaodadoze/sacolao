@@ -83,6 +83,7 @@ class CustomerController extends Controller
                 'document'      => $validated['document'],
                 'name'          => $validated['name'],
                 'customer_code' => null,
+                 'privacy_policy_accepted_at' => now(),
                 //  'observations'  => $validated['observations'] ?? null,
             ]);
             /*     $customer = Customer::firstOrCreate(

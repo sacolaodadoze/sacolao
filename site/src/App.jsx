@@ -9,6 +9,7 @@ import OrderConfirmation from "./pages/OrderConfirmation.jsx";
 import { ProtectedRoute } from "./components/ProtectedRoute.jsx";
 import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
+import PrivacyPolicy from "./pages/PrivacyPolicy.jsx";
 
 if ("scrollRestoration" in window.history) {
   window.history.scrollRestoration = "manual";
@@ -37,6 +38,7 @@ function App() {
             }
           />
           <Route path="/order-confirmation" element={<OrderConfirmation />} />
+          <Route path="/politica-de-privacidade" element={<PrivacyPolicy />} />
         </Routes>
       </HashRouter>
     </>

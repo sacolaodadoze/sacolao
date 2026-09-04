@@ -1,5 +1,5 @@
 // src/pages/Register.jsx
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import {
@@ -10,6 +10,10 @@ import {
   Paper,
   CircularProgress,
   Divider,
+  FormControl,
+  FormControlLabel,
+  Checkbox,
+  FormHelperText,
 } from "@mui/material";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -30,6 +34,9 @@ const registerSchema = z
     city: z.string().optional(),
     state: z.string().optional(),
     cep: z.string().optional(),
+    accepted_privacy_policy: z.boolean().refine((val) => val === true, {
+      message: "Você precisa aceitar a Política de Privacidade",
+    }),
   })
   .refine((data) => data.password === data.password_confirmation, {
     message: "Las contraseñas no coinciden",
@@ -44,6 +51,7 @@ export default function Register() {
     register,
     handleSubmit,
     setError,
+    control,
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(registerSchema),
@@ -228,6 +236,28 @@ export default function Register() {
               sx={{ width: 120 }}
             />
           </Box>
+          <Controller
+            name="accepted_privacy_policy"
+            control={control}
+            render={({ field, fieldState }) => (
+              <FormControl error={!!fieldState.error}>
+                <FormControlLabel
+                  control={
+                    <Checkbox {...field} checked={field.value ?? false} />
+                  }
+                  label={
+                    <>
+                      Li e aceito a{" "}
+                      <Link to="/politica-de-privacidade" target="_blank">
+                        Política de Privacidade
+                      </Link>
+                    </>
+                  }
+                />
+                <FormHelperText>{fieldState.error?.message}</FormHelperText>
+              </FormControl>
+            )}
+          />
 
           {/* error general */}
           {errors.root && (
