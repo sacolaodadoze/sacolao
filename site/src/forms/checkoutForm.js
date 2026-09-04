@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { LANG } from "../../../front-end/src/assets/constants/languages";
+import { validarDocumento, validarTelefone } from "../utils/validations.js";
 
 export const checkoutSchema = z
   .object({
@@ -15,8 +16,10 @@ export const checkoutSchema = z
       .min(1, "El carrito no puede estar vacío"),  */
     items: z.string().min(1, LANG.GLOBAL.REQUIRED),
 
-    name: z.string().optional(),
-    phone: z.string().optional(),
+    name: z.string().min(1, "Nome é obrigatório"),
+    phone: z.string().min(1, "Telefone é obrigatório").refine(validarTelefone, {
+      message: "Telefone inválido",
+    }),
     phoneS: z.string().optional(),
     cep: z.string().optional(),
     street: z.string().optional(),
@@ -34,7 +37,21 @@ export const checkoutSchema = z
     substitution_preference: z.enum(["similar", "contact", "remove"], {
       message: "Selecione uma opção",
     }),
-  })
+    document: z.string().optional() 
+    .refine(
+        (value) => {
+          // Si no hay documento, lo dejamos pasar.
+          if (!value || value.trim() === "") {
+            return true;
+          }
+
+          return validarDocumento(value);
+        },
+        {
+          message: "Documento inválido",
+        },
+      ),
+  }) 
   .superRefine((data, ctx) => {
     if (data.scheduled) {
       if (!data.delivery_date) {
@@ -49,6 +66,42 @@ export const checkoutSchema = z
           code: z.ZodIssueCode.custom,
           message: "Selecione um horário",
           path: ["delivery_hour"],
+        });
+      }
+    }
+
+    //  documento obligatorio solo si el cliente no lo tenía guardado
+    if (
+      data.needs_document &&
+      (!data.document || data.document.trim().length === 0)
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Documento é obrigatório",
+        path: ["document"],
+      });
+    }
+
+    if (data.deliveryType !== "pickup") {
+      if (!data.street) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Rua é obrigatória",
+          path: ["street"],
+        });
+      }
+      if (!data.city) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Cidade é obrigatória",
+          path: ["city"],
+        });
+      }
+      if (!data.state) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Estado é obrigatório",
+          path: ["state"],
         });
       }
     }

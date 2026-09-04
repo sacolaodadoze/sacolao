@@ -31,7 +31,8 @@ import {
 import { Loader } from "../components/Loader.jsx";
 
 export default function Checkout() {
-  const { customer } = useAuth();
+  const { customer, updateCustomer } = useAuth();
+  const needsDocument = !customer?.document;
 
   const navigate = useNavigate();
 
@@ -120,6 +121,8 @@ export default function Checkout() {
 
       observations: "",
       substitution_preference: "",
+      document: customer?.document ?? "",
+      needs_document: needsDocument,
     },
   });
   const street = methods.watch("street");
@@ -261,6 +264,7 @@ export default function Checkout() {
     });
 
     const responseData = await res.json();
+    //console.log(responseData);
 
     if (!res.ok) {
       throw new Error(
@@ -285,7 +289,9 @@ export default function Checkout() {
       const order = await submitOrder(orderData);
       if (!order) return;
 
-      //buildOrderConfirmation(order, data, settings, settingsDelivery/* , summary */);
+      if (order.customer) {
+        updateCustomer(order.customer); //  refresca el AuthContext con datos frescos
+      }
 
       buildOrderConfirmation(order, data, settings, settingsDelivery, {
         subtotal,

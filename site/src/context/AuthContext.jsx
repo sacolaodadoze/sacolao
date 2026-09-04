@@ -30,8 +30,13 @@ export function AuthProvider({ children }) {
 
   const isAuthenticated = !!token;
 
+  const updateCustomer = (customerData) => {
+  setCustomer(customerData);
+  localStorage.setItem("customer", JSON.stringify(customerData));
+};
+
   return (
-    <AuthContext.Provider value={{ customer, token, login, logout, isAuthenticated }}>
+    <AuthContext.Provider value={{ customer, token, login, logout,updateCustomer, isAuthenticated }}>
       {children}
     </AuthContext.Provider>
   );

@@ -41,4 +41,8 @@ return [
         'products_url' => env('HIPER_PRODUCTS_URL'),
     ],
 
+    'google' => [
+    'client_id' => env('GOOGLE_CLIENT_ID'),
+],
+
 ];

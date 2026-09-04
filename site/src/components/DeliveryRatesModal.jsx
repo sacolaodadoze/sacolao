@@ -20,13 +20,16 @@ import {
   CircularProgress,
   Alert,
 } from "@mui/material";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { deliveryRateSchema } from "../forms/deliveryRatesModal.js";
 //import { useNotification } from "../context/NotificationContext.jsx"; // ajustá el path real
 import { Address } from "./Address.jsx";
 
 export function DeliveryRatesModal({ open, onClose }) {
   // const { showNotification } = useNotification();
 
-  const { control, setValue, watch, reset } = useForm({
+  const { control, setValue, watch, reset,handleSubmit,formState: { errors } } = useForm({
+    resolver: zodResolver(deliveryRateSchema),
     defaultValues: {
       cep: "",
       street: "",
@@ -40,7 +43,7 @@ export function DeliveryRatesModal({ open, onClose }) {
 
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [mensajeError, setMensajeError] = useState("");
 
   const { data: rates, isLoading: loadingRates } = useQuery({
     queryKey: ["delivery-rates"],
@@ -49,8 +52,8 @@ export function DeliveryRatesModal({ open, onClose }) {
     staleTime: Infinity,
   });
 
-  const handleCheck = async () => {
-    const values = {
+  const handleCheck = async (values) => {
+  /*   const values = {
       cep: watch("cep"),
       street: watch("street"),
       number: watch("number"),
@@ -59,12 +62,12 @@ export function DeliveryRatesModal({ open, onClose }) {
     };
 
     if (!values.street || !values.city || !values.state) {
-      setError("Preencha ao menos rua, cidade e estado");
+       setMensajeError("Preencha ao menos rua, cidade e estado");
       return;
-    }
+    } */
 
     setLoading(true);
-    setError("");
+     setMensajeError("");
     setResult(null);
 
     try {
@@ -75,12 +78,12 @@ export function DeliveryRatesModal({ open, onClose }) {
       const data = await res.json();
 
       if (data.out_of_range) {
-        setError("Endereço fora da área de entrega");
+         setMensajeError("Endereço fora da área de entrega");
       } else {
         setResult(data);
       }
     } catch (e) {
-      setError("Erro ao calcular a taxa");
+       setMensajeError("Erro ao calcular a taxa");
     } finally {
       setLoading(false);
     }
@@ -89,7 +92,7 @@ export function DeliveryRatesModal({ open, onClose }) {
   const handleClose = () => {
     reset(); // limpia el form al cerrar
     setResult(null);
-    setError("");
+     setMensajeError("");
     onClose();
   };
 
@@ -147,21 +150,22 @@ export function DeliveryRatesModal({ open, onClose }) {
           control={control}
           setValue={setValue}
           watch={watch}
+          errors={errors} 
           /*  showNotification={showNotification} */
         />
 
         <Button
           variant="contained"
-          onClick={handleCheck}
+         onClick={handleSubmit(handleCheck)}
           disabled={loading}
           sx={{ mt: 2 }}
         >
           {loading ? <CircularProgress size={20} /> : "Consultar"}
         </Button>
 
-        {error && (
+        {mensajeError && (
           <Alert severity="warning" sx={{ mt: 2 }}>
-            {error}
+            {mensajeError}
           </Alert>
         )}
 

@@ -24,7 +24,7 @@ export default function OrderConfirmation() {
 
   const order = state.order;
   const itemsList = order.items?.split("\n") ?? [];
- // console.log("COnfitmation", order.confirmation);
+  // console.log("COnfitmation", order.confirmation);
 
   return (
     <Box sx={{ maxWidth: 700, mx: "auto", mt: 4, px: 2 }}>
@@ -80,16 +80,27 @@ export default function OrderConfirmation() {
           </Box>
           <Divider sx={{ my: 3 }} />
           <Typography>
-            Subtotal: <strong> R${order.confirmation.summary.subtotal.toFixed(2)}</strong>
+            Subtotal:{" "}
+            <strong> R${order.confirmation.summary.subtotal.toFixed(2)}</strong>
           </Typography>
+          {!order.pickup ? (
+            <>
+              <Divider sx={{ my: 3 }} />
+              <Typography>
+                Taxa de entrega:{" "}
+                <strong>
+                  {" "}
+                  R${order.confirmation.summary.deliveryFee.toFixed(2)}
+                </strong>
+              </Typography>
+            </>
+          ) : (
+            ""
+          )}
           <Divider sx={{ my: 3 }} />
           <Typography>
-            Taxa de entrega:{" "}
-            <strong> R${order.confirmation.summary.deliveryFee.toFixed(2)}</strong>
-          </Typography>
-          <Divider sx={{ my: 3 }} />
-          <Typography>
-            Total: <strong>R${order.confirmation.summary.total.toFixed(2)}</strong>
+            Total:{" "}
+            <strong>R${order.confirmation.summary.total.toFixed(2)}</strong>
           </Typography>
           <Divider sx={{ my: 3 }} />
 
@@ -98,9 +109,18 @@ export default function OrderConfirmation() {
             Entrega
           </Typography>
           {order.pickup ? (
-            <Box display="flex" gap={1} alignItems="center">
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 1,
+              }}
+            >
               <StoreIcon color="success" />
-              <Typography>Retirada na loja</Typography>
+              <Typography sx={{ whiteSpace: "nowrap" }}>
+                Retirada na loja
+              </Typography>
             </Box>
           ) : (
             <>

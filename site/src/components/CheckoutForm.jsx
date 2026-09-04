@@ -158,11 +158,14 @@ function ScheduleSection() {
 }
 
 export function CheckoutForm({ paymentTypes }) {
+ 
   const {
     control,
     watch,
     formState: { errors },
   } = useFormContext();
+
+   const needsDocument = useWatch({ control, name: "needs_document" });
 
   const renderTextField = ({
     name,
@@ -235,6 +238,16 @@ export function CheckoutForm({ paymentTypes }) {
             label: "Telefone secundário",
             md: 6,
           })}
+
+          {/* solo aparece si el cliente no tenía documento guardado */}
+          {needsDocument &&
+            renderTextField({
+              name: "document",
+              label: "CPF/CNPJ",
+              required: true,
+              md: 12,
+            })}
+
         </Grid>
       </Paper>
 
@@ -293,14 +306,13 @@ export function CheckoutForm({ paymentTypes }) {
           {renderTextField({
             name: "street",
             label: "Rua",
-            required: true,
+            
             md: 7,
           })}
 
           {renderTextField({
             name: "number",
-            label: "Número",
-            required: true,
+            label: "Número",           
             md: 2,
           })}
 
@@ -318,13 +330,13 @@ export function CheckoutForm({ paymentTypes }) {
 
           {renderTextField({
             name: "city",
-            label: "Cidade",
+            label: "Cidade",            
             md: 3,
           })}
 
           {renderTextField({
             name: "state",
-            label: "Estado",
+            label: "Estado",           
             md: 3,
           })}
         </Grid>

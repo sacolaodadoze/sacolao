@@ -19,6 +19,9 @@ use Illuminate\Support\Facades\Auth;
 use App\Services\GeocodingService;
 use App\Services\DeliverySlotService;
 use App\Models\OrderCapacity;
+use App\Models\Customer;
+use Illuminate\Validation\ValidationException;
+use App\Rules\ValidDocument;
 
 class StoreController extends Controller
 {
@@ -64,7 +67,7 @@ class StoreController extends Controller
     public function products(Request $request)
     {
 
- /*  $products = Category::with('products')->orderBy('position')->get()->flatMap(function ($category) {
+        /*  $products = Category::with('products')->orderBy('position')->get()->flatMap(function ($category) {
             return $category->products->map(function ($product) use ($category) {
                 $product->category_name = $category->name;
                 return $product;
@@ -215,14 +218,16 @@ class StoreController extends Controller
             //'customerChanged' => 'required|boolean',
             'phone' => 'required|string',
             'phoneS' => 'nullable|string',
-            'street'      => 'required_unless:pickup,true|string',
+            'street'      => ['nullable', 'required_if:pickup,true|string'],
             'cep'      => 'nullable|string',
             'number' => 'nullable|string',
             'neighborhood' => 'nullable|string',
             'complement' => 'nullable|string',
-            'city' => 'required|string',
-            'state' => 'required|string',
+            'city' => ['nullable', 'required_if:pickup,true|string'],
+            'state' => ['nullable', 'required_if:pickup,true|string'],
             'substitution_preference' => 'required|in:similar,contact,remove',
+            'document' => ['nullable', 'required_if:needs_document,true', 'string',  new ValidDocument()],
+            'needs_document' => ['nullable', 'boolean'],
             /* 'confirm_schedule_change' => 'nullable|boolean', */
         ];
 
@@ -230,18 +235,26 @@ class StoreController extends Controller
 
         $customer = $request->user();
 
-        /*         $settings =  Setting::first();
-        //dd($settings->is_closed,$request->delivery_date);
-        // Pedido para hoy
-        if (
-            ($settings->is_closed &&  $request->delivery_date === now()->toDateString())
-            || ($settings->is_closed &&  $request->delivery_date === null)
+        // si el cliente no tiene documento guardado, y el frontend mandó uno, lo guardamos
+        if (empty($customer->document) && !empty($data['document'])) {
+            $document = preg_replace('/\D/', '', $data['document']);
 
-        ) {
-            return response()->json([
-                'message' => 'Não é possível realizar entregas para hoje.'
-            ], 422);
-        } */
+            $documentExists = Customer::where('document', $document)
+                ->where('id', '!=', $customer->id)
+                ->exists();
+
+            if ($documentExists) {
+                throw ValidationException::withMessages([
+                    'document' => 'O CPF fornecido já está cadastrado para outro cliente.',
+                ]);
+            }
+
+            if (!$documentExists) {
+                $customer->update([
+                    'document' => $document,
+                ]);
+            }
+        }
 
         $settings = Setting::first();
         $orderDate = $data['delivery_date'] ?? now()->toDateString();

@@ -1,7 +1,6 @@
 import { LANG } from "../constants/languages.js";
 import { useForm, Controller, useFormContext } from "react-hook-form";
-/* import { zodResolver } from "@hookform/resolvers/zod";
-import { schema } from "../../forms/customerForm.js"; */
+
 import {
   TextField,
   Select,
@@ -11,6 +10,8 @@ import {
   MenuItem,
   CircularProgress,
   InputAdornment,
+  FormHelperText,
+  Autocomplete,
 } from "@mui/material";
 import { apiFetch } from "../api/apiFetch";
 import { useState, useEffect } from "react";
@@ -18,13 +19,17 @@ import { useState, useEffect } from "react";
 export function Address({
   control,
   setValue,
-  watch /* , showNotification  */,
+  watch,
+  errors = {} /* , showNotification  */,
 }) {
+
+ 
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
   const [loadingCities, setLoadingCities] = useState(false);
   const [loadingStreet, setLoadingStreet] = useState(false);
   const [loadcep, setLoadCep] = useState(false);
+   
 
   const stateValue = watch("state");
 
@@ -166,6 +171,8 @@ export function Address({
                 label={LANG.RATEDELIVERY.STREET}
                 fullWidth
                 InputLabelProps={{ shrink: !!field.value }}
+                error={!!errors["street"]}
+                helperText={errors["street"]?.message}
               />
             )}
           />
@@ -204,11 +211,12 @@ export function Address({
             name="state"
             control={control}
             render={({ field }) => (
-              <FormControl sx={{ width: "100%" }}>
+              <FormControl sx={{ width: "100%" }} error={!!errors["state"]}>
                 <InputLabel>{LANG.RATEDELIVERY.STATE}</InputLabel>
 
                 <Select
                   {...field}
+                  native
                   label={LANG.RATEDELIVERY.STATE}
                   labelId="state-label"
                   value={field.value ?? ""}
@@ -220,13 +228,16 @@ export function Address({
                   MenuProps={{
                     disablePortal: true,
                   }}
+                  disabled={loadingCities}
                 >
+                 <option value=""></option>
                   {states.map((state) => (
-                    <MenuItem key={state.id} value={state.sigla}>
+                    <option key={state.id} value={state.sigla}>
                       {state.sigla}
-                    </MenuItem>
+                    </option>
                   ))}
                 </Select>
+                  <FormHelperText>{errors["state"]?.message}</FormHelperText>
               </FormControl>
             )}
           />
@@ -241,15 +252,16 @@ export function Address({
           <Controller
             name="city"
             control={control}
-            disabled={!stateValue || loadingCities}
+           
             render={({ field }) => (
-              <FormControl sx={{ width: "100%" }}>
+              <FormControl sx={{ width: "100%" }} error={!!errors["city"]}>
                 <InputLabel id="city-label">
                   {LANG.RATEDELIVERY.CITY}
                 </InputLabel>
 
                 <Select
                   {...field}
+                  native
                   label={LANG.RATEDELIVERY.CITY}
                   labelId="city-label"
                   value={field.value ?? ""}
@@ -261,13 +273,16 @@ export function Address({
                   MenuProps={{
                     disablePortal: true,
                   }}
+                  disabled={!stateValue || loadingCities}
                 >
+                   <option value=""></option>
                   {cities.map((citie) => (
-                    <MenuItem key={citie.id} value={citie.nome}>
+                    <option key={citie.id} value={citie.nome}>
                       {citie.nome}
-                    </MenuItem>
+                    </option>
                   ))}
                 </Select>
+                 <FormHelperText>{errors["city"]?.message}</FormHelperText>
               </FormControl>
             )}
           />

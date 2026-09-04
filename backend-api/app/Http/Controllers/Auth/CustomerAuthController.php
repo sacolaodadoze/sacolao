@@ -8,6 +8,8 @@ use App\Models\Address;
 use App\Models\Customer;
 use App\Models\Phone;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 
 class CustomerAuthController extends Controller
 {
@@ -17,15 +19,15 @@ class CustomerAuthController extends Controller
             'email'    => 'required|email',
             'password' => 'required',
         ]);
-    
+
         $customer = Customer::where('email', $request->email)->with(['addresses', 'phones'])->first();
-       
+
         if (!$customer || !Hash::check($request->password, $customer->password)) {
             return response()->json(['message' => 'Credenciales incorrectas'], 401);
         }
 
         $token = $customer->createToken('customer_token')->plainTextToken;
-     
+
         return response()->json([
             'token'    => $token,
             'customer' => $customer,
@@ -112,5 +114,59 @@ class CustomerAuthController extends Controller
     {
         dd($request->user()->load(['addresses', 'phones']));
         return response()->json($request->user()->load(['addresses', 'phones']));
+    }
+
+
+
+    public function loginWithGoogle(Request $request)
+    {
+        $request->validate([
+            'credential' => 'required|string',
+        ]);
+
+        $response = Http::get('https://oauth2.googleapis.com/tokeninfo', [
+            'id_token' => $request->credential,
+        ]);
+
+        if (!$response->ok()) {
+            return response()->json(['message' => 'Token do Google inválido'], 401);
+        }
+
+        $payload = $response->json();
+
+        // Verifica que el token sea realmente para TU app (evita tokens de otras apps)
+        if (($payload['aud'] ?? null) !== config('services.google.client_id')) {
+            return response()->json(['message' => 'Token do Google inválido'], 401);
+        }
+
+        if (($payload['email_verified'] ?? 'false') !== 'true') {
+            return response()->json(['message' => 'Email do Google não verificado'], 401);
+        }
+
+        $email = $payload['email'];
+        $name  = $payload['name'] ?? $email;
+
+        $customer = Customer::where('email', $email)->with(['addresses', 'phones'])->first();
+
+        if (!$customer) {
+            $customer = Customer::create([
+                'name'          => $name,
+                'email'         => $email,
+                'password'      => Hash::make(Str::random(32)), // nunca se usa, login siempre vía Google
+                'customer_type' => 1,
+                'document'      => null, 
+            ]);
+
+             $customer->load(['addresses', 'phones']);
+        }
+
+       
+
+        $token = $customer->createToken('customer_token')->plainTextToken;
+
+        return response()->json([
+            'token'    => $token,
+            'customer' => $customer,
+        ]);
     }
 }

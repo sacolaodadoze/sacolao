@@ -5,6 +5,7 @@ import { Box, Button, TextField, Typography, Paper, CircularProgress } from "@mu
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { apiFetch } from "../api/apiFetch";
+import { GoogleLoginButton } from "../components/GoogleLoginButton.jsx";
 
 const loginSchema = z.object({
   email:    z.string().email("Email inválido"),
@@ -101,7 +102,9 @@ export default function Login() {
             sx={{ mt: 1, py: 1.5 }}
           >
             {isSubmitting ? <CircularProgress size={22} color="inherit" /> : "Entrar"}
+          
           </Button>
+            <GoogleLoginButton />
 
           <Typography textAlign="center" fontSize="0.85rem">
             Não tem conta?{" "}
